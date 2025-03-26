@@ -4,7 +4,7 @@
     import Nav from "react-bootstrap/Nav";
     import Navbar from "react-bootstrap/Navbar";
     import Offcanvas from "react-bootstrap/Offcanvas";
-    import logo from "../assets/react.svg";
+    import logo from "../assets/logo-edu.png";
     import { useAuth } from "../database/authcontext";
     import 'bootstrap-icons/font/bootstrap-icons.css';
     import "../App.css";
@@ -79,7 +79,7 @@
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                 >
                     {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
-                    <strong>Biblioteca Virtual</strong>
+                    <strong>Biblioteca Digital</strong>
                 </Nav.Link>
                 {isLoggedIn ? (
                     <>
