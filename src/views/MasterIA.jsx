@@ -13,8 +13,8 @@ return (
     <div>
     <br />
     <br />
-    <h1>Inicio</h1>
-    <button onClick={() => handleNavigate("/libros")} >Ir a Biblioteca Digital</button>
+    <h1>MasterIA</h1>
+    <button onClick={() => handleNavigate("/inicio")} >Ir a Inicio</button>
     </div>
 )
 }

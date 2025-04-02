@@ -81,6 +81,13 @@
                     {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
                     <strong>Biblioteca Digital</strong>
                 </Nav.Link>
+                <Nav.Link
+                    onClick={() => handleNavigate("/ia")}
+                    className={isCollapsed ? "color-texto-marca" : "text-white"}
+                >
+                    {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
+                    <strong>MasterIA</strong>
+                </Nav.Link>
                 {isLoggedIn ? (
                     <>
                     <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
