@@ -4,7 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from './views/Login'
 import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
-import Books from "./views/Books"; //Importación de Libros
+import Libros from "./views/Libros";
 
 import './App.css'
 
@@ -21,7 +21,7 @@ function App() {
                 
                 <Route path="/" element={<Login />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
-                <Route path="/books" element={<ProtectedRoute element={<Books />} />}/>
+                <Route path="/libros" element={<ProtectedRoute element={<Libros />} />}/>
 
               </Routes>
             </main>
