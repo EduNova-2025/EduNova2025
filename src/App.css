@@ -95,4 +95,33 @@
     width: 100%;
     }
 
-    
+    /* En tu archivo CSS o en el estilo en línea */
+@media (max-width: 768px) {
+    .sidebar {
+      width: 60px;
+    }
+  
+    .sidebar button {
+      font-size: 1.2rem;  /* Reduce el tamaño de los botones */
+    }
+  }
+/* CSS global para asegurar que todo se acomode bien en dispositivos pequeños */
+@media (max-width: 768px) {
+  .d-flex {
+    flex-direction: column;
+  }
+
+  .d-flex .text-center {
+    text-align: center;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .chat-area {
+    margin-top: 20px;
+  }
+}
+  
