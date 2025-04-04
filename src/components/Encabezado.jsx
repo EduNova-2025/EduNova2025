@@ -67,6 +67,7 @@
             <Offcanvas.Body>
                 <Nav className="justify-content-end flex-grow-1 pe-3">
 
+                {/* Opción de Inicio */}
                 <Nav.Link
                     onClick={() => handleNavigate("/inicio")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
@@ -74,29 +75,36 @@
                     {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
                     <strong>Inicio</strong>
                 </Nav.Link>
-                <Nav.Link
-                    onClick={() => handleNavigate("/books")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                    {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
-                    <strong>Biblioteca Digital</strong>
-                </Nav.Link>
-                <Nav.Link
-                    onClick={() => handleNavigate("/ia")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                    {isCollapsed ? <i className="bi-house-door-fill me-2"></i> : null}
-                    <strong>MasterIA</strong>
-                </Nav.Link>
-                {isLoggedIn ? (
+
+                {/* Opciones visibles solo si el usuario está logueado */}
+                {isLoggedIn && (
                     <>
-                    <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
-                        Cerrar Sesión
+                    <Nav.Link
+                        onClick={() => handleNavigate("/books")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                    >
+                        {isCollapsed ? <i className="bi-book-fill me-2"></i> : null}
+                        <strong>Biblioteca Digital</strong>
+                    </Nav.Link>
+
+                    <Nav.Link
+                        onClick={() => handleNavigate("/ia")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                    >
+                        {isCollapsed ? <i className="bi-brain-fill me-2"></i> : null}
+                        <strong>MasterIA</strong>
                     </Nav.Link>
                     </>
+                )}
+
+                {/* Cerrar sesión / Iniciar sesión */}
+                {isLoggedIn ? (
+                    <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
+                    Cerrar Sesión
+                    </Nav.Link>
                 ) : location.pathname === "/" && (
                     <Nav.Link
-                    onClick={() => handleNavigate("/")}
+                    onClick={() => handleNavigate("/login")}
                     className={isCollapsed ? "text-black" : "text-white"}
                     >
                     Iniciar Sesión

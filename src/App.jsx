@@ -6,6 +6,7 @@ import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
 import MasterIA from "./views/MasterIA"; //Importación de la vista MasterIA
 import Books from "./views/Books"; //Importación de la vista Books
+import Bienvenida from "./views/Bienvenida";
 
 import './App.css'
 
@@ -20,7 +21,8 @@ function App() {
             <main>
               <Routes>
                 
-                <Route path="/" element={<Login />} />
+                <Route path="/" element={<Bienvenida />} />
+                <Route path="/login"  element={<Login />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
                 <Route path="/books" element={<ProtectedRoute element={<Books />} />}/>
                 <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
