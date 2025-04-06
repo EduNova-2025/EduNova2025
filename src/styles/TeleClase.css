@@ -271,3 +271,74 @@
         max-width: 33.333333%;
     }
 }
+
+.contenedor-teleclase-mined {
+    width: 100%;
+    padding: 20px;
+}
+
+.btn-agregar {
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #0057B7;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-agregar:hover {
+    background-color: #004494;
+    transform: translateY(-2px);
+}
+
+.tarjeta-acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    justify-content: flex-end;
+}
+
+.btn-accion {
+    width: 35px;
+    height: 35px;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-accion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-accion.btn-outline-success:hover {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-accion i {
+    font-size: 14px;
+}
+
+.tarjeta-teleclase .card-body {
+    padding: 1.25rem;
+}
+
+.tarjeta-contenido {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tarjeta-descripcion {
+    flex-grow: 1;
+    margin-bottom: 10px;
+}

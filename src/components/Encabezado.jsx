@@ -96,6 +96,14 @@ return (
                 </Nav.Link>
 
                 <Nav.Link
+                    onClick={() => handleNavigate("/teleclasemined")}
+                    className={isCollapsed ? "color-texto-marca" : "text-white"}
+                >
+                    {isCollapsed ? <i className="bi-book-fill me-2"></i> : null}
+                    <strong>Teleclases mined</strong>
+                </Nav.Link>
+
+                <Nav.Link
                     onClick={() => handleNavigate("/ia")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                 >

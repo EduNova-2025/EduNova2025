@@ -2,16 +2,7 @@ import React from 'react';
 import { Card, Col, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const TarjetaTeleclases = ({ teleclase }) => {
-  const handleDownload = (videoUrl, titulo) => {
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.download = `${titulo || 'teleclase'}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
+const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
   return (
     <Col lg={4} md={6} sm={12} className="mb-4">
       <Card className="tarjeta-teleclase">
@@ -32,12 +23,20 @@ const TarjetaTeleclases = ({ teleclase }) => {
             <p className="tarjeta-descripcion">{teleclase.descripcion}</p>
             <div className="tarjeta-acciones">
               <Button 
-                variant="outline-success" 
+                variant="outline-primary" 
                 size="sm" 
                 className="btn-accion"
-                onClick={() => handleDownload(teleclase.videoUrl, teleclase.titulo)}
+                onClick={onEdit}
               >
-                <i className="bi bi-download"></i>
+                <i className="bi bi-pencil-fill"></i>
+              </Button>
+              <Button 
+                variant="outline-danger" 
+                size="sm" 
+                className="btn-accion"
+                onClick={onDelete}
+              >
+                <i className="bi bi-trash-fill"></i>
               </Button>
             </div>
           </div>
@@ -47,13 +46,4 @@ const TarjetaTeleclases = ({ teleclase }) => {
   );
 };
 
-export default TarjetaTeleclases;
-
-/* <Button
-variant="outline-warning"
-size="sm"
-className="me-2"
-onClick={() => openEditModal(teleclase)}
->
-<i className="bi bi-pencil"></i> Editar
-</Button> */
+export default TarjetaTeleclasesMINED;

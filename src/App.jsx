@@ -8,6 +8,7 @@ import MasterIA from "./views/MasterIA"; //Importación de la vista MasterIA
 import Books from "./views/Books"; //Importación de la vista Books
 import Bienvenida from "./views/Bienvenida";
 import TeleClase from "./views/TeleClase";
+import TeleClaseMINED from "./views/TeleClaseMINED";
 
 import './App.css'
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/books" element={<ProtectedRoute element={<Books />} />}/>
                 <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
                 <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
+                <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
               </Routes>
             </main>
           </div>
