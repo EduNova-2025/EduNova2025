@@ -6,6 +6,7 @@ import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
 import Libros from "./views/Libros";
 import MasterIA from "./views/MasterIA";
+import TeleClase from "./views/TeleClase"
 
 import './App.css'
 
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
                 <Route path="/libros" element={<ProtectedRoute element={<Libros />} />}/>
                 <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
+                <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
                 
               </Routes>
             </main>
