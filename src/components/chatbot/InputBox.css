@@ -1,0 +1,51 @@
+/* Estilo para el placeholder */
+input::placeholder {
+    color: #0066cc; /* Color azul para el placeholder */
+    opacity: 1; /* Asegura que el placeholder tenga visibilidad completa */
+    font-weight: 600; /* Grosor del texto del placeholder */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombras sutiles en el texto del placeholder */
+}
+
+/* Otros estilos para el input */
+input {
+    width: 80%;  /* Ajusta el ancho al 80% del contenedor */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 4px solid #4A6B3E; /* Borde más grueso */
+    outline: none;
+    color: #333;
+    background-color: #FFF;
+    transition: border-color 0.3s ease;
+    animation: borderAnimation 3s linear infinite; /* Animación del borde */
+}
+
+input:focus {
+    border-color: #0066cc; /* Cambio de color al hacer foco */
+}
+
+/* Definir la animación del borde */
+@keyframes borderAnimation {
+    0% {
+        border-color: #03106f;  /* Azul Oscuro */
+    }
+    25% {
+        border-color: #8f00a5;  /* Morado */
+    }
+    50% {
+        border-color: #3357FF;  /* Azul */
+    }
+    75% {
+        border-color: #FF33A6;  /* Rosa */
+    }
+    100% {
+        border-color: #5092ee;  /* Celeste*/
+    }
+}
+/* Media query para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .input-box {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
