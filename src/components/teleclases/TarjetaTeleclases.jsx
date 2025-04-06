@@ -1,17 +1,8 @@
 import React from 'react';
-import { Card, Col, Button } from 'react-bootstrap';
+import { Card, Col } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const TarjetaTeleclases = ({ teleclase }) => {
-  const handleDownload = (videoUrl, titulo) => {
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.download = `${titulo || 'teleclase'}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <Col lg={4} md={6} sm={12} className="mb-4">
       <Card className="tarjeta-teleclase">
@@ -30,16 +21,6 @@ const TarjetaTeleclases = ({ teleclase }) => {
               Teleclases - {teleclase.materia}
             </h3>
             <p className="tarjeta-descripcion">{teleclase.descripcion}</p>
-            <div className="tarjeta-acciones">
-              <Button 
-                variant="outline-success" 
-                size="sm" 
-                className="btn-accion"
-                onClick={() => handleDownload(teleclase.videoUrl, teleclase.titulo)}
-              >
-                <i className="bi bi-download"></i>
-              </Button>
-            </div>
           </div>
         </Card.Body>
       </Card>
