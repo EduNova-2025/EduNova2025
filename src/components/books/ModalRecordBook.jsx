@@ -9,6 +9,7 @@ handleInputChange,
 handleImageChange,
 handlePdfChange,
 handleAddLibro,
+categorias
 }) => {
 return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -61,6 +62,21 @@ return (
             value={nuevoLibro.dirigido}
             onChange={handleInputChange}
             />
+        <Form.Group className="mb-3">
+                <Form.Label>Categoría</Form.Label>
+                <Form.Select
+                name="categoria"
+                value={nuevoLibro.categoria}
+                onChange={handleInputChange}
+                >
+                <option value="">Seleccione una categoría</option>
+                {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                    </option>
+                ))}
+                </Form.Select>
+            </Form.Group>
         </Form.Group>
         <Form.Group className="mb-3">
             <Form.Label>Imagen</Form.Label>

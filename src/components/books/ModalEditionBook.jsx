@@ -9,6 +9,7 @@ handleEditInputChange,
 handleEditImageChange,
 handleEditPdfChange,
 handleEditLibro,
+categorias
 }) => {
 if (!libroEditado) return null;
 
@@ -63,6 +64,21 @@ return (
             value={libroEditado.dirigido}
             onChange={handleEditInputChange}
             />
+        <Form.Group className="mb-3">
+                <Form.Label>Categoría</Form.Label>
+                <Form.Select
+                name="categoria"
+                value={libroEditado.categoria}
+                onChange={handleEditInputChange}
+                >
+                <option value="">Seleccione una categoría</option>
+                {categorias.map((cat) => (
+                    <option key={cat.id} value={cat.nombre}>
+                    {cat.nombre}
+                    </option>
+                ))}
+                </Form.Select>
+            </Form.Group>
         </Form.Group>
         <Form.Group className="mb-3">
             <Form.Label>Imagen Actual</Form.Label>

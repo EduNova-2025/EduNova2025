@@ -124,4 +124,19 @@
     margin-top: 20px;
   }
 }
-  
+
+.nav-dropdown-white .dropdown-toggle {
+  color: rgb(255, 255, 255) !important;
+}
+
+.nav-dropdown-white .dropdown-menu {
+  background-color: #ffffff; /* o el color que tenga tu navbar */
+}
+
+.nav-dropdown-white .dropdown-item {
+  color: rgb(8, 8, 8);
+}
+
+.nav-dropdown-white .dropdown-item:hover {
+  background-color: #0057b7;
+}

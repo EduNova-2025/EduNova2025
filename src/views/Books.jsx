@@ -26,6 +26,7 @@ import { useAuth } from "../database/authcontext";
 const Libros = () => {
     // Estados para manejo de datos
     const [libros, setLibros] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -35,6 +36,7 @@ const Libros = () => {
         area_edu: "",
         edicion: "",
         dirigido: "",
+        categoria: "",
         imagen: "",
         pdfUrl: "",
     });
@@ -48,8 +50,9 @@ const Libros = () => {
 
     // Referencia a las colecciones en Firestore
     const librosCollection = collection(db, "libros");
+    const categoriasCollection = collection(db, "categorias");
 
-    // Función para obtener todos los libros de Firestore
+    // Función para obtener todos los libros y categorías de Firestore
     const fetchData = async () => {
         try {
             const librosData = await getDocs(librosCollection);
@@ -58,6 +61,15 @@ const Libros = () => {
             id: doc.id,
             }));
             setLibros(fetchedLibros);
+
+             // Obtener categorías
+        const categoriasData = await getDocs(categoriasCollection);
+        const fetchedCategorias = categoriasData.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+        }));
+        setCategorias(fetchedCategorias);
+
         } catch (error) {
             console.error("Error al obtener datos:", error);
             setError("Error al cargar los datos. Intenta de nuevo.");
@@ -146,6 +158,7 @@ const Libros = () => {
             !nuevoLibro.edicion ||
             !nuevoLibro.dirigido ||
             !nuevoLibro.imagen ||
+            !nuevoLibro.categoria ||
             !pdfFile
             ) {
             alert("Por favor, completa todos los campos y selecciona una imagen y un archivo PDF.");
@@ -158,7 +171,7 @@ const Libros = () => {
         
             await addDoc(librosCollection, { ...nuevoLibro, pdfUrl });
             setShowModal(false);
-            setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", pdfUrl: "" });
+            setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", categoria: "", pdfUrl: "" });
             setPdfFile(null);
             } catch (error) {
             console.error("Error al agregar libro:", error);
@@ -175,7 +188,7 @@ const Libros = () => {
             }
         
             if (!libroEditado.titulo || !libroEditado.area_edu || 
-                !libroEditado.descripcion || !libroEditado.edicion || !libroEditado.dirigido ) {
+                !libroEditado.descripcion || !libroEditado.edicion || !libroEditado.dirigido || !libroEditado.categoria ) {
             alert("Por favor, completa todos los campos requeridos.");
             return;
             }
@@ -265,6 +278,7 @@ const Libros = () => {
                 handleImageChange={handleImageChange}
                 handlePdfChange={handlePdfChange}
                 handleAddLibro={handleAddLibro}
+                categorias={categorias}
             />
             <ModalEdicionLibro
                 showEditModal={showEditModal}
@@ -274,6 +288,7 @@ const Libros = () => {
                 handleEditImageChange={handleEditImageChange}
                 handleEditPdfChange={handleEditPdfChange}
                 handleEditLibro={handleEditLibro}
+                categorias={categorias}
             />
             <ModalEliminacionLibro
                 showDeleteModal={showDeleteModal}

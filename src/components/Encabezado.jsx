@@ -7,6 +7,8 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import logo from "../assets/logo-edu.png";
 import { useAuth } from "../database/authcontext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import NavDropdown from "react-bootstrap/NavDropdown";
+
 import "../App.css";
 
 const Encabezado = () => {
@@ -79,13 +81,21 @@ return (
             {/* Opciones visibles solo si el usuario está logueado */}
             {isLoggedIn && (
                 <>
-                <Nav.Link
-                    onClick={() => handleNavigate("/books")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                    {isCollapsed ? <i className="bi-book-fill me-2"></i> : null}
-                    <strong>Biblioteca Digital</strong>
-                </Nav.Link>
+                <NavDropdown
+                        title={<span className={isCollapsed ? "color-texto-marca" : "text-white"}><strong>Biblioteca Digital</strong></span>}
+                        id="biblioteca-dropdown"
+                        className={isCollapsed ? "" : "nav-dropdown-white"}
+                        >
+                        <NavDropdown.Item onClick={() => handleNavigate("/categorias")}>
+                            Categorías
+                        </NavDropdown.Item>
+                        <NavDropdown.Item onClick={() => handleNavigate("/books")}>
+                            General
+                        </NavDropdown.Item>
+                        <NavDropdown.Item onClick={() => handleNavigate("/catalogo")}>
+                            Libros
+                        </NavDropdown.Item>
+                    </NavDropdown>
 
                 <Nav.Link
                     onClick={() => handleNavigate("/teleclase")}
