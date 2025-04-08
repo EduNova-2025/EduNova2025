@@ -12,6 +12,7 @@ return (
         <th>Área Educativa</th>
         <th>Dirigido a</th>
         <th>Edición</th>
+        <th>Categoría</th>
         <th>Descripción</th>
         <th>PDF</th>
         <th>Acciones</th>
@@ -29,6 +30,7 @@ return (
             <td>{libro.area_edu}</td>
             <td>{libro.dirigido}</td>
             <td>{libro.edicion}</td>
+            <td>{libro.categoria}</td>
             <td>{libro.descripcion}</td>
             <td>
             {libro.pdfUrl && (

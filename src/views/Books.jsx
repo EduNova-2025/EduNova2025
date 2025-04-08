@@ -22,10 +22,12 @@ import ModalRegistroLibro from "../components/books/ModalRecordBook";
 import ModalEdicionLibro from "../components/books/ModalEditionBook";
 import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
 
 const Libros = () => {
     // Estados para manejo de datos
     const [libros, setLibros] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -35,6 +37,7 @@ const Libros = () => {
         area_edu: "",
         edicion: "",
         dirigido: "",
+        categoria: "",
         imagen: "",
         pdfUrl: "",
     });
@@ -43,13 +46,17 @@ const Libros = () => {
     const [pdfFile, setPdfFile] = useState(null);
     const [error, setError] = useState(null);
 
+    const [librosFiltrados, setLibrosFiltrados] = useState([]);
+    const [searchText, setSearchText] = useState("");
+
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
 
     // Referencia a las colecciones en Firestore
     const librosCollection = collection(db, "libros");
+    const categoriasCollection = collection(db, "categorias");
 
-    // Función para obtener todos los libros de Firestore
+    // Función para obtener todos los libros y categorías de Firestore
     const fetchData = async () => {
         try {
             const librosData = await getDocs(librosCollection);
@@ -58,6 +65,16 @@ const Libros = () => {
             id: doc.id,
             }));
             setLibros(fetchedLibros);
+            setLibrosFiltrados(fetchedLibros) //Inicializa los Libros filtrados
+
+             // Obtener categorías
+        const categoriasData = await getDocs(categoriasCollection);
+        const fetchedCategorias = categoriasData.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+        }));
+        setCategorias(fetchedCategorias);
+
         } catch (error) {
             console.error("Error al obtener datos:", error);
             setError("Error al cargar los datos. Intenta de nuevo.");
@@ -72,6 +89,23 @@ const Libros = () => {
         fetchData();
         }
     }, [isLoggedIn, navigate]);
+
+    //Hook useEffect para filtrar libros según el texto de búsqueda
+    const handleSearchChange = (e) => {
+        const text = e.target.value.toLowerCase();
+        setSearchText(text);
+        
+        const filtrados = libros.filter((libro) => 
+            libro.titulo.toLowerCase().includes(text) || 
+            libro.descripcion.toLowerCase().includes(text) ||
+            libro.categoria.toLowerCase().includes(text) ||
+            libro.edicion.toLowerCase().includes(text) ||
+            libro.dirigido.toLowerCase().includes(text) ||
+            libro.area_edu.toLowerCase().includes(text) 
+        );
+    
+        setLibrosFiltrados(filtrados);
+    };
 
     // Manejador de cambios en inputs del formulario de nuevo libro
     const handleInputChange = (e) => {
@@ -146,6 +180,7 @@ const Libros = () => {
             !nuevoLibro.edicion ||
             !nuevoLibro.dirigido ||
             !nuevoLibro.imagen ||
+            !nuevoLibro.categoria ||
             !pdfFile
             ) {
             alert("Por favor, completa todos los campos y selecciona una imagen y un archivo PDF.");
@@ -158,7 +193,7 @@ const Libros = () => {
         
             await addDoc(librosCollection, { ...nuevoLibro, pdfUrl });
             setShowModal(false);
-            setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", pdfUrl: "" });
+            setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", categoria: "", pdfUrl: "" });
             setPdfFile(null);
             } catch (error) {
             console.error("Error al agregar libro:", error);
@@ -175,7 +210,7 @@ const Libros = () => {
             }
         
             if (!libroEditado.titulo || !libroEditado.area_edu || 
-                !libroEditado.descripcion || !libroEditado.edicion || !libroEditado.dirigido ) {
+                !libroEditado.descripcion || !libroEditado.edicion || !libroEditado.dirigido || !libroEditado.categoria ) {
             alert("Por favor, completa todos los campos requeridos.");
             return;
             }
@@ -247,13 +282,20 @@ const Libros = () => {
     return (
         <Container className="mt-5">
             <br />
-            <h4>Gestión de Libros</h4>
+            <h4 className="title-gestion">Gestión de Libros</h4>
             {error && <Alert variant="danger">{error}</Alert>}
-            <Button className="mb-3" onClick={() => setShowModal(true)}>
-                Agregar libro
-            </Button>
+            <div className="busqueda-agregar-container">
+                <CuadroBusquedas
+                    searchText={searchText}
+                    handleSearchChange={handleSearchChange}
+                />
+                <Button className="btn-agregar" onClick={() => setShowModal(true)}>
+                <i className="bi bi-plus-lg"></i> Agregar libro
+                </Button>
+            </div>
+
             <TablaLibros
-                libros={libros}
+                libros={librosFiltrados}
                 openEditModal={openEditModal}
                 openDeleteModal={openDeleteModal}
             />
@@ -265,6 +307,7 @@ const Libros = () => {
                 handleImageChange={handleImageChange}
                 handlePdfChange={handlePdfChange}
                 handleAddLibro={handleAddLibro}
+                categorias={categorias}
             />
             <ModalEdicionLibro
                 showEditModal={showEditModal}
@@ -274,6 +317,7 @@ const Libros = () => {
                 handleEditImageChange={handleEditImageChange}
                 handleEditPdfChange={handleEditPdfChange}
                 handleEditLibro={handleEditLibro}
+                categorias={categorias}
             />
             <ModalEliminacionLibro
                 showDeleteModal={showDeleteModal}

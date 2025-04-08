@@ -125,8 +125,48 @@
   }
 }
 
+<<<<<<< HEAD
 aside button:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transition: background-color 0.3s ease;
 }
   
+=======
+.nav-dropdown-white .dropdown-toggle {
+  color: rgb(255, 255, 255) !important;
+}
+
+.nav-dropdown-white .dropdown-menu {
+  background-color: #ffffff; /* o el color que tenga tu navbar */
+}
+
+.nav-dropdown-white .dropdown-item {
+  color: rgb(8, 8, 8);
+}
+
+.nav-dropdown-white .dropdown-item:hover {
+  background-color: #0057b7;
+}
+
+.title-gestion {
+  color: #0057b7;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.178);
+  font-size: 1.8rem;
+}
+
+.busqueda-agregar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Opcional para responsividad */
+  gap: 10px; /* Espacio entre los elementos */
+}
+
+.busqueda-agregar-container .btn-agregar {
+  white-space: nowrap;
+}
+
+>>>>>>> f4894fcab69fee24f908068e15dd9f3f4f0124f7

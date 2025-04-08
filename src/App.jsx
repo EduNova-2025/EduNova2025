@@ -9,6 +9,8 @@ import Books from "./views/Books"; //Importación de la vista Books
 import Bienvenida from "./views/Bienvenida";
 import TeleClase from "./views/TeleClase";
 import TeleClaseMINED from "./views/TeleClaseMINED";
+import Categoria from "./views/Categorias"; //Importanción de la vista Categoría
+import Catalogo from "./views/Catalogo"; //Importación de la vista Catálogo
 
 import './App.css'
 
@@ -27,6 +29,8 @@ function App() {
                 <Route path="/login"  element={<Login />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
                 <Route path="/books" element={<ProtectedRoute element={<Books />} />}/>
+                <Route path="/categorias" element={<ProtectedRoute element={<Categoria />} />}/>
+                <Route path="/catalogo" element={<ProtectedRoute element={<Catalogo/>} />}/>
                 <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
                 <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
                 <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
