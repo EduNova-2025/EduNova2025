@@ -1,11 +1,26 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { BsList, BsPlus } from 'react-icons/bs'; // Importamos los íconos de React Icons
+import './InputBox.css'; // Importamos el archivo CSS
 
 const Sidebar = () => {
   return (
-    <aside className="d-flex flex-column align-items-center bg-dark text-white p-3" style={{ width: '100%', maxWidth: '80px', height: '100vh' }}>
-      <Button variant="light" className="mb-4" style={{ fontSize: '1.5rem' }}>☰</Button>
-      <Button variant="primary" className="rounded-circle p-3" style={{ fontSize: '2rem' }}>+</Button>
+    <aside className="sidebar">
+      {/* Botón hamburguesa con ícono */}
+      <Button
+        variant="link"
+        className="hamburger-btn"
+      >
+        <BsList size={30} /> {/* Aquí agregas el ícono de hamburguesa */}
+      </Button>
+
+      {/* Botón + con ícono */}
+      <Button
+        variant="light"
+        className="add-btn"
+      >
+        <BsPlus size={40} /> {/* Aquí agregas el ícono de "+" */}
+      </Button>
     </aside>
   );
 };
