@@ -65,3 +65,4 @@ export const getAnswerFromFirebase = async (question) => {
     return 'Ocurrió un error al obtener la respuesta.';
   }
 };
+ 
