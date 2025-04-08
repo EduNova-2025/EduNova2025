@@ -96,23 +96,18 @@ return (
                             Libros
                         </NavDropdown.Item>
                     </NavDropdown>
-
-                <Nav.Link
-                    onClick={() => handleNavigate("/teleclase")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                    {isCollapsed ? <i className="bi-book-fill me-2"></i> : null}
-                    <strong>Teleclases</strong>
-                </Nav.Link>
-
-                <Nav.Link
-                    onClick={() => handleNavigate("/teleclasemined")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                    {isCollapsed ? <i className="bi-book-fill me-2"></i> : null}
-                    <strong>Teleclases mined</strong>
-                </Nav.Link>
-
+                    <NavDropdown
+                        title={<span className={isCollapsed ? "color-texto-marca" : "text-white"}><strong>Teleclases</strong></span>}
+                        id="teleclase-dropdown"
+                        className={isCollapsed ? "" : "nav-dropdown-white"}
+                        >
+                        <NavDropdown.Item onClick={() => handleNavigate("/teleclase")}>
+                                General
+                            </NavDropdown.Item>
+                        <NavDropdown.Item onClick={() => handleNavigate("/teleclasemined")}>
+                            MINED
+                        </NavDropdown.Item>
+                    </NavDropdown>
                 <Nav.Link
                     onClick={() => handleNavigate("/ia")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}

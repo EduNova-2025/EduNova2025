@@ -16,6 +16,7 @@
     import ModalRegistroCategoria from "../components/Categorias/ModalRegistroCategoria";
     import ModalEdicionCategoria from "../components/Categorias/ModalEdicionCategoria";
     import ModalEliminacionCategoria from "../components/Categorias/ModalEliminacionCategoria";
+    import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
 
 
     const Categorias = () => {
@@ -32,6 +33,9 @@
     const [categoriaEditada, setCategoriaEditada] = useState(null);
     const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
 
+    const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+    const [searchText, setSearchText] = useState("");
+
     // Referencia a la colección de categorías en Firestore
     const categoriasCollection = collection(db, "categorias");
 
@@ -44,6 +48,7 @@
             id: doc.id,
         }));
         setCategorias(fetchedCategorias);
+        setCategoriasFiltradas(fetchedLibros) //Inicializa las categorías filtradas
         } catch (error) {
         console.error("Error al obtener las categorías:", error);
         }
@@ -53,6 +58,20 @@
     useEffect(() => {
         fetchCategorias();
     }, []);
+
+     //Hook useEffect para filtrar categorías según el texto de búsqueda
+        const handleSearchChange = (e) => {
+        const text = e.target.value.toLowerCase();
+        setSearchText(text);
+        
+        const filtradas = categorias.filter((categoria) => 
+            categoria.nombre.toLowerCase().includes(text) || 
+            categoria.descripcion.toLowerCase().includes(text) 
+        );
+    
+        setCategoriasFiltradas(filtradas);
+    };
+
 
     // Manejador de cambios en inputs del formulario de nueva categoría
     const handleInputChange = (e) => {
@@ -134,12 +153,19 @@
     return (
         <Container className="mt-5">
         <br />
-        <h4>Gestión de Categorías</h4>
-        <Button className="mb-3" onClick={() => setShowModal(true)}>
-            Agregar categoría
+        <h4 className="title-gestion">Gestión de Categorías</h4>
+        <div className="busqueda-agregar-container">
+            <CuadroBusquedas
+                    searchText={searchText}
+                    handleSearchChange={handleSearchChange}
+                />
+            <Button className="btn-agregar" onClick={() => setShowModal(true)}>
+        <i className="bi bi-plus-lg"></i> Agregar categoría
         </Button>
+        </div>
+        
         <TablaCategorias
-            categorias={categorias}
+            categorias={categoriasFiltradas}
             openEditModal={openEditModal}
             openDeleteModal={openDeleteModal}
         />

@@ -22,6 +22,7 @@ import ModalRegistroLibro from "../components/books/ModalRecordBook";
 import ModalEdicionLibro from "../components/books/ModalEditionBook";
 import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
+import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -45,6 +46,9 @@ const Libros = () => {
     const [pdfFile, setPdfFile] = useState(null);
     const [error, setError] = useState(null);
 
+    const [librosFiltrados, setLibrosFiltrados] = useState([]);
+    const [searchText, setSearchText] = useState("");
+
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
 
@@ -61,6 +65,7 @@ const Libros = () => {
             id: doc.id,
             }));
             setLibros(fetchedLibros);
+            setLibrosFiltrados(fetchedLibros) //Inicializa los Libros filtrados
 
              // Obtener categorías
         const categoriasData = await getDocs(categoriasCollection);
@@ -84,6 +89,23 @@ const Libros = () => {
         fetchData();
         }
     }, [isLoggedIn, navigate]);
+
+    //Hook useEffect para filtrar libros según el texto de búsqueda
+    const handleSearchChange = (e) => {
+        const text = e.target.value.toLowerCase();
+        setSearchText(text);
+        
+        const filtrados = libros.filter((libro) => 
+            libro.titulo.toLowerCase().includes(text) || 
+            libro.descripcion.toLowerCase().includes(text) ||
+            libro.categoria.toLowerCase().includes(text) ||
+            libro.edicion.toLowerCase().includes(text) ||
+            libro.dirigido.toLowerCase().includes(text) ||
+            libro.area_edu.toLowerCase().includes(text) 
+        );
+    
+        setLibrosFiltrados(filtrados);
+    };
 
     // Manejador de cambios en inputs del formulario de nuevo libro
     const handleInputChange = (e) => {
@@ -260,13 +282,20 @@ const Libros = () => {
     return (
         <Container className="mt-5">
             <br />
-            <h4>Gestión de Libros</h4>
+            <h4 className="title-gestion">Gestión de Libros</h4>
             {error && <Alert variant="danger">{error}</Alert>}
-            <Button className="mb-3" onClick={() => setShowModal(true)}>
-                Agregar libro
-            </Button>
+            <div className="busqueda-agregar-container">
+                <CuadroBusquedas
+                    searchText={searchText}
+                    handleSearchChange={handleSearchChange}
+                />
+                <Button className="btn-agregar" onClick={() => setShowModal(true)}>
+                <i className="bi bi-plus-lg"></i> Agregar libro
+                </Button>
+            </div>
+
             <TablaLibros
-                libros={libros}
+                libros={librosFiltrados}
                 openEditModal={openEditModal}
                 openDeleteModal={openDeleteModal}
             />

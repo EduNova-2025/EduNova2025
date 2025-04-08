@@ -3,12 +3,14 @@
     import { db } from "../database/firebaseconfig";
     import { collection, getDocs } from "firebase/firestore";
     import TarjetaLibro from "../components/catalogo/TarjetaLibro";
-    import "../components/catalogo/Styles.css"
+    import "../components/catalogo/Styles.css";
+    import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 
-    const Catalogo= () => {
+    const Catalogo = () => {
     const [libros, setLibros] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
+    const [searchText, setSearchText] = useState("");
 
     const librosCollection = collection(db, "libros");
     const categoriasCollection = collection(db, "categorias");
@@ -39,43 +41,71 @@
         fetchData();
     }, []);
 
-    // Filtrar libros por categoría
-    const librosFiltrados = categoriaSeleccionada === "Todas"
-        ? libros
-        : libros.filter((libro) => libro.categoria === categoriaSeleccionada);
+    // Manejador de búsqueda
+    const handleSearchChange = (e) => {
+        setSearchText(e.target.value.toLowerCase());
+    };
+
+    // Filtrado por búsqueda y categoría
+    const librosFiltrados = libros.filter((libro) => {
+        const coincideCategoria =
+        categoriaSeleccionada === "Todas" ||
+        libro.categoria === categoriaSeleccionada;
+
+        const coincideBusqueda =
+        libro.titulo.toLowerCase().includes(searchText) ||
+        libro.descripcion.toLowerCase().includes(searchText) ||
+        libro.categoria.toLowerCase().includes(searchText) ||
+        libro.edicion.toLowerCase().includes(searchText) ||
+        libro.dirigido.toLowerCase().includes(searchText) ||
+        libro.area_edu.toLowerCase().includes(searchText);
+
+        return coincideCategoria && coincideBusqueda;
+    });
 
     return (
         <Container className="mt-5">
         <br />
-        <h4>Catálogo de Libros</h4>
-        {/* Filtro de categorías */}
-        <Row>
-            <Col lg={3} md={3} sm={6}>
-            <Form.Group className="mb-3">
-                <Form.Label>Filtrar por categoría:</Form.Label>
+        <h4 className="title-gestion">Catálogo de Libros</h4>
+
+        <Row className="g-3 align-items-end mb-4">
+            <Col lg={4} md={6} sm={12}>
+                <Form.Group controlId="categoria">
+                <Form.Label className="fw-semibold">Categoría:</Form.Label>
                 <Form.Select
-                value={categoriaSeleccionada}
-                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+                    value={categoriaSeleccionada}
+                    onChange={(e) => setCategoriaSeleccionada(e.target.value)}
                 >
-                <option value="Todas">Todas</option>
-                {categorias.map((categoria) => (
+                    <option value="Todas">Todas</option>
+                    {categorias.map((categoria) => (
                     <option key={categoria.id} value={categoria.nombre}>
-                    {categoria.nombre}
+                        {categoria.nombre}
                     </option>
-                ))}
+                    ))}
                 </Form.Select>
-            </Form.Group>
+                </Form.Group>
+            </Col>
+
+            <Col lg={4} md={6} sm={12}>
+                <Form.Group controlId="busqueda">
+                <Form.Label className="fw-semibold">Buscar:</Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="Buscar libro..."
+                    value={searchText}
+                    onChange={handleSearchChange}
+                />
+                </Form.Group>
             </Col>
         </Row>
 
-        {/* Catálogo de libros filtrados */}
         <Row>
             {librosFiltrados.length > 0 ? (
             librosFiltrados.map((libro) => (
                 <TarjetaLibro key={libro.id} libro={libro} />
             ))
             ) : (
-            <p>No hay libros en esta categoría.</p>
+            <p>No hay libros que coincidan con la búsqueda.</p>
             )}
         </Row>
         </Container>

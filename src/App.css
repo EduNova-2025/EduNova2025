@@ -140,3 +140,25 @@
 .nav-dropdown-white .dropdown-item:hover {
   background-color: #0057b7;
 }
+
+.title-gestion {
+  color: #0057b7;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.178);
+  font-size: 1.8rem;
+}
+
+.busqueda-agregar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Opcional para responsividad */
+  gap: 10px; /* Espacio entre los elementos */
+}
+
+.busqueda-agregar-container .btn-agregar {
+  white-space: nowrap;
+}
+
