@@ -125,13 +125,12 @@
   }
 }
 
-<<<<<<< HEAD
 aside button:hover {
   background-color: rgba(255, 255, 255, 0.2);
   transition: background-color 0.3s ease;
 }
   
-=======
+
 .nav-dropdown-white .dropdown-toggle {
   color: rgb(255, 255, 255) !important;
 }
@@ -168,5 +167,3 @@ aside button:hover {
 .busqueda-agregar-container .btn-agregar {
   white-space: nowrap;
 }
-
->>>>>>> f4894fcab69fee24f908068e15dd9f3f4f0124f7
