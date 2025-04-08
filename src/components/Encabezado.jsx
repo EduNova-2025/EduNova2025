@@ -115,6 +115,14 @@ return (
                     {isCollapsed ? <i className="bi-brain-fill me-2"></i> : null}
                     <strong>MasterIA</strong>
                 </Nav.Link>
+
+                <Nav.Link
+                    onClick={() => handleNavigate("/foro")}
+                    className={isCollapsed ? "color-texto-marca" : "text-white"}
+                >
+                    {isCollapsed ? <i className="bi-brain-fill me-2"></i> : null}
+                    <strong>Foro</strong>
+                </Nav.Link>
                 </>
             )}
 

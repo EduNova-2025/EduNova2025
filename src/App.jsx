@@ -11,6 +11,7 @@ import TeleClase from "./views/TeleClase";
 import TeleClaseMINED from "./views/TeleClaseMINED";
 import Categoria from "./views/Categorias"; //Importanción de la vista Categoría
 import Catalogo from "./views/Catalogo"; //Importación de la vista Catálogo
+import Foro from "./views/Foro";
 
 import './App.css'
 
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
                 <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
                 <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
+                <Route path="/foro" element={<ProtectedRoute element={<Foro />} />}/>
               </Routes>
             </main>
           </div>
