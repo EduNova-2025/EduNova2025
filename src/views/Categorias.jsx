@@ -48,7 +48,7 @@
             id: doc.id,
         }));
         setCategorias(fetchedCategorias);
-        setCategoriasFiltradas(fetchedLibros) //Inicializa las categorías filtradas
+        setCategoriasFiltradas(fetchedCategorias) //Inicializa las categorías filtradas
         } catch (error) {
         console.error("Error al obtener las categorías:", error);
         }

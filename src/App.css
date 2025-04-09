@@ -197,7 +197,7 @@ aside button:hover {
 }
 
 
-/* Estilo animado para los inputs */
+/* Estilo animado para la tarjeta del login */
 .borderCard {
   border: 3px solid #4A6B3E;
   border-radius: 8px;
@@ -214,6 +214,7 @@ aside button:hover {
   border-color: #0066cc;
   outline: none;
 }
+
 
 
 /* Estilo personalizado con gradiente para el botón Iniciar Sesión */
@@ -243,4 +244,42 @@ aside button:hover {
   color: #0057b7;
   font-weight: 600;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/*Amimación para el cuadro de búsqueda de la biblioteca digital*/
+.animated-border {
+  border: 3px solid #0057b7;
+  border-radius: 12px;
+  animation: borderGlow 4s linear infinite;
+  transition: border-color 0.3s ease;
+  overflow: hidden;
+  background-color: white;
+  display: flex;
+}
+
+/* Elimina bordes internos para evitar separación visual */
+.animated-border .no-border {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Animación del borde */
+@keyframes borderGlow {
+  0% {
+    border-color: #0057b7;
+  }
+  25% {
+    border-color: #8f00a5;
+  }
+  50% {
+    border-color: #ffd700;
+  }
+  75% {
+    border-color: #ff33a6;
+  }
+  100% {
+    border-color: #0057b7;
+  }
 }
