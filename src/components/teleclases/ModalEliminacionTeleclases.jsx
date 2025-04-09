@@ -5,14 +5,16 @@ const ModalEliminacionTeleclases = ({
   showModal,
   setShowModal,
   handleDeleteTeleclase,
+  teleclaseTitle,
 }) => {
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header closeButton>
         <Modal.Title>Confirmar Eliminación</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        ¿Estás seguro de que deseas eliminar esta teleclase? Esta acción no se puede deshacer.
+        <p>¿Está seguro que desea eliminar la teleclase?</p>
+        <p className="text-danger">Esta acción no se puede deshacer.</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowModal(false)}>

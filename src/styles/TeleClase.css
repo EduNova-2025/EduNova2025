@@ -13,7 +13,7 @@
     position: fixed;
     left: 0;
     top: 55px;
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
     overflow: hidden;
     z-index: 1000;
 }
@@ -47,6 +47,7 @@
     width: 100%;
     margin: 0;
     padding: 0;
+    margin-top: 60px;
 }
 
 .menu-button {
@@ -157,16 +158,6 @@
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
-}
-
-.botones-filtro button:first-child {
-    background-color: #0057B7;
-    color: white;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 87, 183, 0.2);
-}
-
-.botones-filtro button:not(:first-child) {
     background-color: white;
     color: #0057B7;
     border: 2px solid #0057B7;
@@ -175,6 +166,13 @@
 .botones-filtro button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 87, 183, 0.3);
+}
+
+.botones-filtro button.active {
+    background-color: #0057B7 !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 8px rgba(0, 87, 183, 0.2) !important;
 }
 
 .tarjeta-teleclase {
@@ -278,7 +276,7 @@
 }
 
 .btn-agregar {
-    margin: 20px;
+    margin: 20px auto;
     padding: 10px 20px;
     background-color: #0057B7;
     color: white;
@@ -289,6 +287,7 @@
     gap: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    justify-content: center;
 }
 
 .btn-agregar:hover {
@@ -341,4 +340,141 @@
 .tarjeta-descripcion {
     flex-grow: 1;
     margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .contenedor-principal {
+        flex-direction: row;
+        margin-top: 55px;
+    }
+    .menu-lateral {
+        width: 0;
+        height: calc(100vh - 55px);
+        position: fixed;
+        top: 55px;
+        left: 0;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        overflow: hidden;
+        background-color: #0057B7;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    }
+    .menu-lateral.expanded {
+        width: 250px;
+    }
+    .menu-items {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        margin-top: 60px;
+    }
+    .menu-lateral.expanded .menu-items {
+        opacity: 1;
+    }
+    .menu-button {
+        width: 100%;
+        padding: 15px;
+        justify-content: flex-start;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    .menu-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .menu-button span {
+        opacity: 1;
+        margin-left: 8px;
+        color: white;
+    }
+    .menu-toggle {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 55px;
+        z-index: 1001;
+        background: white;
+        border: none;
+        color: #0057B7;
+        font-size: 24px;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 0 5px 5px 0;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .menu-toggle i {
+        color: #0057B7;
+        font-size: 24px;
+    }
+    .contenedor-teleclase {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 0;
+    }
+    .contenedor-teleclase-mined {
+        margin-top: 0;
+    }
+    .botones-filtro {
+        flex-wrap: wrap;
+    }
+    .botones-filtro button {
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+    }
+    .btn-agregar {
+        margin: 20px auto;
+        display: block;
+    }
+    .busqueda-contenedor {
+        flex-direction: column;
+        align-items: center;
+    }
+    .titulo-busqueda {
+        margin-bottom: 10px;
+    }
+    .campo-busqueda-container {
+        width: 90% !important;
+    }
+    .catalogo-teleclases {
+        padding: 0 10px;
+    }
+    .tarjeta-teleclase {
+        width: 100%;
+        margin-bottom: 30px;
+        max-width: 100%;
+    }
+    .tarjeta-contenido {
+        padding: 20px;
+    }
+    .tarjeta-titulo {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    .tarjeta-descripcion {
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    .video-container {
+        padding-top: 100%; /* Hacer el video más grande */
+        margin-bottom: 20px;
+    }
+    .card-img-top {
+        object-fit: cover;
+    }
+    .tarjeta-acciones {
+        margin-top: 20px;
+    }
+    .btn-accion {
+        width: 45px;
+        height: 45px;
+    }
+    .btn-accion i {
+        font-size: 20px;
+    }
 }

@@ -5,6 +5,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ModalRegistroTeleclases from '../components/teleclases/ModalRegistroTeleclases';
 import TarjetaTeleclasesMINED from '../components/teleclases/TarjetaTeleclaseMINED';
+import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
@@ -12,6 +13,9 @@ import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacio
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
+    const [materias, setMaterias] = useState(['Todos']);
+    const [materiaSeleccionada, setMateriaSeleccionada] = useState('Todos');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -34,6 +38,10 @@ const TeleClaseMINED = () => {
                 id: doc.id,
             }));
             setTeleclases(fetchedTeleclases);
+
+            // Obtener materias únicas
+            const uniqueMaterias = ['Todos', ...new Set(fetchedTeleclases.map(teleclase => teleclase.materia))];
+            setMaterias(uniqueMaterias);
         } catch (error) {
             console.error("Error al obtener teleclases:", error);
         }
@@ -58,10 +66,38 @@ const TeleClaseMINED = () => {
     };
 
     const handleAddTeleclase = async () => {
-        if (!nuevaTeleclase.titulo || !nuevaTeleclase.descripcion || !videoFile) {
-            alert('Por favor, completa todos los campos y selecciona un video.');
+        // Validaciones para agregar teleclase
+        if (!nuevaTeleclase.titulo.trim()) {
+            alert('Por favor, ingrese un título para la teleclase.');
             return;
         }
+        if (!nuevaTeleclase.materia.trim()) {
+            alert('Por favor, seleccione una materia para la teleclase.');
+            return;
+        }
+        if (!nuevaTeleclase.descripcion.trim()) {
+            alert('Por favor, ingrese una descripción para la teleclase.');
+            return;
+        }
+        if (!videoFile) {
+            alert('Por favor, seleccione un video para la teleclase.');
+            return;
+        }
+
+        // Validar el formato del video
+        const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+        if (!allowedTypes.includes(videoFile.type)) {
+            alert('Por favor, seleccione un archivo de video válido (MP4, WebM, o OGG).');
+            return;
+        }
+
+        // Validar el tamaño del video (máximo 100MB)
+        const maxSize = 100 * 1024 * 1024; // 100MB en bytes
+        if (videoFile.size > maxSize) {
+            alert('El archivo de video es demasiado grande. El tamaño máximo permitido es 100MB.');
+            return;
+        }
+
         try {
             const storageRef = ref(storage, `teleclases/${videoFile.name}`);
             await uploadBytes(storageRef, videoFile);
@@ -74,11 +110,42 @@ const TeleClaseMINED = () => {
             await fetchData();
         } catch (error) {
             console.error('Error al agregar teleclase:', error);
+            alert('Ocurrió un error al agregar la teleclase. Por favor, intente nuevamente.');
         }
     };
 
     const handleEditTeleclase = async () => {
         if (!selectedTeleclase) return;
+
+        // Validaciones para editar teleclase
+        if (!selectedTeleclase.titulo.trim()) {
+            alert('Por favor, ingrese un título para la teleclase.');
+            return;
+        }
+        if (!selectedTeleclase.materia.trim()) {
+            alert('Por favor, seleccione una materia para la teleclase.');
+            return;
+        }
+        if (!selectedTeleclase.descripcion.trim()) {
+            alert('Por favor, ingrese una descripción para la teleclase.');
+            return;
+        }
+
+        if (videoFile) {
+            // Validar el formato del video si se está actualizando
+            const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+            if (!allowedTypes.includes(videoFile.type)) {
+                alert('Por favor, seleccione un archivo de video válido (MP4, WebM, o OGG).');
+                return;
+            }
+
+            // Validar el tamaño del video si se está actualizando
+            const maxSize = 100 * 1024 * 1024; // 100MB en bytes
+            if (videoFile.size > maxSize) {
+                alert('El archivo de video es demasiado grande. El tamaño máximo permitido es 100MB.');
+                return;
+            }
+        }
 
         try {
             let videoUrl = selectedTeleclase.videoUrl;
@@ -101,6 +168,7 @@ const TeleClaseMINED = () => {
             await fetchData();
         } catch (error) {
             console.error('Error al actualizar teleclase:', error);
+            alert('Ocurrió un error al actualizar la teleclase. Por favor, intente nuevamente.');
         }
     };
 
@@ -117,19 +185,30 @@ const TeleClaseMINED = () => {
         }
     };
 
+    const handleSearch = (searchTerm) => {
+        setSearchTerm(searchTerm);
+    };
+
+    const filteredTeleclases = teleclases
+        .filter(teleclase => {
+            const matchesSearch = teleclase.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesMateria = materiaSeleccionada === 'Todos' || teleclase.materia === materiaSeleccionada;
+            return matchesSearch && matchesMateria;
+        });
+
     return (
         <div className="contenedor-teleclase-mined" style={{ marginTop: '15px' }}> 
-            <div className="busqueda-contenedor">
-                <span className="titulo-busqueda">Teleclases</span>
-                <div className="campo-busqueda-container">
-                    <input type="text" placeholder="Buscar" className="campo-busqueda" />
-                </div>
-            </div>
+            <BuscadorTeleclases onSearch={handleSearch} />
             <div className="botones-filtro">
-                <button>Todos</button>
-                <button>Matemáticas</button>
-                <button>Lengua y Literatura</button>
-                <button>Inglés</button>
+                {materias.map((materia, index) => (
+                    <button 
+                        key={index}
+                        onClick={() => setMateriaSeleccionada(materia)}
+                        className={materiaSeleccionada === materia ? 'active' : ''}
+                    >
+                        {materia}
+                    </button>
+                ))}
             </div>
             <button className="btn-agregar" onClick={() => setShowModal(true)}>
                 <i className="bi bi-plus-lg"></i> Agregar Teleclase
@@ -137,7 +216,7 @@ const TeleClaseMINED = () => {
             <div className="catalogo-teleclases">
                 <Container fluid>
                     <Row>
-                        {teleclases.map((teleclase) => (
+                        {filteredTeleclases.map((teleclase) => (
                             <TarjetaTeleclasesMINED 
                                 key={teleclase.id} 
                                 teleclase={teleclase}
@@ -155,7 +234,6 @@ const TeleClaseMINED = () => {
                 </Container>
             </div>
             
-            {/* Modales */}
             <ModalRegistroTeleclases
                 showModal={showModal}
                 setShowModal={setShowModal}
@@ -181,6 +259,7 @@ const TeleClaseMINED = () => {
                 showModal={showDeleteModal}
                 setShowModal={setShowDeleteModal}
                 handleDeleteTeleclase={handleDeleteTeleclase}
+                teleclaseTitle={selectedTeleclase?.titulo}
             />
         </div>
     );

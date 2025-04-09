@@ -5,11 +5,15 @@ import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ModalRegistroTeleclases from '../components/teleclases/ModalRegistroTeleclases';
 import TarjetaTeleclases from '../components/teleclases/TarjetaTeleclases';
+import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
+    const [materias, setMaterias] = useState(['Todos']);
+    const [materiaSeleccionada, setMateriaSeleccionada] = useState('Todos');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [nuevaTeleclase, setNuevaTeleclase] = useState({
         titulo: '',
@@ -23,12 +27,20 @@ const TeleClase = () => {
     const teleclasesCollection = collection(db, 'teleclases');
 
     const fetchData = async () => {
-        const teleclasesData = await getDocs(teleclasesCollection);
-        const fetchedTeleclases = teleclasesData.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-        }));
-        setTeleclases(fetchedTeleclases);
+        try {
+            const teleclasesData = await getDocs(teleclasesCollection);
+            const fetchedTeleclases = teleclasesData.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            setTeleclases(fetchedTeleclases);
+
+            // Obtener materias únicas
+            const uniqueMaterias = ['Todos', ...new Set(fetchedTeleclases.map(teleclase => teleclase.materia))];
+            setMaterias(uniqueMaterias);
+        } catch (error) {
+            console.error("Error al obtener teleclases:", error);
+        }
     };
 
     useEffect(() => {
@@ -61,13 +73,24 @@ const TeleClase = () => {
 
             await addDoc(teleclasesCollection, { ...nuevaTeleclase, videoUrl });
             setShowModal(false);
-            setNuevaTeleclase({ titulo: '',materia: '', descripcion: '', videoUrl: '' });
+            setNuevaTeleclase({ titulo: '', materia: '', descripcion: '', videoUrl: '' });
             setVideoFile(null);
             await fetchData();
         } catch (error) {
             console.error('Error al agregar teleclase:', error);
         }
     };
+
+    const handleSearch = (searchTerm) => {
+        setSearchTerm(searchTerm);
+    };
+
+    const filteredTeleclases = teleclases
+        .filter(teleclase => {
+            const matchesSearch = teleclase.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesMateria = materiaSeleccionada === 'Todos' || teleclase.materia === materiaSeleccionada;
+            return matchesSearch && matchesMateria;
+        });
 
     return (
         <div className="contenedor-principal">
@@ -87,23 +110,23 @@ const TeleClase = () => {
                 </div>
             </aside>
             <div className="contenedor-teleclase">
-                <div className="busqueda-contenedor">
-                    <span className="titulo-busqueda">Teleclases</span>
-                    <div className="campo-busqueda-container">
-                        <input type="text" placeholder="Buscar" className="campo-busqueda" />
-                    </div>
-                </div>
+                <BuscadorTeleclases onSearch={handleSearch} />
                 <div className="botones-filtro">
-                    <button>Todos</button>
-                    <button>Matemáticas</button>
-                    <button>Lengua y Literatura</button>
-                    <button>Inglés</button>
+                    {materias.map((materia, index) => (
+                        <button 
+                            key={index}
+                            onClick={() => setMateriaSeleccionada(materia)}
+                            className={materiaSeleccionada === materia ? 'active' : ''}
+                        >
+                            {materia}
+                        </button>
+                    ))}
                 </div>
                
                 <div className="catalogo-teleclases">
                     <Container fluid>
                         <Row>
-                            {teleclases.map((teleclase) => (
+                            {filteredTeleclases.map((teleclase) => (
                                 <TarjetaTeleclases 
                                     key={teleclase.id} 
                                     teleclase={teleclase} 

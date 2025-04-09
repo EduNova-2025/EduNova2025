@@ -216,3 +216,20 @@
 .send-button:hover {
   background-color: #1557b0;
 }
+
+@media (max-width: 768px) {
+    .foro-container {
+        flex-direction: column;
+    }
+    .chats-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    .chat-main {
+        width: 100%;
+    }
+    .message-content {
+        max-width: 100%;
+    }
+}

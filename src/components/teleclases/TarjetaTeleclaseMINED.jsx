@@ -18,7 +18,7 @@ const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
         <Card.Body>
           <div className="tarjeta-contenido">
             <h3 className="tarjeta-titulo">
-              Teleclases - {teleclase.materia}
+              {teleclase.titulo} - {teleclase.materia}
             </h3>
             <p className="tarjeta-descripcion">{teleclase.descripcion}</p>
             <div className="tarjeta-acciones">
