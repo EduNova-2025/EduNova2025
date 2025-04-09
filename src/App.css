@@ -167,3 +167,80 @@ aside button:hover {
 .busqueda-agregar-container .btn-agregar {
   white-space: nowrap;
 }
+
+
+/* Estilo animado para los inputs */
+.animated-input {
+  border: 3px solid #4A6B3E;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  animation: gradientBorder 3s linear infinite;
+  color: #333;
+  background-color: #FFF;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Cambio de color al hacer foco */
+.animated-input:focus {
+  border-color: #0066cc;
+  outline: none;
+}
+
+/* Animación del borde */
+@keyframes gradientBorder {
+  0% { border-color: #03106f; }
+  25% { border-color: #8f00a5; }
+  50% { border-color: #3357FF; }
+  75% { border-color: #FF33A6; }
+  100% { border-color: #5092ee; }
+}
+
+
+/* Estilo animado para los inputs */
+.borderCard {
+  border: 3px solid #4A6B3E;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  animation: gradientBorder 3s linear infinite;
+  color: #333;
+  background-color: #FFF;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Cambio de color al hacer foco */
+.borderCard:focus {
+  border-color: #0066cc;
+  outline: none;
+}
+
+
+/* Estilo personalizado con gradiente para el botón Iniciar Sesión */
+.gradient-button {
+  background-color: #ffd700 !important;
+  background-image: linear-gradient(90deg, #ffd700 0%, #e5007d 46%, #0057b7 100%) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Efecto al pasar el mouse */
+.gradient-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+
+/* Estilo para títulos del login */
+.title {
+  color: #0057b7;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
