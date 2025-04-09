@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TeleClase.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { db, storage } from '../database/firebaseconfig';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -10,6 +11,7 @@ import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
 import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacionTeleclases';
+import Paginacion from '../components/teleclases/Paginacion';
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -20,6 +22,9 @@ const TeleClaseMINED = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedTeleclase, setSelectedTeleclase] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6; // Número de teleclases por página
+
     const [nuevaTeleclase, setNuevaTeleclase] = useState({
         titulo: '',
         materia: '',
@@ -196,6 +201,11 @@ const TeleClaseMINED = () => {
             return matchesSearch && matchesMateria;
         });
 
+    // Calcular las teleclases para la página actual
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentTeleclases = filteredTeleclases.slice(indexOfFirstItem, indexOfLastItem);
+
     return (
         <div className="contenedor-teleclase-mined" style={{ marginTop: '15px' }}> 
             <BuscadorTeleclases onSearch={handleSearch} />
@@ -203,7 +213,10 @@ const TeleClaseMINED = () => {
                 {materias.map((materia, index) => (
                     <button 
                         key={index}
-                        onClick={() => setMateriaSeleccionada(materia)}
+                        onClick={() => {
+                            setMateriaSeleccionada(materia);
+                            setCurrentPage(1); // Resetear a la primera página al cambiar el filtro
+                        }}
                         className={materiaSeleccionada === materia ? 'active' : ''}
                     >
                         {materia}
@@ -216,7 +229,7 @@ const TeleClaseMINED = () => {
             <div className="catalogo-teleclases">
                 <Container fluid>
                     <Row>
-                        {filteredTeleclases.map((teleclase) => (
+                        {currentTeleclases.map((teleclase) => (
                             <TarjetaTeleclasesMINED 
                                 key={teleclase.id} 
                                 teleclase={teleclase}
@@ -233,6 +246,13 @@ const TeleClaseMINED = () => {
                     </Row>
                 </Container>
             </div>
+
+            <Paginacion
+                itemsPerPage={itemsPerPage}
+                totalItems={filteredTeleclases.length}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+            />
             
             <ModalRegistroTeleclases
                 showModal={showModal}

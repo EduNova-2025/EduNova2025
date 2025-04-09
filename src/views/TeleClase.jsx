@@ -8,6 +8,7 @@ import TarjetaTeleclases from '../components/teleclases/TarjetaTeleclases';
 import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Paginacion from '../components/teleclases/Paginacion';
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -15,6 +16,8 @@ const TeleClase = () => {
     const [materiaSeleccionada, setMateriaSeleccionada] = useState('Todos');
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6; // Número de teleclases por página
     const [nuevaTeleclase, setNuevaTeleclase] = useState({
         titulo: '',
         materia: '',
@@ -83,6 +86,7 @@ const TeleClase = () => {
 
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
+        setCurrentPage(1); // Resetear a la primera página al buscar
     };
 
     const filteredTeleclases = teleclases
@@ -91,6 +95,11 @@ const TeleClase = () => {
             const matchesMateria = materiaSeleccionada === 'Todos' || teleclase.materia === materiaSeleccionada;
             return matchesSearch && matchesMateria;
         });
+
+    // Calcular las teleclases para la página actual
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentTeleclases = filteredTeleclases.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
         <div className="contenedor-principal">
@@ -115,7 +124,10 @@ const TeleClase = () => {
                     {materias.map((materia, index) => (
                         <button 
                             key={index}
-                            onClick={() => setMateriaSeleccionada(materia)}
+                            onClick={() => {
+                                setMateriaSeleccionada(materia);
+                                setCurrentPage(1); // Resetear a la primera página al cambiar el filtro
+                            }}
                             className={materiaSeleccionada === materia ? 'active' : ''}
                         >
                             {materia}
@@ -126,7 +138,7 @@ const TeleClase = () => {
                 <div className="catalogo-teleclases">
                     <Container fluid>
                         <Row>
-                            {filteredTeleclases.map((teleclase) => (
+                            {currentTeleclases.map((teleclase) => (
                                 <TarjetaTeleclases 
                                     key={teleclase.id} 
                                     teleclase={teleclase} 
@@ -136,6 +148,14 @@ const TeleClase = () => {
                         </Row>
                     </Container>
                 </div>
+
+                <Paginacion
+                    itemsPerPage={itemsPerPage}
+                    totalItems={filteredTeleclases.length}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                />
+
                 <ModalRegistroTeleclases
                     showModal={showModal}
                     setShowModal={setShowModal}
