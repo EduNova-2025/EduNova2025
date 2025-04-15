@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./database/authcontext";
 import ProtectedRoute from "./components/ProtectedRoute"; 
 import Login from './views/Login'
+import Sidebar from "./components/sidebar/Sidebar";
 import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
 import MasterIA from "./views/MasterIA"; //Importación de la vista MasterIA
@@ -22,7 +23,8 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App">
-            <Encabezado />
+          <Encabezado />
+            <Sidebar />
             <main>
               <Routes>
                 

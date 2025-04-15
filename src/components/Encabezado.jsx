@@ -16,6 +16,8 @@ const [isCollapsed, setIsCollapsed] = useState(false);
 const { isLoggedIn, logout } = useAuth();
 const navigate = useNavigate();
 
+if (isLoggedIn) return null;
+
 const handleLogout = async () => {
     try {
     // Cerrar el offcanvas antes de proceder
