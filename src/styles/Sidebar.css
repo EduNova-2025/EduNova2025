@@ -193,3 +193,14 @@
   transform: translateX(0);
 }
 
+/* Esconder el botón hamburguesa en pantallas grandes */
+.hamburger-btn {
+  display: block; /* Visible por defecto */
+}
+
+@media (min-width: 768px) {
+  .hamburger-btn {
+    display: none; /* Ocultar el botón en pantallas grandes */
+  }
+}
+

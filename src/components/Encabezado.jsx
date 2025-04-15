@@ -11,12 +11,13 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 
 import "../App.css";
 
+if (isLoggedIn) return null;
+
+
 const Encabezado = () => {
 const [isCollapsed, setIsCollapsed] = useState(false);
 const { isLoggedIn, logout } = useAuth();
 const navigate = useNavigate();
-
-if (isLoggedIn) return null;
 
 const handleLogout = async () => {
     try {

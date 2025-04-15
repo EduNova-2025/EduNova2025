@@ -4,7 +4,6 @@
     import { collection, getDocs } from "firebase/firestore";
     import TarjetaLibro from "../components/catalogo/TarjetaLibro";
     import "../components/catalogo/Styles.css";
-    import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 
     const Catalogo = () => {
     const [libros, setLibros] = useState([]);
@@ -64,11 +63,11 @@
     });
 
     return (
-        <Container className="mt-5">
+        <Container>
         <br />
         <h4 className="title-gestion">Catálogo de Libros</h4>
 
-        <Row className="g-3 align-items-end mb-4">
+        <Row className="g-3 align-items-end">
             <Col lg={4} md={6} sm={12}>
                 <Form.Group controlId="categoria">
                 <Form.Label className="fw-semibold">Categoría:</Form.Label>

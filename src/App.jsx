@@ -23,8 +23,8 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App">
-          <Encabezado />
             <Sidebar />
+            <Encabezado />
             <main>
               <Routes>
                 

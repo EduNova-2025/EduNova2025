@@ -54,7 +54,7 @@ const Sidebar = () => {
       await logout();
       localStorage.removeItem("adminEmail");
       localStorage.removeItem("adminPassword");
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -86,7 +86,7 @@ const Sidebar = () => {
       ]
     },
     {
-      icon: <FaRobot />, label: "Master IA", submenuName: "masteria", subItems: [
+      icon: <FaRobot />, label: "Master IA", path:"/ia", submenuName: "masteria", subItems: [
         { icon: <FaComments />, label: "Nueva conversación", path: "/nueva" },
         { icon: <FaHistory />, label: "Recientes", path: "/reciente" },
       ]
