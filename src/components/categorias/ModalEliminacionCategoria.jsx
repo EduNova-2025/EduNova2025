@@ -9,7 +9,7 @@
     return (
         <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-            <Modal.Title>Confirmar Eliminación</Modal.Title>
+            <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             ¿Estás seguro de que deseas eliminar esta categoría?

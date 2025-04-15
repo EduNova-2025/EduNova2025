@@ -14,42 +14,45 @@ const ModalEdicionTeleclases = ({
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Editar Teleclase</Modal.Title>
+        <Modal.Title className="modal-title-custom">Editar Teleclase</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>Título</Form.Label>
+            <Form.Label className="form-label-custom">Título</Form.Label>
             <Form.Control
               type="text"
               name="titulo"
               value={teleclase.titulo}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Materia</Form.Label>
+            <Form.Label className="form-label-custom">Materia</Form.Label>
             <Form.Control
               type="text"
               name="materia"
               value={teleclase.materia}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Descripción</Form.Label>
+            <Form.Label className="form-label-custom">Descripción</Form.Label>
             <Form.Control
               type="text"
               name="descripcion"
               value={teleclase.descripcion}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Video Actual</Form.Label>
+            <Form.Label className="form-label-custom">Video Actual</Form.Label>
             {teleclase.videoUrl && (
               <div className="mb-2">
                 <video 
@@ -59,20 +62,21 @@ const ModalEdicionTeleclases = ({
                 />
               </div>
             )}
-            <Form.Label>Cambiar Video (opcional)</Form.Label>
+            <Form.Label className="form-label-custom">Cambiar Video (opcional)</Form.Label>
             <Form.Control
               type="file"
               accept="video/*"
               onChange={handleVideoChange}
+              className="form-control-custom"
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleEditTeleclase}>
+        <Button className="btn-style" onClick={handleEditTeleclase}>
           Actualizar
         </Button>
       </Modal.Footer>

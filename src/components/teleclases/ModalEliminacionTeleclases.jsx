@@ -10,7 +10,7 @@ const ModalEliminacionTeleclases = ({
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Confirmar Eliminación</Modal.Title>
+        <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>¿Está seguro que desea eliminar la teleclase?</p>

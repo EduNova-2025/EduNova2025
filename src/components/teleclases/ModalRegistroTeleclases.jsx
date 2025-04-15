@@ -12,54 +12,61 @@ const ModalRegistroTeleclases = ({
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Agregar Teleclase</Modal.Title>
+        <Modal.Title className="modal-title-custom">Agregar Teleclase</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>Título</Form.Label>
+            <Form.Label className="form-label-custom">Título</Form.Label>
             <Form.Control
               type="text"
               name="titulo"
+              placeholder="Agrega un título"
               value={nuevaTeleclase.titulo}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Materia</Form.Label>
+            <Form.Label className="form-label-custom">Materia</Form.Label>
             <Form.Control
               type="text"
               name="materia"
+              placeholder="Define una materia"
               value={nuevaTeleclase.materia}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Descripción</Form.Label>
+            <Form.Label className="form-label-custom">Descripción</Form.Label>
             <Form.Control
               type="text"
               name="descripcion"
+              placeholder="Escribe aqui"
               value={nuevaTeleclase.descripcion}
               onChange={handleInputChange}
+              className="form-control-custom"
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Archivo de Video</Form.Label>
+            <Form.Label className="form-label-custom">Archivo de Video</Form.Label>
             <Form.Control
               type="file"
               accept="video/*"
               onChange={handleVideoChange}
+              className="form-control-custom"
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleAddTeleclase}>
+        <Button className="btn-style" onClick={handleAddTeleclase}>
           Guardar
         </Button>
       </Modal.Footer>

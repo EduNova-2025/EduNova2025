@@ -357,3 +357,62 @@ aside button:hover {
   background-color: #4c1d95; /* Color de fondo al hacer clic */
   transform: translateY(2px); /* Efecto de pulsación */
 }
+
+
+.modal-categoria .modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-title-custom {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ffffff;
+}
+
+.form-label-custom {
+  font-weight: 600;
+  color: #0057b7;
+}
+
+/* Estilo moderno: solo borde inferior */
+.form-control-custom {
+  border: none;
+  border-bottom: 2px solid #d1d5db;
+  border-radius: 0;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  background-color: transparent;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: none;
+}
+
+.form-control-custom::placeholder {
+  color: #9ca3af;
+}
+
+.form-control-custom:focus {
+  border-bottom: 2px solid #17579bda;
+  outline: none;
+  box-shadow: 0 1px 0 0 #17579bda;
+}
+
+
+.btn-style {
+  background-color: #17579bda;
+  color: white;
+  border-radius: 12px;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-style:hover {
+  background-color: #0057b7;
+}
+
+.modal-header {
+  background: #0057b7;
+}

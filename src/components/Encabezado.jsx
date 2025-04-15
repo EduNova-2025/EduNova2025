@@ -11,13 +11,12 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 
 import "../App.css";
 
-if (isLoggedIn) return null;
-
 
 const Encabezado = () => {
 const [isCollapsed, setIsCollapsed] = useState(false);
 const { isLoggedIn, logout } = useAuth();
 const navigate = useNavigate();
+
 
 const handleLogout = async () => {
     try {
@@ -37,6 +36,8 @@ const handleLogout = async () => {
     console.error("Error al cerrar sesión:", error);
     }
 };
+
+if (isLoggedIn) return null;
 
 const handleToggle = () => setIsCollapsed(!isCollapsed);
 

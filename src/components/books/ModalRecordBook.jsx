@@ -14,60 +14,66 @@ categorias
 return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
     <Modal.Header closeButton>
-        <Modal.Title>Agregar Libro</Modal.Title>
+        <Modal.Title className="modal-title-custom">Agregar Libro</Modal.Title>
     </Modal.Header>
     <Modal.Body>
         <Form>
         <Form.Group className="mb-3">
-            <Form.Label>Titulo</Form.Label>
+            <Form.Label className="form-label-custom">Titulo</Form.Label>
             <Form.Control
             type="text"
             name="titulo"
             value={nuevoLibro.titulo}
             onChange={handleInputChange}
+            className="form-control-custom"
             />
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Descripción</Form.Label>
+            <Form.Label className="form-label-custom">Descripción</Form.Label>
             <Form.Control
             type="text"
             name="descripcion"
             value={nuevoLibro.descripcion}
             onChange={handleInputChange}
+            className="form-control-custom"
             />
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Edicion</Form.Label>
+            <Form.Label className="form-label-custom">Edicion</Form.Label>
             <Form.Control
             type="text"
             name="edicion"
             value={nuevoLibro.edicion}
             onChange={handleInputChange}
+            className="form-control-custom"
             />
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Área Educativa</Form.Label>
+            <Form.Label className="form-label-custom">Área Educativa</Form.Label>
             <Form.Control
             type="text"
             name="area_edu"
             value={nuevoLibro.area_edu}
             onChange={handleInputChange}
+            className="form-control-custom"
             />
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Dirigido a</Form.Label>
+            <Form.Label className="form-label-custom">Dirigido a</Form.Label>
             <Form.Control
             type="text"
             name="dirigido"
             value={nuevoLibro.dirigido}
             onChange={handleInputChange}
+            className="form-control-custom"
             />
         <Form.Group className="mb-3">
-                <Form.Label>Categoría</Form.Label>
+                <Form.Label className="form-label-custom">Categoría</Form.Label>
                 <Form.Select
                 name="categoria"
                 value={nuevoLibro.categoria}
                 onChange={handleInputChange}
+                className="form-control-custom"
                 >
                 <option value="">Seleccione una categoría</option>
                 {categorias.map((cat) => (
@@ -79,28 +85,30 @@ return (
             </Form.Group>
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Imagen</Form.Label>
+            <Form.Label className="form-label-custom">Imagen</Form.Label>
             <Form.Control
             type="file"
             accept="image/*"
             onChange={handleImageChange}
+            className="form-control-custom"
             />
         </Form.Group>
         <Form.Group className="mb-3">
-            <Form.Label>Documento PDF</Form.Label>
+            <Form.Label className="form-label-custom">Documento PDF</Form.Label>
             <Form.Control
             type="file"
             accept="application/pdf"
             onChange={handlePdfChange}
+            className="form-control-custom"
             />
         </Form.Group>
         </Form>
     </Modal.Body>
     <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
+        <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
         Cancelar
         </Button>
-        <Button variant="primary" onClick={handleAddLibro}>
+        <Button className="btn-style" onClick={handleAddLibro}>
         Guardar
         </Button>
     </Modal.Footer>

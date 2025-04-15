@@ -13,22 +13,23 @@
     return (
         <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-            <Modal.Title>Editar Categoría</Modal.Title>
+            <Modal.Title className="modal-title-custom">Editar Categoría</Modal.Title>
         </Modal.Header>
         <Modal.Body>
             <Form>
             <Form.Group className="mb-3">
-                <Form.Label>Nombre</Form.Label>
+                <Form.Label className="form-label-custom">Nombre</Form.Label>
                 <Form.Control
                 type="text"
                 name="nombre"
                 value={categoriaEditada.nombre}
                 onChange={handleEditInputChange}
                 placeholder="Ingresa el nombre"
+                className="form-control-custom"
                 />
             </Form.Group>
             <Form.Group className="mb-3">
-                <Form.Label>Descripción</Form.Label>
+                <Form.Label className="form-label-custom">Descripción</Form.Label>
                 <Form.Control
                 as="textarea"
                 rows={3}
@@ -36,15 +37,16 @@
                 value={categoriaEditada.descripcion}
                 onChange={handleEditInputChange}
                 placeholder="Ingresa la descripción"
+                className="form-control-custom"
                 />
             </Form.Group>
             </Form>
         </Modal.Body>
         <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            <Button variant="outline-secondary" onClick={() => setShowEditModal(false)}>
             Cancelar
             </Button>
-            <Button variant="primary" onClick={handleEditCategoria}>
+            <Button className="btn-style" onClick={handleEditCategoria}>
             Actualizar
             </Button>
         </Modal.Footer>
