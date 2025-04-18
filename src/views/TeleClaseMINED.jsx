@@ -207,7 +207,7 @@ const TeleClaseMINED = () => {
     const currentTeleclases = filteredTeleclases.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
-        <div className="contenedor-teleclase-mined" style={{ marginTop: '15px' }}> 
+        <div className="contenedor-teleclase-mined" style={{}}> 
             <BuscadorTeleclases onSearch={handleSearch} />
             <div className="botones-filtro">
                 {materias.map((materia, index) => (

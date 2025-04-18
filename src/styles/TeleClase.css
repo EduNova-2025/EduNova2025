@@ -195,6 +195,8 @@
     width: 100%;
     padding-top: 56.25%; /* Aspecto 16:9 */
     background: #f0f0f0;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
 }
 
 .card-img-top {
@@ -203,7 +205,19 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+}
+
+.card-img-top:-webkit-full-screen {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.card-img-top:fullscreen {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
 }
 
 .duracion {
@@ -461,11 +475,10 @@
         line-height: 1.5;
     }
     .video-container {
-        padding-top: 100%; /* Hacer el video más grande */
-        margin-bottom: 20px;
+        padding-top: 56.25%; /* Mantener la relación de aspecto 16:9 */
     }
     .card-img-top {
-        object-fit: cover;
+        object-fit: contain;
     }
     .tarjeta-acciones {
         margin-top: 20px;

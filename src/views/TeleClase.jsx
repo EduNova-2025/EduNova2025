@@ -103,21 +103,7 @@ const TeleClase = () => {
 
     return (
         <div className="contenedor-principal">
-            <aside className={`menu-lateral ${menuExpanded ? 'expanded' : ''}`}>
-                <button className="menu-toggle" onClick={() => setMenuExpanded(!menuExpanded)}>
-                    <i className={`bi ${menuExpanded ? 'bi-x-lg' : 'bi-list'}`}></i>
-                </button>
-                <div className="menu-items">
-                    <button className="menu-button">
-                        <i className="bi bi-clock-history"></i>
-                        <span>Historial</span>
-                    </button>
-                    <button className="menu-button">
-                        <i className="bi bi-clock"></i>
-                        <span>Ver más tarde</span>
-                    </button>
-                </div>
-            </aside>
+       
             <div className="contenedor-teleclase">
                 <BuscadorTeleclases onSearch={handleSearch} />
                 <div className="botones-filtro">
@@ -172,3 +158,19 @@ const TeleClase = () => {
 export default TeleClase;
 
 /* <button onClick={() => setShowModal(true)}>Agregar Teleclase</button>*/
+
+/*<aside className={`menu-lateral ${menuExpanded ? 'expanded' : ''}`}>
+<button className="menu-toggle" onClick={() => setMenuExpanded(!menuExpanded)}>
+    <i className={`bi ${menuExpanded ? 'bi-x-lg' : 'bi-list'}`}></i>
+</button>
+<div className="menu-items">
+    <button className="menu-button">
+        <i className="bi bi-clock-history"></i>
+        <span>Historial</span>
+    </button>
+    <button className="menu-button">
+        <i className="bi bi-clock"></i>
+        <span>Ver más tarde</span>
+    </button>
+</div>
+</aside>*/

@@ -31,13 +31,19 @@ const ModalEdicionTeleclases = ({
 
           <Form.Group className="mb-3">
             <Form.Label className="form-label-custom">Materia</Form.Label>
-            <Form.Control
-              type="text"
+            <Form.Select
               name="materia"
               value={teleclase.materia}
               onChange={handleInputChange}
               className="form-control-custom"
-            />
+            >
+              <option value="">Selecciona una materia</option>
+              <option value="Matematica">Matemática</option>
+              <option value="Lengua y literatura">Lengua y Literatura</option>
+              <option value="Ciencias naturales">Ciencias Naturales</option>
+              <option value="Estudios sociales">Estudios Sociales</option>
+              <option value="Inglés">Inglés</option>
+            </Form.Select>
           </Form.Group>
 
           <Form.Group className="mb-3">
