@@ -1,50 +1,105 @@
-    import React from "react";
-    import { Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
-    import "../App.css";
+import React, { useState } from "react";
+import { Row, Col } from "react-bootstrap";
+import "../styles/LoginForm.css";
 
-    const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit }) => {
-    return (
-      <Row className="w-100 justify-content-center login-background">
-        <Col md={6} lg={5} xl={4}>
-          <Card className="p-4 shadow-lg borderCard">
-            <Card.Body>
-              <h3 className="text-center mb-4 title">Iniciar Sesión</h3>
-              {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="emailUsuario">
-                  <Form.Label className="title">Correo Electrónico</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Ingresa tu correo"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="animated-input"
-                  />
-                </Form.Group>
+const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit }) => {
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
 
-                <Form.Group className="mb-3" controlId="contraseñaUsuario">
-                  <Form.Label className="title" >Contraseña</Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Ingresa tu contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="animated-input"
-                  />
-                </Form.Group>
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit(e);
+  };
 
-                <Button type="submit" className="w-100 gradient-button">
-                  Iniciar Sesión
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    // Aquí puedes implementar la lógica para el registro
+    console.log("Registro:", { username, email: registerEmail, phone: phoneNumber, password: registerPassword });
+  };
 
-    );
-    };
+  return (
+    <Row className="w-100 justify-content-center">
+      <Col xs={12} sm={10} md={8} lg={6} xl={5}>
+        <div className="login-container">
+          <div className="main">
+            <input 
+              type="checkbox" 
+              id="chk" 
+              aria-hidden="true" 
+              checked={!isLogin}
+              onChange={() => setIsLogin(!isLogin)}
+            />
 
-    export default LoginForm;
+            <div className="signup">
+              <form onSubmit={handleRegisterSubmit}>
+                <label htmlFor="chk" aria-hidden="true">Registrarse</label>
+                <input 
+                  type="text" 
+                  name="txt" 
+                  placeholder="Nombre de usuario" 
+                  required 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="Correo electrónico" 
+                  required 
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
+                />
+                <input 
+                  type="number" 
+                  name="phone" 
+                  placeholder="Número de teléfono" 
+                  required 
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+                <input 
+                  type="password" 
+                  name="pswd" 
+                  placeholder="Contraseña" 
+                  required 
+                  value={registerPassword}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
+                />
+                <button type="submit" >Registrarse</button>
+              </form>
+            </div>
+
+            <div className="login">
+              <form onSubmit={handleLoginSubmit}>
+                <label htmlFor="chk" aria-hidden="true">Iniciar Sesión</label>
+                {error && <div className="error-message">{error}</div>}
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="Correo electrónico" 
+                  required 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <input 
+                  type="password" 
+                  name="pswd" 
+                  placeholder="Contraseña" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="submit" >Iniciar Sesión</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </Col>
+    </Row>
+  );
+};
+
+export default LoginForm;
