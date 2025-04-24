@@ -11,7 +11,7 @@ import {
   FaSignOutAlt, FaListAlt, FaHistory,
   FaClock,
   FaComment,
-  FaFolderOpen, FaBook, FaThList,
+  FaFolderOpen, FaBook, FaThList, FaVideo,
 } from "react-icons/fa";
 import { useAuth } from "../../database/authcontext"; // Importar el contexto de autenticación
 import "../../styles/Sidebar.css";
@@ -92,6 +92,7 @@ const Sidebar = () => {
       ]
     },
     { icon: <FaComment />, label: "Foro", path: "/foro" },
+    { icon: <FaVideo />, label: "Conferencias", path: "/conferencia" },
     { icon: <FaCog />, label: "Ajustes", path: "/configuracion" },
   ];
 
