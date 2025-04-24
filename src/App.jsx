@@ -14,6 +14,7 @@ import Categoria from "./views/Categorias"; //Importanción de la vista Categor�
 import Catalogo from "./views/Catalogo"; //Importación de la vista Catálogo
 import Foro from "./views/Foro";
 import DetalleLibro from "./views/DetalleLibro"; //Importacioón de la vista DetalleLibro
+import Conferencia from "./views/Conferencias"; //Importanción de la vista Conferencia
 
 import './App.css'
 
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
                 <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
                 <Route path="/foro" element={<ProtectedRoute element={<Foro />} />}/>
+                <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} />}/>
               </Routes>
             </main>
           </div>

@@ -81,16 +81,10 @@ const Sidebar = () => {
       icon: <FaTags />, label: "Teleclases", submenuName: "teleclase", subItems: [
         { icon: <FaBook />, label: "Gestión", path: "/teleclasemined" },
         { icon: <FaListAlt />, label: "Documentos", path: "/teleclase" },
-        { icon: <FaHistory />, label: "Historial", path: "/historial" },
-        { icon: <FaClock />, label: "Ver más tarde", path: "/ver" },
       ]
     },
     {
-      icon: <FaRobot />, label: "Master IA", path:"/ia", submenuName: "masteria", subItems: [
-        { icon: <FaComments />, label: "Nueva conversación", path: "/nueva" },
-        { icon: <FaHistory />, label: "Recientes", path: "/reciente" },
-      ]
-    },
+      icon: <FaRobot />, label: "Master IA", path:"/ia"},
     { icon: <FaComment />, label: "Foro", path: "/foro" },
     { icon: <FaVideo />, label: "Conferencias", path: "/conferencia" },
     { icon: <FaCog />, label: "Ajustes", path: "/configuracion" },

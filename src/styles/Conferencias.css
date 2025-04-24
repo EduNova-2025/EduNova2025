@@ -1,0 +1,86 @@
+.programarClase-container {
+    display: flex;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin-left: 80px;
+  }
+  
+  .main-panel {
+    flex: 1;
+    padding: 2rem;
+  }
+  
+  .sidebar {
+    width: 240px;
+    background-color: #ffffff;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    height: 200px;
+    flex-direction: column;
+    margin-top: 50px;
+  }
+  
+  .sidebar.right {
+    order: 1;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .sidebar-btn {
+    background: none;
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 1rem;
+    text-align: left;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .sidebar-btn:hover,
+  .sidebar-btn.active {
+    background-color: #001d9e;
+    border-radius: 8px;
+  }
+  
+  .formulario input {
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.6rem;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .formulario button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #27ae60;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  
+  .historial {
+    max-width: 600px;
+  }
+  
+  .llamada-item {
+    background-color: white;
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .fecha {
+    color: gray;
+    font-size: 0.9rem;
+  }
+  
