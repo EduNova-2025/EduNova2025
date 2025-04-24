@@ -26,9 +26,23 @@
           a.appendChild(r);
       })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
-    <!-- public/index.html -->
-<script src="https://meet.jit.si/external_api.js"></script>
-
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      
+      #root {
+        height: 100%;
+      }
+      
+      /* Estilo específico para la página de login */
+      body.login-page {
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

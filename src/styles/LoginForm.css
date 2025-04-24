@@ -1,12 +1,33 @@
+/* Estilos para eliminar el scroll en la página de login */
 .login-container {
-  margin: 0;
-  padding: 0;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  font-family: 'Jost', sans-serif;
-  /* Quitamos el fondo degradado de aquí */
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  margin-top: 45px;
+}
+
+.login-card {
+  max-height: 90vh;
+  overflow-y: auto; /* Permite scroll solo dentro de la tarjeta si es necesario */
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Ajustes para dispositivos pequeños */
+@media (max-height: 600px) {
+  .login-container {
+    align-items: flex-start;
+    padding-top: 10px;
+  }
+  
+  .login-card {
+    max-height: 95vh;
+  }
 }
 
 .main {
@@ -46,15 +67,16 @@ label {
 
 input {
   width: 60%;
-  height: 10px;
+  height: 35px;
   background: #e0dede;
   justify-content: center;
   display: flex;
-  margin: 20px auto;
+  margin: 15px auto;
   padding: 12px;
-  border: none;
+  border-color: black;
   outline: none;
   border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(9, 9, 9, 0.49);
 }
 
 button {
@@ -67,7 +89,7 @@ button {
   background: #6a11cb;
   font-size: 1em;
   font-weight: bold;
-  margin-top: 30px;
+  margin-top: 20px;
   outline: none;
   border: none;
   border-radius: 5px;
@@ -85,7 +107,7 @@ button:hover {
   background: #eee;
   border-radius: 60% / 10%;
   transform: translateY(-180px);
-  transition: .8s ease-in-out;
+  transition: .5s ease-in-out;
 }
 
 .login label {
@@ -111,19 +133,4 @@ button:hover {
   margin: 10px auto;
   font-size: 0.9em;
   width: 80%;
-}
-
-/* Añade esto al final de tu archivo CSS */
-
-/* Ocultar flechas del input number en diferentes navegadores */
-/* Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
 }
