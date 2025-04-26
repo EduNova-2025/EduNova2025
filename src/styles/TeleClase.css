@@ -1,6 +1,9 @@
 .contenedor-principal {
     display: flex;
+    min-height: calc(100vh - 55px);
     margin-top: 55px;
+    position: relative;
+    overflow-x: hidden;
 }
 
 .menu-lateral {
@@ -252,9 +255,10 @@
 
 .catalogo-teleclases {
     width: 100%;
-    padding: 20px 60px;
+    padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
+    overflow-y: auto;
 }
 
 .busqueda-contenedor {
@@ -358,9 +362,32 @@
 
 @media (max-width: 768px) {
     .contenedor-principal {
-        flex-direction: row;
+        flex-direction: column;
         margin-top: 55px;
+        overflow-x: hidden;
     }
+    
+    .contenedor-teleclase {
+        margin-left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .catalogo-teleclases {
+        padding: 10px;
+    }
+    
+    .campo-busqueda-container {
+        width: 90% !important;
+        margin: 0 auto;
+    }
+    
+    .busqueda-contenedor {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+    
     .menu-lateral {
         width: 0;
         height: calc(100vh - 55px);
@@ -426,11 +453,6 @@
         color: #0057B7;
         font-size: 24px;
     }
-    .contenedor-teleclase {
-        margin-left: 0;
-        width: 100%;
-        margin-top: 0;
-    }
     .contenedor-teleclase-mined {
         margin-top: 0;
     }
@@ -444,19 +466,6 @@
     .btn-agregar {
         margin: 20px auto;
         display: block;
-    }
-    .busqueda-contenedor {
-        flex-direction: column;
-        align-items: center;
-    }
-    .titulo-busqueda {
-        margin-bottom: 10px;
-    }
-    .campo-busqueda-container {
-        width: 90% !important;
-    }
-    .catalogo-teleclases {
-        padding: 0 10px;
     }
     .tarjeta-teleclase {
         width: 100%;

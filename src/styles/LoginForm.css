@@ -65,21 +65,7 @@ label {
   transition: .5s ease-in-out;
 }
 
-input {
-  width: 60%;
-  height: 35px;
-  background: #e0dede;
-  justify-content: center;
-  display: flex;
-  margin: 15px auto;
-  padding: 12px;
-  border-color: black;
-  outline: none;
-  border-radius: 5px;
-  box-shadow: 0 4px 10px rgba(9, 9, 9, 0.49);
-}
-
-button {
+.login-container button {
   width: 60%;
   height: 40px;
   margin: 10px auto;
@@ -98,8 +84,22 @@ button {
   box-shadow: 0 4px 10px rgba(255, 255, 255, 0.49);
 }
 
-button:hover {
+.login-container button:hover {
   background: #6d44b8;
+}
+
+.login-container input {
+  width: 60%;
+  height: 35px;
+  background: #e0dede;
+  justify-content: center;
+  display: flex;
+  margin: 15px auto;
+  padding: 12px;
+  border-color: black;
+  outline: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(9, 9, 9, 0.49);
 }
 
 .login {
