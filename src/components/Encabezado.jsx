@@ -31,7 +31,7 @@ const handleLogout = async () => {
     await logout();
 
     // Redirigir al inicio
-    navigate("/");
+    navigate("/inicio");
     } catch (error) {
     console.error("Error al cerrar sesión:", error);
     }

@@ -1,31 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Videoconferencia from '../components/conferencias/Videoconferencia';
 import { db } from '../database/firebaseconfig';
 import {
   collection,
   addDoc,
   serverTimestamp,
-  onSnapshot,
-  query,
-  orderBy,
 } from 'firebase/firestore';
 import '../styles/Conferencias.css';
+import { useNavigate } from 'react-router-dom';
 
-const ProgramarClase = () => {
+const Conferencia = () => {
   const [roomName, setRoomName] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [platform, setPlatform] = useState('interna');
   const [inMeeting, setInMeeting] = useState(false);
-  const [videollamadas, setVideollamadas] = useState([]);
-  const [activePanel, setActivePanel] = useState('formulario');
-
-  useEffect(() => {
-    const q = query(collection(db, 'videoconferencias'), orderBy('fecha', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const llamadas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setVideollamadas(llamadas);
-    });
-    return () => unsubscribe();
-  }, []);
+  const navigate = useNavigate();
 
   const handleStartMeeting = async () => {
     if (!roomName || !displayName) {
@@ -33,12 +22,28 @@ const ProgramarClase = () => {
       return;
     }
 
+    let enlace = '';
+    if (platform !== 'interna') {
+      enlace = prompt(`Pega aquí el enlace de la reunión en ${platform.toUpperCase()}`);
+      if (!enlace) {
+        alert("Debes proporcionar el enlace externo para continuar.");
+        return;
+      }
+    }
+
     try {
       await addDoc(collection(db, 'videoconferencias'), {
         roomName,
         displayName,
+        plataforma: platform,
+        enlace: platform === 'interna' ? null : enlace,
         fecha: serverTimestamp(),
       });
+
+      if (platform !== 'interna') {
+        window.open(enlace, '_blank');
+      }
+
       setInMeeting(true);
     } catch (error) {
       console.error("Error al guardar la videollamada:", error);
@@ -49,8 +54,15 @@ const ProgramarClase = () => {
     <div className="programarClase-container">
       <main className="main-panel">
         {inMeeting ? (
-          <Videoconferencia roomName={roomName} displayName={displayName} />
-        ) : activePanel === 'formulario' ? (
+          platform === 'interna' ? (
+            <Videoconferencia roomName={roomName} displayName={displayName} />
+          ) : (
+            <div className="externa-redirect">
+              <h2>Clase abierta en {platform.toUpperCase()}</h2>
+              <p>La videollamada se abrió en otra pestaña.</p>
+            </div>
+          )
+        ) : (
           <div className="formulario">
             <h2>Programar Clase</h2>
             <input
@@ -65,42 +77,22 @@ const ProgramarClase = () => {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
+            <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
+              <option value="interna">Videollamada Interna (Jitsi)</option>
+              <option value="zoom">Zoom</option>
+              <option value="meet">Google Meet</option>
+              <option value="discord">Discord</option>
+            </select>
             <button onClick={handleStartMeeting}>Iniciar Videollamada</button>
-          </div>
-        ) : (
-          <div className="historial">
-            <h2>Historial de Videollamadas</h2>
-            {videollamadas.length === 0 ? (
-              <p>No hay llamadas registradas aún.</p>
-            ) : (
-              videollamadas.map((call) => (
-                <div key={call.id} className="llamada-item">
-                  <p><strong>Clase:</strong> {call.roomName}</p>
-                  <p><strong>Docente:</strong> {call.displayName}</p>
-                  <p className="fecha">{call.fecha?.toDate().toLocaleString()}</p>
-                </div>
-              ))
-            )}
+
+            <button onClick={() => navigate('/hisconferencia')} className="boton-historial">
+              Ver historial de videollamadas
+            </button>
           </div>
         )}
       </main>
-
-      <aside className="sidebar right">
-        <button
-          className={`sidebar-btn ${activePanel === 'formulario' ? 'active' : ''}`}
-          onClick={() => setActivePanel('formulario')}
-        >
-          Conferencia
-        </button>
-        <button
-          className={`sidebar-btn ${activePanel === 'historial' ? 'active' : ''}`}
-          onClick={() => setActivePanel('historial')}
-        >
-          Historial
-        </button>
-      </aside>
     </div>
   );
 };
 
-export default ProgramarClase;
+export default Conferencia;

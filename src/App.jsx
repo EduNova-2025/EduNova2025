@@ -15,6 +15,7 @@ import Catalogo from "./views/Catalogo"; //Importación de la vista Catálogo
 import Foro from "./views/Foro";
 import DetalleLibro from "./views/DetalleLibro"; //Importacioón de la vista DetalleLibro
 import Conferencia from "./views/Conferencias"; //Importanción de la vista Conferencia
+import HistorialConferencias from "./views/HistorialVideollamadas"; //Importación de la vista Conferencias
 
 import './App.css'
 
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
                 <Route path="/foro" element={<ProtectedRoute element={<Foro />} />}/>
                 <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} />}/>
+                <Route path="/hisconferencia" element={<ProtectedRoute element={<HistorialConferencias />} />}/>
               </Routes>
             </main>
           </div>
@@ -51,4 +53,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

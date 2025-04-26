@@ -239,14 +239,6 @@ aside button:hover {
 }
 
 
-/* Estilo para títulos del login */
-.title {
-  color: #0057b7;
-  font-weight: 600;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-
 /*Amimación para el cuadro de búsqueda de la biblioteca digital*/
 .animated-border {
   border: 3px solid #0057b7;
@@ -415,4 +407,18 @@ aside button:hover {
 
 .modal-header {
   background: #0057b7;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.App {
+  min-height: 100vh;  
+  overflow-y: auto;    
 }

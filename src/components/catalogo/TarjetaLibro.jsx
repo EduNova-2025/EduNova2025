@@ -1,5 +1,6 @@
 import { Card, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import "./Styles.css"
 
 const TarjetaLibro = ({ libro }) => {
     return (

@@ -1,18 +1,21 @@
-/* Estilo para la tarjeta del libro */
+/* Estilo para el contenedor de la tarjeta */
 .tarjeta-libro-col {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch; /* ESTO hace que todas las tarjetas sean igual de altas */
+    padding: 10px;
 }
 
+/* Estilo para la tarjeta */
 .tarjeta-libro {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
+    width: 250px; /* Aquí fijo el ancho */
+    height: 100%; /* Que se estiren igual todas */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    background-color: #ffffff00;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -20,25 +23,37 @@
     transform: scale(1.05);
 }
 
+/* Estilo para la imagen */
 .tarjeta-libro-img {
-    object-fit: cover;
     width: 100%;
-    height: 400px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    height: 300px; /* Más alto para respetar la forma vertical del libro */
+    object-fit: contain; /* << importante */
+    background-color: #ffffff00; /* para que el espacio sobrante sea blanco */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
+
+/* Cuerpo de la tarjeta */
 .tarjeta-libro-body {
     padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
+/* Título */
 .tarjeta-libro-title {
-    margin-top: 400px;
     font-size: 1.2rem;
     font-weight: bold;
+    text-align: center;
     margin-bottom: 10px;
+    margin-top: 300px;
+    color: blue;
 }
 
+/* Texto adicional */
 .tarjeta-libro-text {
     font-size: 0.95rem;
     color: #555;
@@ -46,33 +61,9 @@
     margin-bottom: 15px;
 }
 
+/* Botón */
 .tarjeta-libro-btn {
     font-size: 0.9rem;
     text-decoration: underline;
     margin-top: 10px;
 }
-
-/* Estilo para el modal */
-.tarjeta-libro-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.tarjeta-libro-fullscreen-btn {
-    font-size: 0.8rem;
-}
-
-.tarjeta-libro-modal-body {
-    padding: 0;
-}
-
-.tarjeta-libro-modal-footer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.tarjeta-libro-btn {
-    margin-top: 10px;
-}
-
