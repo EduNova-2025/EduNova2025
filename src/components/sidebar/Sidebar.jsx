@@ -5,11 +5,9 @@ import {
   FaHome,
   FaBoxOpen,
   FaTags,
-  FaComments,
   FaRobot,
   FaCog,
-  FaSignOutAlt, FaListAlt, FaHistory,
-  FaClock,
+  FaSignOutAlt, FaListAlt,
   FaComment,
   FaFolderOpen, FaBook, FaThList, FaVideo,
 } from "react-icons/fa";
