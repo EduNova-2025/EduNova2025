@@ -26,15 +26,17 @@ const Sidebar = () => {
       <div className="top-right-buttons">
         <Button
           variant="light"
-          className="new-chat-btn"
+          className="icon-btn new-chat-btn"
           onClick={handleNewChat}
+          title="Iniciar nuevo chat"
         >
-          <BsPlus size={20} /> Nuevo chat
+          <BsPlus size={20} />
         </Button>
         <Button
           variant="light"
-          className="menu-btn"
+          className="icon-btn menu-btn"
           onClick={toggleSidebar}
+          title="Abrir menú de historial"
         >
           <BsList size={20} />
         </Button>

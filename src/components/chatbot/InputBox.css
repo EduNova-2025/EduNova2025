@@ -48,9 +48,7 @@
   /* ===== ChatArea Styles ===== */
   .chat-area {
     background: #F0F0F0;
-    height: 40%;
-    min-height: 100vh;
-    position: relative;
+    height: 100%;
     overflow: hidden; /* Evita scroll en toda la página */
     display: flex;
     flex-direction: column;
@@ -112,7 +110,6 @@
   padding: 30px 170px 100px 170px; /* Añadido padding inferior para evitar que los mensajes queden detrás del input */
   margin-top: 150px; /* Espacio para el título */
   overflow-y: auto; /* Solo scroll para mensajes */
-  height: calc(100vh - 250px); /* Altura calculada para evitar scroll en toda la página */
   width: 100%;
   box-sizing: border-box;
   margin-left: 80px; /* Espacio para el sidebar */
@@ -121,7 +118,7 @@
 .chat-bubble-container {
   display: flex;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* Aumentado de 10px a 20px para más separación entre mensajes */
 }
 
 .chat-bubble {
@@ -135,7 +132,6 @@
   white-space: pre-wrap;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
 }
-
 
 /* Burbuja del Usuario */
 .chat-bubble.user {
@@ -171,6 +167,41 @@
   z-index: 1001;
 }
 
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #e0e0e0;
+}
+
+.new-chat-btn, .menu-btn {
+  position: relative;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .icon-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .top-right-buttons {
+    right: 20px;
+  }
+}
+
 .new-chat-btn, .menu-btn {
   background-color: #f0f0f0;
   border: 1px solid #e0e0e0;
@@ -180,6 +211,7 @@
   align-items: center;
   gap: 5px;
   transition: all 0.2s ease;
+  margin-top: 30px;
 }
 
 .new-chat-btn:hover, .menu-btn:hover {
@@ -203,16 +235,16 @@
 
 .sidebar.open {
   right: 0; /* Cambiado: ahora se muestra desde la derecha */
-  margin-top: 75px;
-  height: 88vh;
+  margin-top: 85px;
+  height: 86vh;
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
 }
 
 .sidebar-header {
-  padding: 20px;
+  padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center; 
+  text-align:left; 
 }
 
 .chat-history {
@@ -277,12 +309,29 @@
 /* Media queries para dispositivos muy pequeños */
 @media (max-width: 480px) {
   .chat-container {
-    padding: 15px 10px 70px 55px;
-    margin-top: 100px;
+    padding: 15px 10px 70px 10px;
+    margin-top: 80px;
+    margin-left: 0;
   }
   
   .chat-bubble {
-    max-width: 90%;
-    font-size: 13px;
+    max-width: 80%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .chat-bubble-container {
+    margin-bottom: 15px; /* Aumentado de 8px a 15px para dispositivos móviles */
+  }
+  
+  /* Mejora visual para distinguir mejor entre usuario y AI */
+  .chat-bubble.user {
+    border-bottom-right-radius: 4px;
+    margin-right: 5px;
+  }
+  
+  .chat-bubble.ai {
+    border-bottom-left-radius: 4px;
+    margin-left: 5px;
   }
 }
