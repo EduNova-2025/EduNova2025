@@ -70,8 +70,6 @@
   .plan-title {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     font-size: 2rem;
-    margin-top: 250px;
-    overflow: hidden; /* Evita scroll en toda la página */
   }
   
   .input-container {
