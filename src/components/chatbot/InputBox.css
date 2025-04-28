@@ -257,7 +257,7 @@
 .sidebar.open {
   right: 0; /* Cambiado: ahora se muestra desde la derecha */
   margin-top: 85px;
-  height: 86vh;
+  height: calc(100vh - 85px); /* Ajustado para ser más preciso */
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
 }
@@ -265,7 +265,7 @@
 .sidebar-header {
   padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  text-align:left; 
+  text-align: left; 
 }
 
 .chat-history {
@@ -314,6 +314,11 @@
     width: 280px;
   }
   
+  .sidebar.open {
+    margin-top: 70px; /* Reducido para móviles */
+    height: calc(100vh - 70px);
+  }
+  
   .sidebar-overlay {
     display: block;
   }
@@ -325,10 +330,30 @@
   .new-chat-btn {
     padding: 8px;
   }
+  
+  .chat-history {
+    padding: 15px;
+  }
+  
+  .chat-item {
+    padding: 8px 12px;
+    margin: 4px 0;
+  }
 }
 
 /* Media queries para dispositivos muy pequeños */
 @media (max-width: 480px) {
+  .sidebar {
+    width: 85%; /* Cambiado a porcentaje para mejor adaptación */
+    max-width: 280px;
+    right: -85%; /* Ajustado para coincidir con el ancho */
+  }
+  
+  .sidebar.open {
+    margin-top: 60px; /* Reducido aún más para dispositivos pequeños */
+    height: calc(100vh - 60px);
+  }
+  
   .chat-area {
     position: fixed; /* Fijar el área de chat */
     width: 100%;
@@ -369,5 +394,37 @@
   .chat-bubble.ai {
     border-bottom-left-radius: 4px;
     margin-left: 5px;
+  }
+  
+  /* Ajustes adicionales para el sidebar en dispositivos muy pequeños */
+  .sidebar-header {
+    padding: 8px;
+  }
+  
+  .chat-history {
+    padding: 10px;
+  }
+  
+  .chat-item {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+/* Media query para dispositivos extremadamente pequeños */
+@media (max-width: 320px) {
+  .sidebar {
+    width: 90%; /* Aumentado para ocupar más espacio */
+    right: -90%;
+  }
+  
+  .sidebar.open {
+    margin-top: 50px;
+    height: calc(100vh - 50px);
+  }
+  
+  .chat-item {
+    padding: 5px 8px;
+    font-size: 13px;
   }
 }
