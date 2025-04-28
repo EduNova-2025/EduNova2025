@@ -21,6 +21,7 @@
     background-color: #FFF;
     transition: border-color 0.3s ease;
     animation: gradientBorder 3s linear infinite;
+    margin-bottom: 40px;
   }
   
   /* Foco */
@@ -48,15 +49,16 @@
   /* ===== ChatArea Styles ===== */
   .chat-area {
     background: #F0F0F0;
-    height: 100%;
-    overflow: hidden; /* Evita scroll en toda la página */
+    height: 100vh; /* Cambiado a 100vh para ocupar toda la altura de la ventana */
+    overflow: hidden; /* Mantiene la prevención de scroll */
     display: flex;
     flex-direction: column;
+    position: relative; /* Añadido para posicionar elementos internos */
   }
   
   .masteria-title {
     position: absolute;
-    top: 100px;
+    top: 40px;
     left: 120px;
     font-size: 30px;
     font-weight: bold;
@@ -70,11 +72,19 @@
   .plan-title {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     font-size: 2rem;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: fit-content;
+    margin: 0;
+    z-index: 10;
   }
-  
+
   .input-container {
     position: absolute;
-    bottom: 80px;
+    bottom: 20px; /* Reducido de 80px */
     left: 50%;
     transform: translateX(-50%);
     width: 70%;
@@ -100,18 +110,30 @@
       left: 70px;
       font-size: 24px;
     }
+    
+    .plan-title {
+      font-size: 1.5rem;
+      text-align: center;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   /* ===== ChatBot CSS ===== */
 .chat-container {
   display: flex;
   flex-direction: column;
-  padding: 30px 170px 100px 170px; /* Añadido padding inferior para evitar que los mensajes queden detrás del input */
-  margin-top: 150px; /* Espacio para el título */
+  padding: 30px 170px 100px 170px; /* Padding inferior grande */
+  margin-top: 5px; /* Espacio grande para el título */
   overflow-y: auto; /* Solo scroll para mensajes */
   width: 100%;
   box-sizing: border-box;
   margin-left: 80px; /* Espacio para el sidebar */
+  height: calc(100vh - 120px); /* Altura calculada para permitir scroll */
+  max-height: 100vh; /* Limitar altura máxima */
 }
 
 .chat-bubble-container {
@@ -307,10 +329,25 @@
 
 /* Media queries para dispositivos muy pequeños */
 @media (max-width: 480px) {
+  .chat-area {
+    position: fixed; /* Fijar el área de chat */
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Reforzar la prevención de scroll */
+  }
+  
   .chat-container {
     padding: 15px 10px 70px 10px;
     margin-top: 80px;
     margin-left: 0;
+    overflow: hidden !important; /* Forzar la eliminación del scroll */
+    height: calc(100% - 150px); /* Altura ajustada */
+    max-height: none; /* Eliminar restricción de altura máxima */
+    position: absolute; /* Posicionamiento absoluto */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px; /* Espacio para el input */
   }
   
   .chat-bubble {
