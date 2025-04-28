@@ -19,7 +19,7 @@ const ChatArea = () => {
   };
 
   return (
-    <div className="chat-area d-flex flex-column align-items-center justify-content-center text-center flex-grow-1 p-5">
+    <div className="chat-area justify-content-center text-center flex-grow-1 p-5">
       {responses.length === 0 && (
         <>
           <div className="masteria-title">Master IA</div>
