@@ -99,10 +99,12 @@
 
 .campo-busqueda-container {
     position: relative !important;
-    width: 610px !important;
+    width: 100% !important;
+    max-width: 610px !important;
     padding: 2px !important;
     background: linear-gradient(45deg, #0057B7, #E5007D) !important;
     border-radius: 25px !important;
+    margin: 0 auto;
 }
 
 .campo-busqueda {
@@ -151,6 +153,14 @@
     margin-bottom: 20px;
     gap: 20px;
     padding: 0 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.botones-filtro::-webkit-scrollbar {
+    display: none;
 }
 
 .botones-filtro button {
@@ -164,6 +174,7 @@
     background-color: white;
     color: #0057B7;
     border: 2px solid #0057B7;
+    flex: 0 0 auto;
 }
 
 .botones-filtro button:hover {
@@ -256,29 +267,33 @@
 .catalogo-teleclases {
     width: 100%;
     padding: 20px;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .busqueda-contenedor {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    margin-top: 40px;
-    width: 100%;
     justify-content: center;
-    padding: 0 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    width: 100%;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .titulo-busqueda {
-    font-size: 32px;
-    margin-right: 30px;
+    font-size: 28px;
     font-weight: bold;
+    text-align: center;
     background: linear-gradient(45deg, #0057B7, #E5007D);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin: 0;
 }
 
 @media (min-width: 992px) {
@@ -370,22 +385,24 @@
     .contenedor-teleclase {
         margin-left: 0;
         width: 100%;
-        padding: 10px;
+        padding: 0;
     }
     
     .catalogo-teleclases {
         padding: 10px;
     }
     
-    .campo-busqueda-container {
-        width: 90% !important;
-        margin: 0 auto;
+    .busqueda-contenedor {
+        padding: 10px 20px;
+        margin-top: 10px;
     }
     
-    .busqueda-contenedor {
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
+    .titulo-busqueda {
+        font-size: 24px;
+    }
+    
+    .campo-busqueda-container {
+        width: 100% !important;
     }
     
     .menu-lateral {
@@ -457,20 +474,25 @@
         margin-top: 0;
     }
     .botones-filtro {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding: 10px 20px;
+        margin: 0 -10px 20px -10px;
+        width: calc(100% + 20px);
     }
     .botones-filtro button {
-        flex: 1 1 100%;
-        margin-bottom: 10px;
+        flex: 0 0 auto;
+        margin-bottom: 0;
+        font-size: 14px;
+        padding: 8px 16px;
     }
     .btn-agregar {
         margin: 20px auto;
         display: block;
     }
     .tarjeta-teleclase {
-        width: 100%;
-        margin-bottom: 30px;
-        max-width: 100%;
+        margin: 10px;
+        width: calc(100% - 20px);
     }
     .tarjeta-contenido {
         padding: 20px;
