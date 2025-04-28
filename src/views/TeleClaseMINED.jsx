@@ -11,7 +11,7 @@ import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
 import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacionTeleclases';
-import Paginacion from '../components/teleclases/Paginacion';
+import Paginacion from '../components/ordenamiento/Paginacion';
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);

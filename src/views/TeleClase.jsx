@@ -8,7 +8,7 @@ import TarjetaTeleclases from '../components/teleclases/TarjetaTeleclases';
 import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import Paginacion from '../components/teleclases/Paginacion';
+import Paginacion from '../components/ordenamiento/Paginacion';
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -25,7 +25,6 @@ const TeleClase = () => {
         videoUrl: '',
     });
     const [videoFile, setVideoFile] = useState(null);
-    const [menuExpanded, setMenuExpanded] = useState(false);
 
     const teleclasesCollection = collection(db, 'teleclases');
 

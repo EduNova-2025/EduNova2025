@@ -1,6 +1,6 @@
 import { Card, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import "./Styles.css"
+import "../../styles/Catalogo.css"
 
 const TarjetaLibro = ({ libro }) => {
     return (
