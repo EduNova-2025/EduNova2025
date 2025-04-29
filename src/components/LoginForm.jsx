@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col } from "react-bootstrap";
+import { registerUser, loginUser } from "../services/authService.jsx";
 import "../styles/LoginForm.css";
 
 const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit }) => {
@@ -8,16 +9,39 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const [registerError, setRegisterError] = useState("");
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    handleSubmit(e);
+    const result = await loginUser(email, password);
+    if (result.success) {
+      handleSubmit(e);
+    } else {
+      setError(result.error);
+    }
   };
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes implementar la lógica para el registro
-    console.log("Registro:", { username, email: registerEmail, phone: phoneNumber, password: registerPassword });
+    setRegisterError("");
+    
+    if (!username || !registerEmail || !registerPassword) {
+      setRegisterError("Por favor complete todos los campos");
+      return;
+    }
+
+    const result = await registerUser(registerEmail, registerPassword, username, phoneNumber);
+    
+    if (result.success) {
+      // Limpiar el formulario y cambiar a login
+      setUsername("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setPhoneNumber("");
+      setIsLogin(true);
+    } else {
+      setRegisterError(result.error);
+    }
   };
 
   return (
@@ -37,6 +61,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
             <div className="signup">
               <form onSubmit={handleRegisterSubmit}>
                 <label htmlFor="chk" aria-hidden="true" className="label-login">Registrarse</label>
+                {registerError && <div className="error-message">{registerError}</div>}
                 <input 
                   type="text" 
                   name="txt" 
@@ -59,7 +84,6 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   type="number" 
                   name="phone" 
                   placeholder="Número de teléfono" 
-                  required 
                   className="input-login"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
@@ -73,7 +97,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                 />
-                <button type="submit" className="button-login" >Registrarse</button>
+                <button type="submit" className="button-login">Registrarse</button>
               </form>
             </div>
 
