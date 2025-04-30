@@ -12,6 +12,16 @@ const gruposPredefinidos = [
   { id: 'ingles', nombre: 'Inglés', icono: '🇬🇧' },
 ];
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 900);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return isMobile;
+};
+
 const Foro = () => {
   const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
   const [mensajes, setMensajes] = useState([]);
@@ -19,6 +29,8 @@ const Foro = () => {
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [usuarios, setUsuarios] = useState({});
   const [noLeidos, setNoLeidos] = useState({});
+  const [ultimosMensajes, setUltimosMensajes] = useState({});
+  const isMobile = useIsMobile();
 
   const marcarComoLeido = async (userId, grupoId) => {
     try {
@@ -84,6 +96,34 @@ const Foro = () => {
       obtenerNoLeidos();
     }
   }, [usuarioActual, mensajes.length]);
+
+  useEffect(() => {
+    if (usuarioActual) {
+      const obtenerUltimosMensajes = async () => {
+        for (const grupo of gruposPredefinidos) {
+          const mensajesRef = collection(db, `grupos/${grupo.id}/mensajes`);
+          const q = query(mensajesRef, orderBy('timestamp', 'desc'));
+          const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            if (!querySnapshot.empty) {
+              const docSnap = querySnapshot.docs[0];
+              const data = docSnap.data();
+              setUltimosMensajes((prev) => ({
+                ...prev,
+                [grupo.id]: {
+                  usuario: data.nombreUsuario || 'Usuario',
+                  hora: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
+                  contenido: data.contenido || ''
+                }
+              }));
+            } else {
+              setUltimosMensajes((prev) => ({ ...prev, [grupo.id]: null }));
+            }
+          });
+        }
+      };
+      obtenerUltimosMensajes();
+    }
+  }, [usuarioActual]);
 
   const handleSeleccionarGrupo = async (grupo) => {
     setGrupoSeleccionado(grupo);
@@ -155,6 +195,100 @@ const Foro = () => {
     }
   };
 
+  // Botón para volver a la lista en móvil
+  const handleBackToList = () => setGrupoSeleccionado(null);
+
+  // Renderizado condicional según dispositivo
+  if (isMobile) {
+    return (
+      <div className="foro-container" style={{ flexDirection: 'column' }}>
+        {!grupoSeleccionado ? (
+          <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0 }}>
+            <div className="chats-header">
+              <h2>Grupos</h2>
+            </div>
+            <div className="chats-list">
+              {gruposPredefinidos.map((grupo) => {
+                const ultimo = ultimosMensajes[grupo.id];
+                return (
+                  <div
+                    key={grupo.id}
+                    className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
+                    onClick={() => handleSeleccionarGrupo(grupo)}
+                  >
+                    <div className="chat-icon">{grupo.icono}</div>
+                    <div className="chat-info">
+                      <div className="chat-name">
+                        <span>{grupo.nombre}</span>
+                        {ultimo && (
+                          <span className="chat-time">
+                            {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                          </span>
+                        )}
+                      </div>
+                      {ultimo && (
+                        <div className="chat-message">
+                          <span>{ultimo.usuario}:</span> {ultimo.contenido}
+                        </div>
+                      )}
+                    </div>
+                    {noLeidos[grupo.id] > 0 && (
+                      <span className="chat-notifications">{noLeidos[grupo.id]}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0 }}>
+            <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
+              <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
+                ←
+              </button>
+              <h2 style={{ margin: 0 }}>{grupoSeleccionado.nombre}</h2>
+            </div>
+            <div className="chat-messages">
+              {mensajes.map((mensaje) => (
+                <div
+                  key={mensaje.id}
+                  className={`message${mensaje.esMio ? ' mine' : ''}`}
+                >
+                  <div className="message-content">
+                    <div className="message-author">
+                      {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                    </div>
+                    <div className="message-text">{mensaje.contenido}</div>
+                    <div className="message-time">
+                      {mensaje.timestamp?.toDate ?
+                        new Date(mensaje.timestamp.toDate()).toLocaleTimeString() :
+                        new Date(mensaje.timestamp).toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="chat-input">
+              <input
+                type="text"
+                value={nuevoMensaje}
+                onChange={(e) => setNuevoMensaje(e.target.value)}
+                placeholder="Escribe un mensaje..."
+                onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+              />
+              <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="foro-container">
       <div className="chats-sidebar">
@@ -162,61 +296,85 @@ const Foro = () => {
           <h2>Grupos</h2>
         </div>
         <div className="chats-list">
-          {gruposPredefinidos.map((grupo) => (
-            <div
-              key={grupo.id}
-              className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
-              onClick={() => handleSeleccionarGrupo(grupo)}
-            >
-              <div className="chat-icon">{grupo.icono}</div>
-              <div className="chat-name">{grupo.nombre}</div>
-              {noLeidos[grupo.id] > 0 && (
-                <span className="chat-notifications">{noLeidos[grupo.id]}</span>
-              )}
-            </div>
-          ))}
+          {gruposPredefinidos.map((grupo) => {
+            const ultimo = ultimosMensajes[grupo.id];
+            return (
+              <div
+                key={grupo.id}
+                className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
+                onClick={() => handleSeleccionarGrupo(grupo)}
+              >
+                <div className="chat-icon">{grupo.icono}</div>
+                <div className="chat-info" style={{ flex: 1, minWidth: 0 }}>
+                  <div className="chat-name" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>{grupo.nombre}</span>
+                    {ultimo && (
+                      <span className="chat-time" style={{ marginLeft: 8, fontSize: '0.85em', color: '#888', minWidth: 60, textAlign: 'right' }}>
+                        {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                      </span>
+                    )}
+                  </div>
+                  {ultimo && (
+                    <div className="chat-message" style={{ fontSize: '0.92em', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontWeight: 500 }}>{ultimo.usuario}:</span> {ultimo.contenido}
+                    </div>
+                  )}
+                </div>
+                {noLeidos[grupo.id] > 0 && (
+                  <span className="chat-notifications">{noLeidos[grupo.id]}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div className="chat-main">
-        <div className="chat-header">
-          <h2>{grupoSeleccionado ? grupoSeleccionado.nombre : 'Selecciona un grupo'}</h2>
-        </div>
-        <div className="chat-messages">
-          {mensajes.map((mensaje) => (
-            <div
-              key={mensaje.id}
-              className={`message${mensaje.esMio ? ' mine' : ''}`}
-            >
-              <div className="message-content">
-                <div className="message-author">
-                  {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
-                </div>
-                <div className="message-text">{mensaje.contenido}</div>
-                <div className="message-time">
-                  {mensaje.timestamp?.toDate ? 
-                    new Date(mensaje.timestamp.toDate()).toLocaleTimeString() : 
-                    new Date(mensaje.timestamp).toLocaleTimeString()}
+      {/* Solo mostrar el área del chat si hay grupo seleccionado */}
+      {grupoSeleccionado ? (
+        <div className="chat-main">
+          <div className="chat-header">
+            <h2>{grupoSeleccionado.nombre}</h2>
+          </div>
+          <div className="chat-messages">
+            {mensajes.map((mensaje) => (
+              <div
+                key={mensaje.id}
+                className={`message${mensaje.esMio ? ' mine' : ''}`}
+              >
+                <div className="message-content">
+                  <div className="message-author">
+                    {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                  </div>
+                  <div className="message-text">{mensaje.contenido}</div>
+                  <div className="message-time">
+                    {mensaje.timestamp?.toDate ? 
+                      new Date(mensaje.timestamp.toDate()).toLocaleTimeString() : 
+                      new Date(mensaje.timestamp).toLocaleTimeString()}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="chat-input">
+            <input
+              type="text"
+              value={nuevoMensaje}
+              onChange={(e) => setNuevoMensaje(e.target.value)}
+              placeholder="Escribe un mensaje..."
+              onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+            />
+            <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            value={nuevoMensaje}
-            onChange={(e) => setNuevoMensaje(e.target.value)}
-            placeholder="Escribe un mensaje..."
-            onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
-          />
-          <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </div>
-      </div>
+      ) : (
+        !isMobile && (
+          <div className="chat-placeholder">Selecciona un grupo para comenzar a chatear</div>
+        )
+      )}
     </div>
   );
 };
