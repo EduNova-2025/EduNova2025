@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { db } from '../database/firebaseconfig';
-import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import '../styles/Foro.css';
 
@@ -18,12 +18,30 @@ const Foro = () => {
   const [nuevoMensaje, setNuevoMensaje] = useState('');
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [usuarios, setUsuarios] = useState({});
+  const [noLeidos, setNoLeidos] = useState({});
+
+  const marcarComoLeido = async (userId, grupoId) => {
+    try {
+      const userRef = doc(db, 'usuarios', userId);
+      await updateDoc(userRef, {
+        [`lecturas.${grupoId}`]: Timestamp.now()
+      });
+      setUsuarioActual((prev) => ({
+        ...prev,
+        lecturas: {
+          ...(prev.lecturas || {}),
+          [grupoId]: Timestamp.now()
+        }
+      }));
+    } catch (error) {
+      console.error('Error al marcar como leído:', error);
+    }
+  };
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        // Obtener la información del usuario de Firestore
         const userDoc = await getDoc(doc(db, 'usuarios', user.uid));
         if (userDoc.exists()) {
           setUsuarioActual({
@@ -40,6 +58,40 @@ const Foro = () => {
 
     return () => unsubscribeAuth();
   }, []);
+
+  useEffect(() => {
+    if (usuarioActual) {
+      const obtenerNoLeidos = async () => {
+        const nuevosNoLeidos = {};
+        for (const grupo of gruposPredefinidos) {
+          const mensajesRef = collection(db, `grupos/${grupo.id}/mensajes`);
+          const q = query(mensajesRef, orderBy('timestamp'));
+          const snapshot = await onSnapshot(q, (querySnapshot) => {
+            let count = 0;
+            const lastRead = usuarioActual.lecturas?.[grupo.id]?.toDate ? usuarioActual.lecturas[grupo.id].toDate() : usuarioActual.lecturas?.[grupo.id];
+            querySnapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              const msgTime = data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp;
+              if (!lastRead || (msgTime && lastRead && msgTime > lastRead)) {
+                if (data.usuarioId !== usuarioActual.uid) count++;
+              }
+            });
+            nuevosNoLeidos[grupo.id] = count;
+            setNoLeidos((prev) => ({ ...prev, [grupo.id]: count }));
+          });
+        }
+      };
+      obtenerNoLeidos();
+    }
+  }, [usuarioActual, mensajes.length]);
+
+  const handleSeleccionarGrupo = async (grupo) => {
+    setGrupoSeleccionado(grupo);
+    if (usuarioActual) {
+      await marcarComoLeido(usuarioActual.uid, grupo.id);
+      setNoLeidos((prev) => ({ ...prev, [grupo.id]: 0 }));
+    }
+  };
 
   useEffect(() => {
     if (grupoSeleccionado && usuarioActual) {
@@ -114,10 +166,13 @@ const Foro = () => {
             <div
               key={grupo.id}
               className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
-              onClick={() => setGrupoSeleccionado(grupo)}
+              onClick={() => handleSeleccionarGrupo(grupo)}
             >
               <div className="chat-icon">{grupo.icono}</div>
               <div className="chat-name">{grupo.nombre}</div>
+              {noLeidos[grupo.id] > 0 && (
+                <span className="chat-notifications">{noLeidos[grupo.id]}</span>
+              )}
             </div>
           ))}
         </div>

@@ -44,12 +44,13 @@
 
 .chat-item {
   display: flex;
+  align-items: center;
   padding: 14px 18px;
   cursor: pointer;
-  align-items: center;
   border-radius: 8px;
   margin: 4px 8px;
   transition: background 0.2s, color 0.2s;
+  position: relative;
 }
 
 .chat-item:hover,
@@ -102,13 +103,31 @@
 }
 
 .chat-notifications {
-  background-color: #1a73e8;
-  color: white;
-  font-size: 0.8em;
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 20px;
-  text-align: center;
+  background-color: #0015ff;
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: bold;
+  padding: 0 7px;
+  min-width: 22px;  
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.15);
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  border: 2px solid #fff;
+  animation: popIn 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5) translateY(-50%); opacity: 0; }
+  80% { transform: scale(1.1) translateY(-50%); opacity: 1; }
+  100% { transform: scale(1) translateY(-50%); opacity: 1; }
 }
 
 .chat-main {
