@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Row, Col } from "react-bootstrap";
-import { registerUser, loginUser } from "../services/authService.jsx";
+import { registerUser, loginUser, registerWithGoogle } from "../services/authService.jsx";
 import "../styles/LoginForm.css";
+import iconoGoogle from "../assets/iconoGoogle.png";
 
 const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit }) => {
   const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
   const [registerPassword, setRegisterPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [registerError, setRegisterError] = useState("");
+  const [emailAlreadyRegistered, setEmailAlreadyRegistered] = useState(false);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -24,20 +26,41 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setRegisterError("");
-    
+    setEmailAlreadyRegistered(false);
+
     if (!username || !registerEmail || !registerPassword) {
       setRegisterError("Por favor complete todos los campos");
       return;
     }
 
     const result = await registerUser(registerEmail, registerPassword, username, phoneNumber);
-    
+
     if (result.success) {
       // Limpiar el formulario y cambiar a login
       setUsername("");
       setRegisterEmail("");
       setRegisterPassword("");
       setPhoneNumber("");
+      setIsLogin(true);
+    } else {
+      setRegisterError(result.error);
+      if (result.error === "El correo ya está registrado.") {
+        setEmailAlreadyRegistered(true);
+        alert("El correo ya ha sido registrado. Por favor, utiliza otro correo o inicia sesión.");
+      }
+    }
+  };
+
+  // Agrega esta función para el registro con Google
+  const handleGoogleRegister = async (e) => {
+    e.preventDefault();
+    setRegisterError("");
+    setEmailAlreadyRegistered(false);
+    const result = await registerWithGoogle();
+    if (result.success && result.alreadyRegistered) {
+      setRegisterError("Este correo ya está registrado. Por favor, inicia sesión.");
+      setIsLogin(true); // Cambia a la vista de inicio de sesión
+    } else if (result.success) {
       setIsLogin(true);
     } else {
       setRegisterError(result.error);
@@ -60,44 +83,48 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
 
             <div className="signup">
               <form onSubmit={handleRegisterSubmit}>
-                <label htmlFor="chk" aria-hidden="true" className="label-login">Registrarse</label>
+                <label htmlFor="chk" aria-hidden="true" className="label-register">Registrarse</label>
                 {registerError && <div className="error-message">{registerError}</div>}
                 <input 
                   type="text" 
                   name="txt" 
                   placeholder="Nombre de usuario" 
                   required 
-                  className="input-login"
+                  className="input-register"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  disabled={emailAlreadyRegistered}
                 />
                 <input 
                   type="email" 
                   name="email" 
                   placeholder="Correo electrónico" 
                   required 
-                  className="input-login"
+                  className="input-register"
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
+                  disabled={emailAlreadyRegistered}
                 />
                 <input 
                   type="number" 
                   name="phone" 
                   placeholder="Número de teléfono" 
-                  className="input-login"
+                  className="input-register"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
+                  disabled={emailAlreadyRegistered}
                 />
                 <input 
                   type="password" 
                   name="pswd" 
                   placeholder="Contraseña" 
                   required 
-                  className="input-login"
+                  className="input-register"
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
+                  disabled={emailAlreadyRegistered}
                 />
-                <button type="submit" className="button-login">Registrarse</button>
+                <button type="submit" className="button-register" disabled={emailAlreadyRegistered}>Registrarse</button>
               </form>
             </div>
 
@@ -124,6 +151,12 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button type="submit" className="button-login">Iniciar Sesión</button>
+                <div className="separator-or">
+                  <span>O</span>
+                </div>
+                <div className="google-login-icon" onClick={handleGoogleRegister} style={{cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "10px"}}>
+                  <img src={iconoGoogle} alt="Google" className="google-icon" />
+                </div>
               </form>
             </div>
           </div>

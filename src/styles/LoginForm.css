@@ -1,7 +1,7 @@
 /* Estilos para eliminar el scroll en la página de login */
 .login-container {
-  height: 100vh;
-  max-height: 100vh;
+  height: calc(100vh - 45px);
+  max-height: calc(100vh - 45px);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -56,13 +56,38 @@
 
 .label-login {
   color: #fff;
-  font-size: 2.3em;
+  font-size: 2.28em;
   justify-content: center;
   display: flex;
   margin: 50px;
   font-weight: bold;
   cursor: pointer;
   transition: .5s ease-in-out;
+}
+
+.label-register  {
+  color: #fff;
+  font-size: 2.3em;
+  justify-content: center;
+  display: flex;
+  margin: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .5s ease-in-out;
+}
+
+.input-register {
+  width: 60%;
+  height: 35px;
+  background: #e0dede;
+  justify-content: center;
+  display: flex;
+  margin: 15px auto;
+  padding: 12px;
+  border-color: black;
+  outline: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(9, 9, 9, 0.49);
 }
 
 .input-login {
@@ -98,12 +123,31 @@
   box-shadow: 0 4px 10px rgba(255, 255, 255, 0.49);
 }
 
+.button-register {
+  width: 60%;
+  height: 40px;
+  margin: 10px auto;
+  justify-content: center;
+  display: block;
+  color: #fff;
+  background: #6a11cb;
+  font-size: 1em;
+  font-weight: bold;
+  margin-top: 20px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  transition: .2s ease-in;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.49);
+}
+
 .button-login:hover {
   background: #6d44b8;
 }
 
 .login {
-  height: 460px;
+  height: 470px;
   background: #eee;
   border-radius: 60% / 10%;
   transform: translateY(-180px);
@@ -133,4 +177,122 @@
   margin: 10px auto;
   font-size: 0.9em;
   width: 80%;
+}
+
+.button-google {
+  width: 60%;
+  height: 40px;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  background-color: #fff;
+  font-size: 1em;
+  font-weight: bold;
+  outline: none;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: .2s ease-in;
+  cursor: pointer;
+  border-color: #000;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.49);
+  gap: 10px;
+}
+
+.button-google:hover {
+  background: #f5f5f5;
+}
+
+.google-icon {
+  width: 35px;
+  height: 35px;
+  margin-right: 0px;
+  margin-left: 6px;
+  color: #f5f5f5;
+}
+
+.google-btn-text {
+  font-weight: bold;
+  color: black;
+  font-size: 0.8rem;
+  margin-right: 40px;
+  letter-spacing: 0.9px;
+}
+
+.separator-or {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 0 0;
+  font-weight: bold;
+  color: black;
+  font-size: 1.3em;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  user-select: none;
+  pointer-events: none;
+}
+
+.google-login-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.google-login-icon .google-icon {
+  width: 35px;
+  height: 35px;
+  margin: 0;
+  transition: transform 0.2s;
+}
+
+.google-login-icon:hover .google-icon {
+  transform: scale(1.1);
+}
+
+/* --- Responsivo para tablets y móviles --- */
+@media (max-width: 600px) {
+  .button-google {
+    width: 90%;
+    font-size: 0.95em;
+    height: 38px;
+  }
+  .google-icon,
+  .google-login-icon .google-icon {
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+  }
+  .google-btn-text {
+    font-size: 0.75rem;
+    margin-right: 10px;
+  }
+  .separator-or {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 400px) {
+  .button-google {
+    width: 98%;
+    font-size: 0.9em;
+    height: 36px;
+    padding: 0 2px;
+  }
+  .google-icon,
+  .google-login-icon .google-icon {
+    width: 22px;
+    height: 22px;
+    margin-left: 2px;
+  }
+  .google-btn-text {
+    font-size: 0.7rem;
+    margin-right: 2px;
+  }
+  .separator-or {
+    font-size: 0.9em;
+  }
 }
