@@ -299,17 +299,30 @@
 @media (max-width: 900px) {
   .foro-container {
     flex-direction: column;
+    height: 100vh;
   }
   .chats-sidebar {
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
-    min-width: 0;
+    height: 100vh;
+    min-height: 0;
     max-width: none;
+    border-radius: 0;
+    overflow-y: auto;
+    background: #fff;
+  }
+  .chats-list {
+    flex: 1;
+    overflow-y: auto;
+    height: calc(100vh - 60px); /* Ajusta según el alto de tu header */
   }
   .chat-main {
-    margin: 0;
-    border-radius: 0 0 16px 16px;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
   }
   .chat-messages {
     padding: 10px 2vw;
@@ -398,5 +411,39 @@
   }
   .chat-placeholder {
     display: none !important;
+    background: none !important;
+    
   }
+}
+
+.chat-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f8fafc;
+  border-radius: 0 16px 16px 0;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.04);
+}
+
+.placeholder-content {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.placeholder-content h1 {
+  font-size: 2.8rem;
+  color: #222;
+  margin-bottom: 0.3em;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.placeholder-content p {
+  font-size: 1.3rem;
+  color: #1a73e8;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }

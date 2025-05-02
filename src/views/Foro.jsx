@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db } from '../database/firebaseconfig';
 import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -31,6 +31,7 @@ const Foro = () => {
   const [noLeidos, setNoLeidos] = useState({});
   const [ultimosMensajes, setUltimosMensajes] = useState({});
   const isMobile = useIsMobile();
+  const chatMessagesRef = useRef(null);
 
   const marcarComoLeido = async (userId, grupoId) => {
     try {
@@ -198,14 +199,20 @@ const Foro = () => {
   // Botón para volver a la lista en móvil
   const handleBackToList = () => setGrupoSeleccionado(null);
 
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [mensajes, grupoSeleccionado]);
+
   // Renderizado condicional según dispositivo
   if (isMobile) {
     return (
-      <div className="foro-container" style={{ flexDirection: 'column' }}>
+      <div className="foro-container" style={{ flexDirection: 'column', height: '100vh' }}>
         {!grupoSeleccionado ? (
-          <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0 }}>
+          <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0, height: '100vh', overflowY: 'auto' }}>
             <div className="chats-header">
-              <h2>Grupos</h2>
+              <h2>EduNova</h2>
             </div>
             <div className="chats-list">
               {gruposPredefinidos.map((grupo) => {
@@ -241,14 +248,14 @@ const Foro = () => {
             </div>
           </div>
         ) : (
-          <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0 }}>
+          <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
               <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
                 ←
               </button>
               <h2 style={{ margin: 0 }}>{grupoSeleccionado.nombre}</h2>
             </div>
-            <div className="chat-messages">
+            <div className="chat-messages" ref={chatMessagesRef}>
               {mensajes.map((mensaje) => (
                 <div
                   key={mensaje.id}
@@ -289,11 +296,13 @@ const Foro = () => {
     );
   }
 
+  console.log("isMobile:", isMobile);
+
   return (
     <div className="foro-container">
       <div className="chats-sidebar">
         <div className="chats-header">
-          <h2>Grupos</h2>
+          <h2>EduNova</h2>
         </div>
         <div className="chats-list">
           {gruposPredefinidos.map((grupo) => {
@@ -334,7 +343,7 @@ const Foro = () => {
           <div className="chat-header">
             <h2>{grupoSeleccionado.nombre}</h2>
           </div>
-          <div className="chat-messages">
+          <div className="chat-messages" ref={chatMessagesRef}>
             {mensajes.map((mensaje) => (
               <div
                 key={mensaje.id}
@@ -372,7 +381,12 @@ const Foro = () => {
         </div>
       ) : (
         !isMobile && (
-          <div className="chat-placeholder">Selecciona un grupo para comenzar a chatear</div>
+          <div className="chat-placeholder">
+            <div className="placeholder-content">
+              <h1>Selecciona un grupo</h1>
+              <p>para comenzar a chatear</p>
+            </div>
+          </div>
         )
       )}
     </div>
