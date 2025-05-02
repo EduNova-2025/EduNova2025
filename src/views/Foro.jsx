@@ -339,9 +339,12 @@ const Foro = () => {
       </div>
       {/* Solo mostrar el área del chat si hay grupo seleccionado */}
       {grupoSeleccionado ? (
-        <div className="chat-main">
-          <div className="chat-header">
-            <h2>{grupoSeleccionado.nombre}</h2>
+        <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
+            <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
+              ←
+            </button>
+            <h2 style={{ margin: 0 }}>{grupoSeleccionado.nombre}</h2>
           </div>
           <div className="chat-messages" ref={chatMessagesRef}>
             {mensajes.map((mensaje) => (

@@ -7,5 +7,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  server: {
+    host: '0.0.0.0', // Permite que otros dispositivos accedan al servidor
+    port: 5173,
+  },
   assetsInclude: ['**/*.m4v']  // Permite que Vite trate .m4v como un asset
 })
