@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../database/firebaseconfig';
-import { collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
+import {collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import '../styles/Foro.css';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const gruposPredefinidos = [
   { id: 'matematicas', nombre: 'Matemáticas', icono: '🧮' },
@@ -32,6 +33,10 @@ const Foro = () => {
   const [ultimosMensajes, setUltimosMensajes] = useState({});
   const isMobile = useIsMobile();
   const chatMessagesRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const storage = getStorage();
+  const [visorImagen, setVisorImagen] = useState({ abierto: false, url: '', nombre: '' });
+  const [subiendoArchivo, setSubiendoArchivo] = useState(false);
 
   const marcarComoLeido = async (userId, grupoId) => {
     try {
@@ -196,6 +201,32 @@ const Foro = () => {
     }
   };
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !grupoSeleccionado || !usuarioActual) return;
+    setSubiendoArchivo(true);
+    try {
+      // Subir archivo a Storage
+      const storageRef = ref(storage, `chats/${grupoSeleccionado.id}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      // Enviar mensaje con archivo
+      const mensajesRef = collection(db, `grupos/${grupoSeleccionado.id}/mensajes`);
+      await addDoc(mensajesRef, {
+        usuarioId: usuarioActual.uid,
+        contenido: '',
+        archivoUrl: url,
+        archivoNombre: file.name,
+        archivoTipo: file.type,
+        timestamp: Timestamp.now(),
+        nombreUsuario: usuarioActual.username || 'Usuario'
+      });
+    } catch (error) {
+      console.error('Error al subir archivo:', error);
+    }
+    setSubiendoArchivo(false);
+  };
+
   // Botón para volver a la lista en móvil
   const handleBackToList = () => setGrupoSeleccionado(null);
 
@@ -212,7 +243,29 @@ const Foro = () => {
         {!grupoSeleccionado ? (
           <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0, height: '100vh', overflowY: 'auto' }}>
             <div className="chats-header">
-              <h2>EduNova</h2>
+              <button
+                className="menu-button"
+                aria-label="Abrir menú"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 26,
+                  color: '#1a73e8',
+                  cursor: 'pointer',
+                  marginRight: 12,
+                  marginLeft: 0,
+                  marginTop: 44,
+                  display: isMobile ? 'block' : 'none',
+                  height: 40,
+                  width: 40,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0
+                }}
+              >
+                <span style={{fontSize: 28}}>☰</span>
+              </button>
+              <h2 style={{ margin: 0, flex: 1, textAlign: 'left' }}>EduNova</h2>
             </div>
             <div className="chats-list">
               {gruposPredefinidos.map((grupo) => {
@@ -266,6 +319,20 @@ const Foro = () => {
                       {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
                     </div>
                     <div className="message-text">{mensaje.contenido}</div>
+                    {mensaje.archivoUrl && (
+                      mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') ? (
+                        <img
+                          src={mensaje.archivoUrl}
+                          alt={mensaje.archivoNombre}
+                          style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
+                          onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
+                        />
+                      ) : (
+                        <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
+                          📄 {mensaje.archivoNombre}
+                        </a>
+                      )
+                    )}
                     <div className="message-time">
                       {mensaje.timestamp?.toDate ?
                         new Date(mensaje.timestamp.toDate()).toLocaleTimeString() :
@@ -276,12 +343,44 @@ const Foro = () => {
               ))}
             </div>
             <div className="chat-input">
+              {subiendoArchivo && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  color: '#1a73e8',
+                  fontWeight: 500,
+                  marginBottom: 8
+                }}>
+                  <span className="spinner" style={{
+                    width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
+                    borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
+                  }}></span>
+                  Subiendo archivo...
+                </div>
+              )}
+              <button
+                className="attach-button"
+                type="button"
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                aria-label="Adjuntar archivo"
+                style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+              >
+                📎
+              </button>
+              <input
+                type="file"
+                style={{ display: 'none' }}
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
               <input
                 type="text"
                 value={nuevoMensaje}
                 onChange={(e) => setNuevoMensaje(e.target.value)}
                 placeholder="Escribe un mensaje..."
                 onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+                style={{ flex: 1 }}
               />
               <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -357,6 +456,20 @@ const Foro = () => {
                     {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
                   </div>
                   <div className="message-text">{mensaje.contenido}</div>
+                  {mensaje.archivoUrl && (
+                    mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') ? (
+                      <img
+                        src={mensaje.archivoUrl}
+                        alt={mensaje.archivoNombre}
+                        style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
+                        onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
+                      />
+                    ) : (
+                      <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
+                        📄 {mensaje.archivoNombre}
+                      </a>
+                    )
+                  )}
                   <div className="message-time">
                     {mensaje.timestamp?.toDate ? 
                       new Date(mensaje.timestamp.toDate()).toLocaleTimeString() : 
@@ -367,12 +480,44 @@ const Foro = () => {
             ))}
           </div>
           <div className="chat-input">
+            {subiendoArchivo && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                color: '#1a73e8',
+                fontWeight: 500,
+                marginBottom: 8
+              }}>
+                <span className="spinner" style={{
+                  width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
+                  borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
+                }}></span>
+                Subiendo archivo...
+              </div>
+            )}
+            <button
+              className="attach-button"
+              type="button"
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              aria-label="Adjuntar archivo"
+              style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+            >
+              📎
+            </button>
+            <input
+              type="file"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
             <input
               type="text"
               value={nuevoMensaje}
               onChange={(e) => setNuevoMensaje(e.target.value)}
               placeholder="Escribe un mensaje..."
               onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+              style={{ flex: 1 }}
             />
             <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -391,6 +536,45 @@ const Foro = () => {
             </div>
           </div>
         )
+      )}
+      {visorImagen.abierto && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, width: '100vw', height: '100vh',
+            background: 'rgba(0,0,0,0.8)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 9999
+          }}
+          onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
+        >
+          <img
+            src={visorImagen.url}
+            alt={visorImagen.nombre}
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              borderRadius: '12px',
+              boxShadow: '0 4px 32px rgba(0,0,0,0.5)'
+            }}
+            onClick={e => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
+            style={{
+              position: 'fixed',
+              top: 24,
+              right: 32,
+              fontSize: 32,
+              color: '#fff',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              zIndex: 10000
+            }}
+            aria-label='Cerrar visor'
+          >✕</button>
+        </div>
       )}
     </div>
   );

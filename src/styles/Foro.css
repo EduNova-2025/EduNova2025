@@ -1,3 +1,14 @@
+html, body {
+  width: 100vw;
+  min-width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: #fff;
+}
+
 .foro-container {
   display: flex;
   height: 100vh;
@@ -298,11 +309,25 @@
 
 @media (max-width: 900px) {
   .foro-container {
-    flex-direction: column;
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
     height: 100vh;
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff;
+  }
+  .chats-sidebar, .chat-main {
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .chats-sidebar {
-    width: 100%;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
     height: 100vh;
     min-height: 0;
     max-width: none;
@@ -311,6 +336,9 @@
     background: #fff;
   }
   .chats-list {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    margin-top: -30px;
     flex: 1;
     overflow-y: auto;
     height: calc(100vh - 60px); /* Ajusta según el alto de tu header */
@@ -331,6 +359,9 @@
     background: #fff;
     border-radius: 0;
     font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    padding-left: 10px !important;
   }
   .chat-messages {
     flex: 1 1 auto;
@@ -353,6 +384,8 @@
     align-items: center;
   }
   .chat-item {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
     padding: 12px 10px;
     min-height: 60px;
     border-radius: 0;
@@ -439,6 +472,12 @@
     background: none !important;
     
   }
+  .fab-button, .floating-button {
+    position: fixed;
+    right: 24px;
+    bottom: 80px; /* Sube el botón flotante */
+    z-index: 1000;
+  }
 }
 
 .chat-placeholder {
@@ -471,4 +510,9 @@
   margin: 0;
   font-weight: 500;
   letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
 }
