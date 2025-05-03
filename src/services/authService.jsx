@@ -1,6 +1,7 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDocs, collection, query, where } from 'firebase/firestore';
-import { appfirebase } from '../database/firebaseconfig';
+import { appfirebase, analytics } from '../database/firebaseconfig';
+import { logEvent } from 'firebase/analytics';
 
 const auth = getAuth(appfirebase);
 const db = getFirestore(appfirebase);
@@ -30,6 +31,8 @@ export const registerUser = async (email, password, username, phoneNumber) => {
             phoneNumber: phoneNumber,
             createdAt: new Date()
         });
+        // Evento Analytics
+        logEvent(analytics, 'registrousuario', { accion: 'registro', origen: 'authService' });
 
         return { success: true };
     } catch (error) {
@@ -77,6 +80,8 @@ export const registerWithGoogle = async () => {
             phoneNumber: user.phoneNumber || "",
             createdAt: new Date()
         }, { merge: true });
+        // Evento Analytics
+        logEvent(analytics, 'registro_user_google', { accion: 'registro', origen: 'authService_google' });
 
         return { success: true, alreadyRegistered: false, user };
     } catch (error) {

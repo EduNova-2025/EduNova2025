@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TeleClase.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { db, storage } from '../database/firebaseconfig';
+import { db, storage, analytics } from '../database/firebaseconfig';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ModalRegistroTeleclases from '../components/teleclases/ModalRegistroTeleclases';
@@ -12,6 +12,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
 import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacionTeleclases';
 import Paginacion from '../components/ordenamiento/Paginacion';
+import { logEvent } from 'firebase/analytics';
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -109,6 +110,7 @@ const TeleClaseMINED = () => {
             const videoUrl = await getDownloadURL(storageRef);
 
             await addDoc(teleclasesCollection, { ...nuevaTeleclase, videoUrl });
+            logEvent(analytics, 'registro_teleclase', { accion: 'registro', origen: 'teleclases' });
             setShowModal(false);
             setNuevaTeleclase({ titulo: '', materia: '', descripcion: '', videoUrl: '' });
             setVideoFile(null);
@@ -166,7 +168,7 @@ const TeleClaseMINED = () => {
                 ...selectedTeleclase,
                 videoUrl
             });
-
+            logEvent(analytics, 'actualizacion_teleclase', { accion: 'actualizacion', origen: 'teleclases' });
             setShowEditModal(false);
             setSelectedTeleclase(null);
             setVideoFile(null);
@@ -182,6 +184,7 @@ const TeleClaseMINED = () => {
 
         try {
             await deleteDoc(doc(db, 'teleclases', selectedTeleclase.id));
+            logEvent(analytics, 'eliminacion_teleclase', { accion: 'eliminacion', origen: 'teleclases' });
             setShowDeleteModal(false);
             setSelectedTeleclase(null);
             await fetchData();
@@ -192,6 +195,13 @@ const TeleClaseMINED = () => {
 
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
+        logEvent(analytics, 'busqueda_teleclase', { termino: searchTerm });
+    };
+
+    const handleMateriaFilter = (materia) => {
+        setMateriaSeleccionada(materia);
+        setCurrentPage(1);
+        logEvent(analytics, 'filtrar_teleclase', { materia });
     };
 
     const filteredTeleclases = teleclases
@@ -206,6 +216,20 @@ const TeleClaseMINED = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentTeleclases = filteredTeleclases.slice(indexOfFirstItem, indexOfLastItem);
 
+    // Evento: Visualización de teleclase (edición)
+    const openEditModal = (teleclase) => {
+        logEvent(analytics, 'ver_teleclase', { id: teleclase.id, titulo: teleclase.titulo });
+        setSelectedTeleclase(teleclase);
+        setShowEditModal(true);
+    };
+
+    // Evento: Visualización de teleclase (eliminación)
+    const openDeleteModal = (teleclase) => {
+        logEvent(analytics, 'ver_teleclase', { id: teleclase.id, titulo: teleclase.titulo });
+        setSelectedTeleclase(teleclase);
+        setShowDeleteModal(true);
+    };
+
     return (
         <div className="contenedor-teleclase-mined" style={{}}> 
             <BuscadorTeleclases onSearch={handleSearch} />
@@ -214,8 +238,7 @@ const TeleClaseMINED = () => {
                     <button 
                         key={index}
                         onClick={() => {
-                            setMateriaSeleccionada(materia);
-                            setCurrentPage(1); // Resetear a la primera página al cambiar el filtro
+                            handleMateriaFilter(materia);
                         }}
                         className={materiaSeleccionada === materia ? 'active' : ''}
                     >
@@ -234,12 +257,10 @@ const TeleClaseMINED = () => {
                                 key={teleclase.id} 
                                 teleclase={teleclase}
                                 onEdit={() => {
-                                    setSelectedTeleclase(teleclase);
-                                    setShowEditModal(true);
+                                    openEditModal(teleclase);
                                 }}
                                 onDelete={() => {
-                                    setSelectedTeleclase(teleclase);
-                                    setShowDeleteModal(true);
+                                    openDeleteModal(teleclase);
                                 }}
                             />
                         ))}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Videoconferencia from '../components/conferencias/Videoconferencia';
-import { db } from '../database/firebaseconfig';
+import { db, analytics } from '../database/firebaseconfig';
 import {
   collection,
   addDoc,
@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore';
 import '../styles/Conferencias.css';
 import { useNavigate } from 'react-router-dom';
+import { logEvent } from 'firebase/analytics';
 
 const Conferencia = () => {
   const [roomName, setRoomName] = useState('');
@@ -39,6 +40,8 @@ const Conferencia = () => {
         enlace: platform === 'interna' ? null : enlace,
         fecha: serverTimestamp(),
       });
+      logEvent(analytics, 'registro_conferencia', { accion: 'registro', origen: 'conferencias' });
+      logEvent(analytics, 'ver_conferencia', { roomName, displayName, plataforma: platform });
 
       if (platform !== 'interna') {
         window.open(enlace, '_blank');
@@ -48,6 +51,11 @@ const Conferencia = () => {
     } catch (error) {
       console.error("Error al guardar la videollamada:", error);
     }
+  };
+
+  const handleGoToHistorial = () => {
+    logEvent(analytics, 'navegacion_historial_conferencias', {});
+    navigate('/hisconferencia');
   };
 
   return (
@@ -85,7 +93,7 @@ const Conferencia = () => {
             </select>
             <button onClick={handleStartMeeting}>Iniciar Videollamada</button>
 
-            <button onClick={() => navigate('/hisconferencia')} className="boton-historial">
+            <button onClick={handleGoToHistorial} className="boton-historial">
               Ver historial de videollamadas
             </button>
           </div>

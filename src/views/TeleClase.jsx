@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TeleClase.css';
-import { db, storage } from '../database/firebaseconfig';
+import { db, storage, analytics } from '../database/firebaseconfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ModalRegistroTeleclases from '../components/teleclases/ModalRegistroTeleclases';
@@ -9,6 +9,7 @@ import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Paginacion from '../components/ordenamiento/Paginacion';
+import { logEvent } from 'firebase/analytics';
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -74,6 +75,7 @@ const TeleClase = () => {
             const videoUrl = await getDownloadURL(storageRef);
 
             await addDoc(teleclasesCollection, { ...nuevaTeleclase, videoUrl });
+            logEvent(analytics, 'registro_teleclase', { accion: 'registro', origen: 'teleclases' });
             setShowModal(false);
             setNuevaTeleclase({ titulo: '', materia: '', descripcion: '', videoUrl: '' });
             setVideoFile(null);
@@ -83,9 +85,20 @@ const TeleClase = () => {
         }
     };
 
+    const handleVerTeleclase = (teleclase) => {
+        logEvent(analytics, 'ver_teleclase', { id: teleclase.id, titulo: teleclase.titulo });
+    };
+
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
-        setCurrentPage(1); // Resetear a la primera página al buscar
+        setCurrentPage(1);
+        logEvent(analytics, 'busqueda_teleclase', { termino: searchTerm });
+    };
+
+    const handleMateriaFilter = (materia) => {
+        setMateriaSeleccionada(materia);
+        setCurrentPage(1);
+        logEvent(analytics, 'filtrar_teleclase', { materia });
     };
 
     const filteredTeleclases = teleclases
@@ -109,10 +122,7 @@ const TeleClase = () => {
                     {materias.map((materia, index) => (
                         <button 
                             key={index}
-                            onClick={() => {
-                                setMateriaSeleccionada(materia);
-                                setCurrentPage(1); // Resetear a la primera página al cambiar el filtro
-                            }}
+                            onClick={() => handleMateriaFilter(materia)}
                             className={materiaSeleccionada === materia ? 'active' : ''}
                         >
                             {materia}
@@ -128,6 +138,7 @@ const TeleClase = () => {
                                     key={teleclase.id} 
                                     teleclase={teleclase} 
                                     openEditModal={() => { /* Implementar lógica de edición si es necesario */ }} 
+                                    onVerTeleclase={() => handleVerTeleclase(teleclase)}
                                 />
                             ))}
                         </Row>

@@ -1,7 +1,7 @@
     // Importaciones
     import React, { useState, useEffect } from "react";
     import { Container, Button } from "react-bootstrap";
-    import { db } from "../database/firebaseconfig";
+    import { db, analytics } from "../database/firebaseconfig";
     import {
         collection,
         onSnapshot,
@@ -10,6 +10,7 @@
         deleteDoc,
         doc,
     } from "firebase/firestore";
+    import { logEvent } from 'firebase/analytics';
 
     // Importaciones de componentes personalizados
     import TablaCategorias from "../components/categorias/TablaCategorias";
@@ -94,6 +95,7 @@
         const handleSearchChange = (e) => {
         const text = e.target.value.toLowerCase();
         setSearchText(text);
+        logEvent(analytics, 'busqueda_categoria', { termino: text });
         
         const filtradas = categorias.filter((categoria) => 
             categoria.nombre.toLowerCase().includes(text) || 
@@ -147,6 +149,7 @@
     
         // Intentar guardar en Firestore
         await addDoc(categoriasCollection, nuevaCategoria);
+        logEvent(analytics, 'registro_categoria', { accion: 'registro', origen: 'categorias' });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -186,6 +189,7 @@
             nombre: categoriaEditada.nombre,
             descripcion: categoriaEditada.descripcion,
         });
+        logEvent(analytics, 'actualizacion_categoria', { accion: 'actualizacion', origen: 'categorias' });
     
         console.log('Red desconectada:', isOffline )
     
@@ -241,6 +245,7 @@
         // Intentar eliminar en Firestore
         const categoriaRef = doc(db, "categorias", categoriaAEliminar.id);
         await deleteDoc(categoriaRef);
+        logEvent(analytics, 'eliminacion_categoria', { accion: 'eliminacion', origen: 'categorias' });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -271,12 +276,14 @@
 
     // Función para abrir el modal de edición con datos prellenados
     const openEditModal = (categoria) => {
+        logEvent(analytics, 'ver_categoria', { id: categoria.id, nombre: categoria.nombre });
         setCategoriaEditada({ ...categoria });
         setShowEditModal(true);
     };
 
     // Función para abrir el modal de eliminación
     const openDeleteModal = (categoria) => {
+        logEvent(analytics, 'ver_categoria', { id: categoria.id, nombre: categoria.nombre });
         setCategoriaAEliminar(categoria);
         setShowDeleteModal(true);
     };

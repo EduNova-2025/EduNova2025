@@ -1,7 +1,7 @@
 // Importaciones
 import React, { useState, useEffect } from "react";
 import { Container, Button, Alert } from "react-bootstrap";
-import { db, storage } from "../database/firebaseconfig";
+import { db, storage, analytics } from "../database/firebaseconfig";
 import { useNavigate } from "react-router-dom";
 import {
     collection,
@@ -23,6 +23,7 @@ import ModalEdicionLibro from "../components/books/ModalEditionBook";
 import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
+import { logEvent } from 'firebase/analytics';
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -94,6 +95,7 @@ const Libros = () => {
     const handleSearchChange = (e) => {
         const text = e.target.value.toLowerCase();
         setSearchText(text);
+        logEvent(analytics, 'busqueda_libro', { termino: text });
         
         const filtrados = libros.filter((libro) => 
             libro.titulo.toLowerCase().includes(text) || 
@@ -192,6 +194,7 @@ const Libros = () => {
             const pdfUrl = await getDownloadURL(storageRef);
         
             await addDoc(librosCollection, { ...nuevoLibro, pdfUrl });
+            logEvent(analytics, 'registro_libro', { accion: 'registro', origen: 'libros' });
             setShowModal(false);
             setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", categoria: "", pdfUrl: "" });
             setPdfFile(null);
@@ -227,6 +230,7 @@ const Libros = () => {
                 await uploadBytes(storageRef, pdfFile);
                 const newPdfUrl = await getDownloadURL(storageRef);
                 await updateDoc(libroRef, { ...libroEditado, pdfUrl: newPdfUrl });
+                logEvent(analytics, 'actualizacion_libro', { accion: 'actualizacion', origen: 'libros' });
             } else {
                 await updateDoc(libroRef, libroEditado);
             }
@@ -257,6 +261,7 @@ const Libros = () => {
                 });
                 }
                 await deleteDoc(libroRef);
+                logEvent(analytics, 'eliminacion_libro', { accion: 'eliminacion', origen: 'libros' });
                 setShowDeleteModal(false);
                 await fetchData();
             } catch (error) {
@@ -268,14 +273,21 @@ const Libros = () => {
 
     // Función para abrir el modal de edición con datos prellenados
     const openEditModal = (libro) => {
+        logEvent(analytics, 'ver_libro', { id: libro.id, titulo: libro.titulo });
         setLibroEditado({ ...libro });
         setShowEditModal(true);
     };
 
     // Función para abrir el modal de eliminación
     const openDeleteModal = (libro) => {
+        logEvent(analytics, 'ver_libro', { id: libro.id, titulo: libro.titulo });
         setLibroAEliminar(libro);
         setShowDeleteModal(true);
+    };
+
+    // Evento: Descarga de PDF
+    const handlePdfDownload = (libro) => {
+        logEvent(analytics, 'descarga_libro', { id: libro.id, titulo: libro.titulo });
     };
 
     // Renderizado del componente
