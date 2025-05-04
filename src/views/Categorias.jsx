@@ -1,7 +1,7 @@
     // Importaciones
     import React, { useState, useEffect } from "react";
     import { Container, Button } from "react-bootstrap";
-    import { db, analytics } from "../database/firebaseconfig";
+    import { db } from "../database/firebaseconfig";
     import {
         collection,
         onSnapshot,
@@ -10,7 +10,7 @@
         deleteDoc,
         doc,
     } from "firebase/firestore";
-    import { logEvent } from 'firebase/analytics';
+    import ReactGA from "react-ga4";
 
     // Importaciones de componentes personalizados
     import TablaCategorias from "../components/categorias/TablaCategorias";
@@ -95,7 +95,11 @@
         const handleSearchChange = (e) => {
         const text = e.target.value.toLowerCase();
         setSearchText(text);
-        logEvent(analytics, 'busqueda_categoria', { termino: text });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Búsqueda de Categoría",
+            label: text,
+        });
         
         const filtradas = categorias.filter((categoria) => 
             categoria.nombre.toLowerCase().includes(text) || 
@@ -149,7 +153,11 @@
     
         // Intentar guardar en Firestore
         await addDoc(categoriasCollection, nuevaCategoria);
-        logEvent(analytics, 'registro_categoria', { accion: 'registro', origen: 'categorias' });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Registro de Categoría",
+            label: nuevaCategoria.nombre,
+        });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -189,7 +197,11 @@
             nombre: categoriaEditada.nombre,
             descripcion: categoriaEditada.descripcion,
         });
-        logEvent(analytics, 'actualizacion_categoria', { accion: 'actualizacion', origen: 'categorias' });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Actualización de Categoría",
+            label: categoriaEditada.nombre,
+        });
     
         console.log('Red desconectada:', isOffline )
     
@@ -245,7 +257,11 @@
         // Intentar eliminar en Firestore
         const categoriaRef = doc(db, "categorias", categoriaAEliminar.id);
         await deleteDoc(categoriaRef);
-        logEvent(analytics, 'eliminacion_categoria', { accion: 'eliminacion', origen: 'categorias' });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Eliminación de Categoría",
+            label: categoriaAEliminar.nombre,
+        });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -276,14 +292,22 @@
 
     // Función para abrir el modal de edición con datos prellenados
     const openEditModal = (categoria) => {
-        logEvent(analytics, 'ver_categoria', { id: categoria.id, nombre: categoria.nombre });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Ver Categoría",
+            label: categoria.nombre,
+        });
         setCategoriaEditada({ ...categoria });
         setShowEditModal(true);
     };
 
     // Función para abrir el modal de eliminación
     const openDeleteModal = (categoria) => {
-        logEvent(analytics, 'ver_categoria', { id: categoria.id, nombre: categoria.nombre });
+        ReactGA.event({
+            category: "Categorías",
+            action: "Ver Categoría",
+            label: categoria.nombre,
+        });
         setCategoriaAEliminar(categoria);
         setShowDeleteModal(true);
     };

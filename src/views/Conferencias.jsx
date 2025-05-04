@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Videoconferencia from '../components/conferencias/Videoconferencia';
-import { db, analytics } from '../database/firebaseconfig';
+import { db } from '../database/firebaseconfig';
 import {
   collection,
   addDoc,
@@ -8,7 +8,7 @@ import {
 } from 'firebase/firestore';
 import '../styles/Conferencias.css';
 import { useNavigate } from 'react-router-dom';
-import { logEvent } from 'firebase/analytics';
+import ReactGA from "react-ga4";
 
 const Conferencia = () => {
   const [roomName, setRoomName] = useState('');
@@ -40,13 +40,19 @@ const Conferencia = () => {
         enlace: platform === 'interna' ? null : enlace,
         fecha: serverTimestamp(),
       });
-      logEvent(analytics, 'registro_conferencia', { accion: 'registro', origen: 'conferencias' });
-      logEvent(analytics, 'ver_conferencia', { roomName, displayName, plataforma: platform });
-
+      ReactGA.event({
+        category: "Conferencias",
+        action: "Registro de Conferencia",
+        label: roomName,
+      });
+      ReactGA.event({
+        category: "Conferencias",
+        action: "Ver Conferencia",
+        label: roomName,
+      });
       if (platform !== 'interna') {
         window.open(enlace, '_blank');
       }
-
       setInMeeting(true);
     } catch (error) {
       console.error("Error al guardar la videollamada:", error);
@@ -54,7 +60,10 @@ const Conferencia = () => {
   };
 
   const handleGoToHistorial = () => {
-    logEvent(analytics, 'navegacion_historial_conferencias', {});
+    ReactGA.event({
+      category: "Conferencias",
+      action: "Navegación a Historial",
+    });
     navigate('/hisconferencia');
   };
 
