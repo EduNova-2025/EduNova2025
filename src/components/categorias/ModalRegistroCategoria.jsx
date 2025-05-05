@@ -4,7 +4,7 @@ import ReactGA from "react-ga4";
 
 ReactGA.initialize([
   {
-    trackingId: "G-71KQ8LCBB0",
+    trackingId: "G-7VB065E7DH",
     gaOptions: {
       siteSpeedSampleRate: 100
     }
