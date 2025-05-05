@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TeleClase.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { db, storage, analytics } from '../database/firebaseconfig';
+import { db, storage} from '../database/firebaseconfig';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import ModalRegistroTeleclases from '../components/teleclases/ModalRegistroTeleclases';

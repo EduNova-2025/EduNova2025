@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { initializeFirestore, persistentLocalCache } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
-import { getAnalytics } from "firebase/analytics";
 
 // Configuración de firebase usando variables de entorno
 const firebaseConfig = {
@@ -39,7 +38,4 @@ const auth = getAuth(appfirebase);
 // Inicializa Storage
 const storage = getStorage(appfirebase);
 
-// Inicializa Analytics
-const analytics = getAnalytics(appfirebase);
-
-export { appfirebase, db, auth, storage, analytics };
+export { appfirebase, db, auth, storage};

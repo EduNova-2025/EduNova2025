@@ -1,7 +1,7 @@
 // Importaciones
 import React, { useState, useEffect } from "react";
 import { Container, Button, Alert } from "react-bootstrap";
-import { db, storage, analytics } from "../database/firebaseconfig";
+import { db, storage} from "../database/firebaseconfig";
 import { useNavigate } from "react-router-dom";
 import {
     collection,
