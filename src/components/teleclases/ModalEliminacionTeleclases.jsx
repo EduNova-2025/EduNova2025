@@ -1,5 +1,15 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize([
+  {
+    trackingId: "G-71KQ8LCBB0",
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    }
+  }
+]);
 
 const ModalEliminacionTeleclases = ({
   showModal,
@@ -7,6 +17,22 @@ const ModalEliminacionTeleclases = ({
   handleDeleteTeleclase,
   teleclaseTitle,
 }) => {
+  // Función para rastrear la eliminación de teleclases
+  const trackTeleclaseDelete = () => {
+    ReactGA.event({
+      category: "Teleclases",
+      action: "Eliminación",
+      label: teleclaseTitle,
+      origin: "registroteleclases"
+    });
+  };
+
+  // Modificar handleDeleteTeleclase para incluir el tracking
+  const handleDeleteTeleclaseWithTracking = () => {
+    handleDeleteTeleclase();
+    trackTeleclaseDelete();
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} centered>
       <Modal.Header closeButton>
@@ -20,7 +46,7 @@ const ModalEliminacionTeleclases = ({
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>
-        <Button variant="danger" onClick={handleDeleteTeleclase}>
+        <Button variant="danger" onClick={handleDeleteTeleclaseWithTracking}>
           Eliminar
         </Button>
       </Modal.Footer>

@@ -1,5 +1,15 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize([
+  {
+    trackingId: "G-71KQ8LCBB0",
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    }
+  }
+]);
 
 const ModalRegistroLibro = ({
 showModal,
@@ -11,7 +21,24 @@ handlePdfChange,
 handleAddLibro,
 categorias
 }) => {
-return (
+
+  // Función para rastrear el registro de libro
+  const trackLibroRegistration = () => {
+    ReactGA.event({
+      category: "Libros",
+      action: "Registro",
+      label: nuevoLibro.titulo,
+      origin: "registroteleclases"
+    });
+  };
+
+  // Modificar handleAddLibro para incluir el tracking
+  const handleAddLibroWithTracking = () => {
+    handleAddLibro();
+    trackLibroRegistration();
+  };
+
+  return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
     <Modal.Header closeButton>
         <Modal.Title className="modal-title-custom">Agregar Libro</Modal.Title>
@@ -108,7 +135,7 @@ return (
         <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
         Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleAddLibro}>
+        <Button className="btn-style" onClick={handleAddLibroWithTracking}>
         Guardar
         </Button>
     </Modal.Footer>

@@ -1,5 +1,15 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize([
+  {
+    trackingId: "G-71KQ8LCBB0",
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    }
+  }
+]);
 
 const ModalRegistroTeleclases = ({
   showModal,
@@ -9,6 +19,22 @@ const ModalRegistroTeleclases = ({
   handleVideoChange,
   handleAddTeleclase,
 }) => {
+  // Función para rastrear el registro de teleclases
+  const trackTeleclaseRegistration = () => {
+    ReactGA.event({
+      category: "Teleclases",
+      action: "Registro",
+      label: nuevaTeleclase.titulo,
+      origin: "registroteleclases"
+    });
+  };
+
+  // Modificar handleAddTeleclase para incluir el tracking
+  const handleAddTeleclaseWithTracking = () => {
+    handleAddTeleclase();
+    trackTeleclaseRegistration();
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
@@ -71,7 +97,7 @@ const ModalRegistroTeleclases = ({
         <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleAddTeleclase}>
+        <Button className="btn-style" onClick={handleAddTeleclaseWithTracking}>
           Guardar
         </Button>
       </Modal.Footer>

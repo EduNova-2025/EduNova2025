@@ -1,5 +1,15 @@
 import React from "react";
 import { Modal, Form, Button, Image } from "react-bootstrap";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize([
+  {
+    trackingId: "G-71KQ8LCBB0",
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    }
+  }
+]);
 
 const ModalEdicionLibro = ({
 showEditModal,
@@ -12,6 +22,22 @@ handleEditLibro,
 categorias
 }) => {
 if (!libroEditado) return null;
+
+// Función para rastrear la actualización de libro
+const trackLibroUpdate = () => {
+  ReactGA.event({
+    category: "Libros",
+    action: "Actualización",
+    label: libroEditado.titulo,
+    origin: "registroteleclases"
+  });
+};
+
+// Modificar handleEditLibro para incluir el tracking
+const handleEditLibroWithTracking = () => {
+  handleEditLibro();
+  trackLibroUpdate();
+};
 
 return (
     <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
@@ -124,7 +150,7 @@ return (
         <Button variant="outline-secondary" onClick={() => setShowEditModal(false)}>
         Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleEditLibro}>
+        <Button className="btn-style" onClick={handleEditLibroWithTracking}>
         Actualizar
         </Button>
     </Modal.Footer>

@@ -1,5 +1,15 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import ReactGA from "react-ga4";
+
+ReactGA.initialize([
+  {
+    trackingId: "G-71KQ8LCBB0",
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    }
+  }
+]);
 
 const ModalEdicionTeleclases = ({
   showModal,
@@ -10,6 +20,22 @@ const ModalEdicionTeleclases = ({
   handleEditTeleclase,
 }) => {
   if (!teleclase) return null;
+
+  // Función para rastrear la actualización de teleclases
+  const trackTeleclaseUpdate = () => {
+    ReactGA.event({
+      category: "Teleclases",
+      action: "Actualización",
+      label: teleclase.titulo,
+      origin: "registroteleclases"
+    });
+  };
+
+  // Modificar handleEditTeleclase para incluir el tracking
+  const handleEditTeleclaseWithTracking = () => {
+    handleEditTeleclase();
+    trackTeleclaseUpdate();
+  };
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -38,7 +64,7 @@ const ModalEdicionTeleclases = ({
               className="form-control-custom"
             >
               <option value="">Selecciona una materia</option>
-              <option value="Matematica">Matemática</option>
+              <option value="Matemática">Matemática</option>
               <option value="Lengua y literatura">Lengua y Literatura</option>
               <option value="Ciencias naturales">Ciencias Naturales</option>
               <option value="Estudios sociales">Estudios Sociales</option>
@@ -82,7 +108,7 @@ const ModalEdicionTeleclases = ({
         <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
           Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleEditTeleclase}>
+        <Button className="btn-style" onClick={handleEditTeleclaseWithTracking}>
           Actualizar
         </Button>
       </Modal.Footer>
