@@ -23,7 +23,6 @@ import ModalEdicionLibro from "../components/books/ModalEditionBook";
 import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
-import ReactGA from "react-ga4";
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -95,11 +94,6 @@ const Libros = () => {
     const handleSearchChange = (e) => {
         const text = e.target.value.toLowerCase();
         setSearchText(text);
-        ReactGA.event({
-            category: "Libros",
-            action: "Búsqueda de Libro",
-            label: text,
-        });
         
         const filtrados = libros.filter((libro) => 
             libro.titulo.toLowerCase().includes(text) || 
@@ -198,11 +192,6 @@ const Libros = () => {
             const pdfUrl = await getDownloadURL(storageRef);
         
             await addDoc(librosCollection, { ...nuevoLibro, pdfUrl });
-            ReactGA.event({
-                category: "Libros",
-                action: "Registro de Libro",
-                label: nuevoLibro.titulo,
-            });
             setShowModal(false);
             setNuevoLibro({ titulo: "", descripcion: "", area_edu: "", edicion: "", dirigido: "", imagen:"", categoria: "", pdfUrl: "" });
             setPdfFile(null);
@@ -238,11 +227,6 @@ const Libros = () => {
                 await uploadBytes(storageRef, pdfFile);
                 const newPdfUrl = await getDownloadURL(storageRef);
                 await updateDoc(libroRef, { ...libroEditado, pdfUrl: newPdfUrl });
-                ReactGA.event({
-                    category: "Libros",
-                    action: "Actualización de Libro",
-                    label: libroEditado.titulo,
-                });
             } else {
                 await updateDoc(libroRef, libroEditado);
             }
@@ -273,11 +257,6 @@ const Libros = () => {
                 });
                 }
                 await deleteDoc(libroRef);
-                ReactGA.event({
-                    category: "Libros",
-                    action: "Eliminación de Libro",
-                    label: libroAEliminar.titulo,
-                });
                 setShowDeleteModal(false);
                 await fetchData();
             } catch (error) {
@@ -289,33 +268,18 @@ const Libros = () => {
 
     // Función para abrir el modal de edición con datos prellenados
     const openEditModal = (libro) => {
-        ReactGA.event({
-            category: "Libros",
-            action: "Ver Libro",
-            label: libro.titulo,
-        });
         setLibroEditado({ ...libro });
         setShowEditModal(true);
     };
 
     // Función para abrir el modal de eliminación
     const openDeleteModal = (libro) => {
-        ReactGA.event({
-            category: "Libros",
-            action: "Ver Libro",
-            label: libro.titulo,
-        });
         setLibroAEliminar(libro);
         setShowDeleteModal(true);
     };
 
     // Evento: Descarga de PDF
     const handlePdfDownload = (libro) => {
-        ReactGA.event({
-            category: "Libros",
-            action: "Descarga de PDF",
-            label: libro.titulo,
-        });
     };
 
     // Renderizado del componente

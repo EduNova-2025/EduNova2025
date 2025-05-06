@@ -12,7 +12,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
 import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacionTeleclases';
 import Paginacion from '../components/ordenamiento/Paginacion';
-import ReactGA from "react-ga4";
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -110,11 +109,6 @@ const TeleClaseMINED = () => {
             const videoUrl = await getDownloadURL(storageRef);
 
             await addDoc(teleclasesCollection, { ...nuevaTeleclase, videoUrl });
-            ReactGA.event({
-                category: "Teleclases",
-                action: "Registro de Teleclase",
-                label: nuevaTeleclase.titulo,
-            });
             setShowModal(false);
             setNuevaTeleclase({ titulo: '', materia: '', descripcion: '', videoUrl: '' });
             setVideoFile(null);
@@ -172,11 +166,6 @@ const TeleClaseMINED = () => {
                 ...selectedTeleclase,
                 videoUrl
             });
-            ReactGA.event({
-                category: "Teleclases",
-                action: "Actualización de Teleclase",
-                label: selectedTeleclase.titulo,
-            });
             setShowEditModal(false);
             setSelectedTeleclase(null);
             setVideoFile(null);
@@ -192,11 +181,6 @@ const TeleClaseMINED = () => {
 
         try {
             await deleteDoc(doc(db, 'teleclases', selectedTeleclase.id));
-            ReactGA.event({
-                category: "Teleclases",
-                action: "Eliminación de Teleclase",
-                label: selectedTeleclase.titulo,
-            });
             setShowDeleteModal(false);
             setSelectedTeleclase(null);
             await fetchData();
@@ -207,21 +191,11 @@ const TeleClaseMINED = () => {
 
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Búsqueda de Teleclase",
-            label: searchTerm,
-        });
     };
 
     const handleMateriaFilter = (materia) => {
         setMateriaSeleccionada(materia);
         setCurrentPage(1);
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Filtrar por Materia",
-            label: materia,
-        });
     };
 
     const filteredTeleclases = teleclases
@@ -238,22 +212,12 @@ const TeleClaseMINED = () => {
 
     // Evento: Visualización de teleclase (edición)
     const openEditModal = (teleclase) => {
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Ver Teleclase",
-            label: teleclase.titulo,
-        });
         setSelectedTeleclase(teleclase);
         setShowEditModal(true);
     };
 
     // Evento: Visualización de teleclase (eliminación)
     const openDeleteModal = (teleclase) => {
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Ver Teleclase",
-            label: teleclase.titulo,
-        });
         setSelectedTeleclase(teleclase);
         setShowDeleteModal(true);
     };

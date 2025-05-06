@@ -8,7 +8,6 @@ import {
 } from 'firebase/firestore';
 import '../styles/Conferencias.css';
 import { useNavigate } from 'react-router-dom';
-import ReactGA from "react-ga4";
 
 const Conferencia = () => {
   const [roomName, setRoomName] = useState('');
@@ -40,16 +39,6 @@ const Conferencia = () => {
         enlace: platform === 'interna' ? null : enlace,
         fecha: serverTimestamp(),
       });
-      ReactGA.event({
-        category: "Conferencias",
-        action: "Registro de Conferencia",
-        label: roomName,
-      });
-      ReactGA.event({
-        category: "Conferencias",
-        action: "Ver Conferencia",
-        label: roomName,
-      });
       if (platform !== 'interna') {
         window.open(enlace, '_blank');
       }
@@ -60,10 +49,6 @@ const Conferencia = () => {
   };
 
   const handleGoToHistorial = () => {
-    ReactGA.event({
-      category: "Conferencias",
-      action: "Navegación a Historial",
-    });
     navigate('/hisconferencia');
   };
 

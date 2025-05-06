@@ -10,7 +10,6 @@
         deleteDoc,
         doc,
     } from "firebase/firestore";
-    import ReactGA from "react-ga4";
 
     // Importaciones de componentes personalizados
     import TablaCategorias from "../components/categorias/TablaCategorias";
@@ -95,11 +94,6 @@
         const handleSearchChange = (e) => {
         const text = e.target.value.toLowerCase();
         setSearchText(text);
-        ReactGA.event({
-            category: "Categorías",
-            action: "Búsqueda de Categoría",
-            label: text,
-        });
         
         const filtradas = categorias.filter((categoria) => 
             categoria.nombre.toLowerCase().includes(text) || 
@@ -153,11 +147,6 @@
     
         // Intentar guardar en Firestore
         await addDoc(categoriasCollection, nuevaCategoria);
-        ReactGA.event({
-            category: "Categorías",
-            action: "Registro de Categoría",
-            label: nuevaCategoria.nombre,
-        });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -196,11 +185,6 @@
         await updateDoc(categoriaRef, {
             nombre: categoriaEditada.nombre,
             descripcion: categoriaEditada.descripcion,
-        });
-        ReactGA.event({
-            category: "Categorías",
-            action: "Actualización de Categoría",
-            label: categoriaEditada.nombre,
         });
     
         console.log('Red desconectada:', isOffline )
@@ -257,11 +241,6 @@
         // Intentar eliminar en Firestore
         const categoriaRef = doc(db, "categorias", categoriaAEliminar.id);
         await deleteDoc(categoriaRef);
-        ReactGA.event({
-            category: "Categorías",
-            action: "Eliminación de Categoría",
-            label: categoriaAEliminar.nombre,
-        });
     
         // Mensaje según estado de conexión
         if (isOffline) {
@@ -292,22 +271,12 @@
 
     // Función para abrir el modal de edición con datos prellenados
     const openEditModal = (categoria) => {
-        ReactGA.event({
-            category: "Categorías",
-            action: "Ver Categoría",
-            label: categoria.nombre,
-        });
         setCategoriaEditada({ ...categoria });
         setShowEditModal(true);
     };
 
     // Función para abrir el modal de eliminación
     const openDeleteModal = (categoria) => {
-        ReactGA.event({
-            category: "Categorías",
-            action: "Ver Categoría",
-            label: categoria.nombre,
-        });
         setCategoriaAEliminar(categoria);
         setShowDeleteModal(true);
     };

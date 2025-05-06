@@ -9,7 +9,6 @@ import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Paginacion from '../components/ordenamiento/Paginacion';
-import ReactGA from "react-ga4";
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -75,11 +74,6 @@ const TeleClase = () => {
             const videoUrl = await getDownloadURL(storageRef);
 
             await addDoc(teleclasesCollection, { ...nuevaTeleclase, videoUrl });
-            ReactGA.event({
-                category: "Teleclases",
-                action: "Registro de Teleclase",
-                label: nuevaTeleclase.titulo,
-            });
             setShowModal(false);
             setNuevaTeleclase({ titulo: '', materia: '', descripcion: '', videoUrl: '' });
             setVideoFile(null);
@@ -90,31 +84,17 @@ const TeleClase = () => {
     };
 
     const handleVerTeleclase = (teleclase) => {
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Ver Teleclase",
-            label: teleclase.titulo,
-        });
+        // No se envía evento personalizado aquí
     };
 
     const handleSearch = (searchTerm) => {
         setSearchTerm(searchTerm);
         setCurrentPage(1);
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Búsqueda de Teleclase",
-            label: searchTerm,
-        });
     };
 
     const handleMateriaFilter = (materia) => {
         setMateriaSeleccionada(materia);
         setCurrentPage(1);
-        ReactGA.event({
-            category: "Teleclases",
-            action: "Filtrar por Materia",
-            label: materia,
-        });
     };
 
     const filteredTeleclases = teleclases
