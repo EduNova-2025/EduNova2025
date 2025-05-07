@@ -50,6 +50,12 @@ export const registerUser = async (email, password, username, phoneNumber) => {
 export const loginUser = async (email, password) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // Evento Analytics para login exitoso
+        ReactGA.event({
+            category: "Usuarios",
+            action: "Inicio de Sesión",
+            label: email,
+        });
         return { success: true, user: userCredential.user };
     } catch (error) {
         return { 

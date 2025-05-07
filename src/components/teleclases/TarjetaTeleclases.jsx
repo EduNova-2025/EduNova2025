@@ -1,8 +1,17 @@
 import React from 'react';
 import { Card, Col } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import ReactGA from 'react-ga4';
 
 const TarjetaTeleclases = ({ teleclase }) => {
+  const handleVideoPlay = () => {
+    ReactGA.event({
+      category: teleclase.materia || 'Sin materia',
+      action: 'Reproducir Video Teleclase',
+      label: teleclase.titulo
+    });
+  };
+
   return (
     <Col lg={4} md={6} sm={12} className="mb-4">
       <Card className="tarjeta-teleclase">
@@ -12,6 +21,7 @@ const TarjetaTeleclases = ({ teleclase }) => {
               className="card-img-top" 
               src={teleclase.videoUrl} 
               controls
+              onPlay={handleVideoPlay}
             />
           </div>
         )}
