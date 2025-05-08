@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { appfirebase } from "./firebaseconfig";
 
 const AuthContext = createContext();
@@ -9,12 +10,25 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const auth = getAuth(appfirebase);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const db = getFirestore(appfirebase);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setIsLoggedIn(!!user);
+      if (user) {
+        // Obtener el rol del usuario desde Firestore
+        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().rol || null);
+        } else {
+          setUserRole(null);
+        }
+      } else {
+        setUserRole(null);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -47,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, userRole, logout }}>
       {children}
     </AuthContext.Provider>
   );

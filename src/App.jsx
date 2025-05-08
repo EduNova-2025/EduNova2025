@@ -33,17 +33,17 @@ function App() {
                 
                 <Route path="/" element={<Bienvenida />} />
                 <Route path="/login"  element={<Login />} />
-                <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} />} />
-                <Route path="/books" element={<ProtectedRoute element={<Books />} />}/>
-                <Route path="/categorias" element={<ProtectedRoute element={<Categoria />} />}/>
-                <Route path="/catalogo" element={<ProtectedRoute element={<Catalogo/>} />}/>
+                <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
+                <Route path="/books" element={<ProtectedRoute element={<Books />} allowedRoles={["Admin"]} />}/>
+                <Route path="/categorias" element={<ProtectedRoute element={<Categoria />} allowedRoles={["Admin"]} />}/>
+                <Route path="/catalogo" element={<ProtectedRoute element={<Catalogo/>} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
                 <Route path="/libro/:id" element={<DetalleLibro />} />
-                <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} />}/>
-                <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} />}/>
-                <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} />}/>
-                <Route path="/foro" element={<ProtectedRoute element={<Foro />} />}/>
-                <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} />}/>
-                <Route path="/hisconferencia" element={<ProtectedRoute element={<HistorialConferencias />} />}/>
+                <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} allowedRoles={["Admin"]} />}/>
+                <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} allowedRoles={["Docente", "Admin"]} />}/>
+                <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} allowedRoles={["Mined", "Admin"]} />}/>
+                <Route path="/foro" element={<ProtectedRoute element={<Foro />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
+                <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
+                <Route path="/hisconferencia" element={<ProtectedRoute element={<HistorialConferencias />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
               </Routes>
             </main>
           </div>

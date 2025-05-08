@@ -12,6 +12,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
   const [isLogin, setIsLogin] = useState(true);
   const [registerError, setRegisterError] = useState("");
   const [emailAlreadyRegistered, setEmailAlreadyRegistered] = useState(false);
+  const [registerRole, setRegisterRole] = useState("Docente");
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +34,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
       return;
     }
 
-    const result = await registerUser(registerEmail, registerPassword, username, phoneNumber);
+    const result = await registerUser(registerEmail, registerPassword, username, phoneNumber, registerRole);
 
     if (result.success) {
       // Limpiar el formulario y cambiar a login
@@ -41,6 +42,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
       setRegisterEmail("");
       setRegisterPassword("");
       setPhoneNumber("");
+      setRegisterRole("Docente");
       setIsLogin(true);
     } else {
       setRegisterError(result.error);
@@ -124,6 +126,18 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   disabled={emailAlreadyRegistered}
                 />
+                <select
+                  className="select-register"
+                  value={registerRole}
+                  onChange={e => setRegisterRole(e.target.value)}
+                  disabled={emailAlreadyRegistered}
+                  required
+                >
+                  <option value="" disabled>Seleccione su rol</option>
+                  <option value="Docente">Docente</option>
+                  <option value="Mined">Mined</option>
+                  <option value="Admin">Admin</option>
+                </select>
                 <button type="submit" className="button-register" disabled={emailAlreadyRegistered}>Registrarse</button>
               </form>
             </div>

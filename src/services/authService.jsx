@@ -6,7 +6,7 @@ import ReactGA from "react-ga4";
 const auth = getAuth(appfirebase);
 const db = getFirestore(appfirebase);
 
-export const registerUser = async (email, password, username, phoneNumber) => {
+export const registerUser = async (email, password, username, phoneNumber, rol) => {
     try {
         // Verificar si el correo ya existe en la colección 'usuarios'
         const usuariosRef = collection(db, 'usuarios');
@@ -29,6 +29,7 @@ export const registerUser = async (email, password, username, phoneNumber) => {
             email: email,
             username: username,
             phoneNumber: phoneNumber,
+            rol: rol,
             createdAt: new Date()
         });
         // Evento Analytics
