@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import logo from "../assets/logo-edu.png";
+import logo from "../assets/Edunova-512x512-white.png";
 import { useAuth } from "../database/authcontext";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -50,8 +50,8 @@ const handleNavigate = (path) => {
 return (
     <Navbar expand="sm" fixed="top" className="color-navbar">
     <Container>
-        <Navbar.Brand onClick={() => handleNavigate("/inicio")} className="text-white" style={{ cursor: "pointer" }}>
-        <img alt="" src={logo} width="30" height="30" className="d-inline-block align-top" />{" "}
+        <Navbar.Brand onClick={() => handleNavigate("/inicio")} className="text-white encabezado-marca" style={{ cursor: "pointer" }}>
+        <img alt="" src={logo} width="60" height="40" className="d-inline-block align-top encabezado-logo" />{" "}
         <strong>EduNova</strong>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="offcanvasNavbar-expand-sm" onClick={handleToggle} />
