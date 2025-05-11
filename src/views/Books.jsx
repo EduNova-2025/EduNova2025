@@ -23,6 +23,7 @@ import ModalEdicionLibro from "../components/books/ModalEditionBook";
 import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
+import Paginacion from "../components/ordenamiento/Paginacion";
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -48,6 +49,9 @@ const Libros = () => {
 
     const [librosFiltrados, setLibrosFiltrados] = useState([]);
     const [searchText, setSearchText] = useState("");
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5; // Número de productos por página
 
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
@@ -89,6 +93,12 @@ const Libros = () => {
         fetchData();
         }
     }, [isLoggedIn, navigate]);
+
+    // Calcular libros paginados
+    const paginatedLibros = librosFiltrados.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     //Hook useEffect para filtrar libros según el texto de búsqueda
     const handleSearchChange = (e) => {
@@ -299,9 +309,20 @@ const Libros = () => {
             </div>
 
             <TablaLibros
-                libros={librosFiltrados}
+                libros={librosFiltrados}             
                 openEditModal={openEditModal}
                 openDeleteModal={openDeleteModal}
+                Libros={paginatedLibros} // Pasar productos paginados
+                totalItems={librosFiltrados.length} // Total de productos
+                itemsPerPage={itemsPerPage}   // Elementos por página
+                currentPage={currentPage}     // Página actual
+                setCurrentPage={setCurrentPage} // Método para cambiar página
+            />
+            <Paginacion
+                itemsPerPage={itemsPerPage}
+                totalItems={librosFiltrados.length}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
             />
             <ModalRegistroLibro
                 showModal={showModal}

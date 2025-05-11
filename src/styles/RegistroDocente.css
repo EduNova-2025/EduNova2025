@@ -1,0 +1,78 @@
+/* Fondo centrado */
+.registro-docente-wrapper {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #f0f4f8;
+  padding: 4rem 2rem 2rem; /* Aumentamos el padding-top */
+  overflow: hidden;
+}
+
+/* Contenedor del formulario */
+.registro-docente-container {
+  width: 100%;
+  max-width: 850px;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  margin: 1rem;
+}
+
+/* Título */
+.registro-docente-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #0057b7;
+}
+
+/* Formulario */
+.registro-docente-formulario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .registro-docente-formulario {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Inputs */
+.registro-docente-formulario input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  border-color: #0057b7;
+}
+
+/* Botón */
+.registro-docente-boton {
+  grid-column: span 2;
+  background-color: #0057b7;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.registro-docente-boton:hover {
+  background-color: #6300e5;
+}
+
+/* Mensaje de error */
+.registro-docente-mensaje {
+  margin-top: 1rem;
+  text-align: center;
+  color: #dc2626;
+  font-size: 0.95rem;
+}
