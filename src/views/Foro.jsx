@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../database/firebaseconfig';
-import {collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
+import {collection, addDoc, query, orderBy, onSnapshot, getDoc, doc, Timestamp, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import '../styles/Foro.css';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { Modal, Button } from 'react-bootstrap';
 
 const gruposPredefinidos = [
   { id: 'matematicas', nombre: 'Matemáticas', icono: '🧮' },
@@ -37,6 +38,12 @@ const Foro = () => {
   const storage = getStorage();
   const [visorImagen, setVisorImagen] = useState({ abierto: false, url: '', nombre: '' });
   const [subiendoArchivo, setSubiendoArchivo] = useState(false);
+  const [grabandoAudio, setGrabandoAudio] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
+  const [audioSubiendo, setAudioSubiendo] = useState(false);
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [mensajeAEliminar, setMensajeAEliminar] = useState(null);
 
   const marcarComoLeido = async (userId, grupoId) => {
     try {
@@ -236,6 +243,77 @@ const Foro = () => {
     }
   }, [mensajes, grupoSeleccionado]);
 
+  // Función para iniciar la grabación de audio
+  const iniciarGrabacion = async () => {
+    if (!grupoSeleccionado || !usuarioActual) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new window.MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      setAudioChunks([]);
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) setAudioChunks((prev) => [...prev, e.data]);
+      };
+      recorder.onstop = async () => {
+        if (audioChunks.length === 0) return;
+        setAudioSubiendo(true);
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioFileName = `audio_${Date.now()}.webm`;
+        const storageRef = ref(storage, `chats/${grupoSeleccionado.id}/${audioFileName}`);
+        await uploadBytes(storageRef, audioBlob);
+        const url = await getDownloadURL(storageRef);
+        const mensajesRef = collection(db, `grupos/${grupoSeleccionado.id}/mensajes`);
+        await addDoc(mensajesRef, {
+          usuarioId: usuarioActual.uid,
+          contenido: '',
+          archivoUrl: url,
+          archivoNombre: audioFileName,
+          archivoTipo: 'audio/webm',
+          timestamp: Timestamp.now(),
+          nombreUsuario: usuarioActual.username || 'Usuario'
+        });
+        setAudioSubiendo(false);
+        setAudioChunks([]);
+      };
+      recorder.start();
+      setGrabandoAudio(true);
+    } catch (err) {
+      alert('No se pudo acceder al micrófono.');
+    }
+  };
+
+  // Función para detener la grabación de audio
+  const detenerGrabacion = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setGrabandoAudio(false);
+    }
+  };
+
+  // Eliminar mensaje (solo Mined y Admin)
+  const solicitarEliminarMensaje = (mensajeId) => {
+    if (!usuarioActual || (usuarioActual.rol !== 'Mined' && usuarioActual.rol !== 'Admin')) {
+      setShowModalEliminar(true);
+      setMensajeAEliminar(null); // No hay mensaje a eliminar, solo mostrar advertencia
+      return;
+    }
+    setMensajeAEliminar(mensajeId);
+    setShowModalEliminar(true);
+  };
+
+  const eliminarMensaje = async () => {
+    if (!grupoSeleccionado || !mensajeAEliminar) return;
+    try {
+      await deleteDoc(doc(db, `grupos/${grupoSeleccionado.id}/mensajes`, mensajeAEliminar));
+      setShowModalEliminar(false);
+      setMensajeAEliminar(null);
+    } catch (err) {
+      setShowModalEliminar(false);
+      setMensajeAEliminar(null);
+      // Podrías mostrar un error aquí si lo deseas
+    }
+  };
+
   // Renderizado condicional según dispositivo
   if (isMobile) {
     return (
@@ -317,21 +395,32 @@ const Foro = () => {
                   <div className="message-content">
                     <div className="message-author">
                       {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                      {/* Botón eliminar solo para Mined y Admin */}
+                      {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
+                        <button
+                          onClick={() => solicitarEliminarMensaje(mensaje.id)}
+                          style={{ marginLeft: 8, color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
+                          title="Eliminar mensaje"
+                        >🗑️</button>
+                      )}
                     </div>
                     <div className="message-text">{mensaje.contenido}</div>
-                    {mensaje.archivoUrl && (
-                      mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') ? (
-                        <img
-                          src={mensaje.archivoUrl}
-                          alt={mensaje.archivoNombre}
-                          style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
-                          onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
-                        />
-                      ) : (
-                        <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
-                          📄 {mensaje.archivoNombre}
-                        </a>
-                      )
+                    {/* Mostrar audio si el mensaje es de audio */}
+                    {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('audio/') && (
+                      <audio controls src={mensaje.archivoUrl} style={{ marginTop: 8, width: '100%' }} />
+                    )}
+                    {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') && (
+                      <img
+                        src={mensaje.archivoUrl}
+                        alt={mensaje.archivoNombre}
+                        style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
+                        onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
+                      />
+                    )}
+                    {mensaje.archivoUrl && mensaje.archivoTipo && !mensaje.archivoTipo.startsWith('image/') && !mensaje.archivoTipo.startsWith('audio/') && (
+                      <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
+                        📄 {mensaje.archivoNombre}
+                      </a>
                     )}
                     <div className="message-time">
                       {mensaje.timestamp?.toDate ?
@@ -368,6 +457,18 @@ const Foro = () => {
               >
                 📎
               </button>
+              <button
+                className="audio-button"
+                type="button"
+                onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
+                aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
+                style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+              >
+                {grabandoAudio ? '⏹️' : '🎤'}
+              </button>
+              {audioSubiendo && (
+                <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
+              )}
               <input
                 type="file"
                 style={{ display: 'none' }}
@@ -454,21 +555,32 @@ const Foro = () => {
                 <div className="message-content">
                   <div className="message-author">
                     {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                    {/* Botón eliminar solo para Mined y Admin */}
+                    {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
+                      <button
+                        onClick={() => solicitarEliminarMensaje(mensaje.id)}
+                        style={{ marginLeft: 8, color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
+                        title="Eliminar mensaje"
+                      >🗑️</button>
+                    )}
                   </div>
                   <div className="message-text">{mensaje.contenido}</div>
-                  {mensaje.archivoUrl && (
-                    mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') ? (
-                      <img
-                        src={mensaje.archivoUrl}
-                        alt={mensaje.archivoNombre}
-                        style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
-                        onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
-                      />
-                    ) : (
-                      <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
-                        📄 {mensaje.archivoNombre}
-                      </a>
-                    )
+                  {/* Mostrar audio si el mensaje es de audio */}
+                  {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('audio/') && (
+                    <audio controls src={mensaje.archivoUrl} style={{ marginTop: 8, width: '100%' }} />
+                  )}
+                  {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') && (
+                    <img
+                      src={mensaje.archivoUrl}
+                      alt={mensaje.archivoNombre}
+                      style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
+                      onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
+                    />
+                  )}
+                  {mensaje.archivoUrl && mensaje.archivoTipo && !mensaje.archivoTipo.startsWith('image/') && !mensaje.archivoTipo.startsWith('audio/') && (
+                    <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
+                      📄 {mensaje.archivoNombre}
+                    </a>
                   )}
                   <div className="message-time">
                     {mensaje.timestamp?.toDate ? 
@@ -505,6 +617,18 @@ const Foro = () => {
             >
               📎
             </button>
+            <button
+              className="audio-button"
+              type="button"
+              onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
+              aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
+              style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+            >
+              {grabandoAudio ? '⏹️' : '🎤'}
+            </button>
+            {audioSubiendo && (
+              <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
+            )}
             <input
               type="file"
               style={{ display: 'none' }}
@@ -576,6 +700,32 @@ const Foro = () => {
           >✕</button>
         </div>
       )}
+      {/* Modal de confirmación de eliminación */}
+      <Modal show={showModalEliminar} onHide={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {mensajeAEliminar ? (
+            <>
+              <p>¿Está seguro que desea eliminar este mensaje?</p>
+              <p className="text-danger">Esta acción no se puede deshacer.</p>
+            </>
+          ) : (
+            <p className="text-danger">No tienes permisos para eliminar mensajes.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }}>
+            Cancelar
+          </Button>
+          {mensajeAEliminar && (
+            <Button variant="danger" onClick={eliminarMensaje}>
+              Eliminar
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
