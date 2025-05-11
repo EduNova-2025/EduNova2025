@@ -18,6 +18,16 @@ export default function RegistroGestor() {
         zona: '',
     });
 
+    const departamentos = {
+    Managua: ['Managua', 'Ciudad Sandino', 'Tipitapa'],
+    León: ['León', 'Nagarote', 'La Paz Centro'],
+    Chontales: ['Juigalpa', 'Acoyapa', 'Santo Tomás'],
+    Masaya: ['Masaya', 'Nindirí', 'Masatepe'],
+    Granada: ['Granada', 'Nandaime'],
+    // Agregá más si es necesario
+    };
+
+
     const [mensaje, setMensaje] = useState('');
     const navigate = useNavigate();  // Inicializa navigate
 
@@ -94,13 +104,29 @@ export default function RegistroGestor() {
                 <input name="correo" type="email" placeholder="Correo electrónico" value={datos.correo} onChange={handleChange} required className="w-full p-2 border rounded" />
                 <input name="contrasena" type="password" placeholder="Contraseña" value={datos.contrasena} onChange={handleChange} required className="w-full p-2 border rounded" />
                 <input name="telefono" placeholder="Teléfono" value={datos.telefono} onChange={handleChange} className="w-full p-2 border rounded" />
-                <input name="departamento" placeholder="Departamento" value={datos.departamento} onChange={handleChange} className="w-full p-2 border rounded" />
-                <input name="municipio" placeholder="Municipio" value={datos.municipio} onChange={handleChange} className="w-full p-2 border rounded" />
+            <select name="departamento" value={datos.departamento} onChange={handleChange} required>
+            <option value="">Selecciona un departamento</option>
+            {Object.keys(departamentos).map(dep => (
+                <option key={dep} value={dep}>{dep}</option>
+                ))}
+            </select>
+
+            <select name="municipio" value={datos.municipio} onChange={handleChange} required disabled={!datos.departamento}>
+                <option value="">Selecciona un municipio</option>
+                {departamentos[datos.departamento]?.map(mun => (
+                <option key={mun} value={mun}>{mun}</option>
+                ))}
+            </select>
                 <input name="cargo" placeholder="Cargo" value={datos.cargo} onChange={handleChange} className="w-full p-2 border rounded" />
-                <input name="zona" placeholder="Zona de supervisión" value={datos.zona} onChange={handleChange} className="w-full p-2 border rounded" />
+                {/* Select Zona */}
+                    <select name="zona" value={datos.zona} onChange={handleChange} className="w-full p-2 border rounded">
+                        <option value="">Selecciona zona</option>
+                        <option value="Rural">Rural</option>
+                        <option value="Urbana">Urbana</option>
+                    </select>
                 <button type="submit" className="registro-docente-boton">Registrarse</button>
             </form>
-            {mensaje && <p className="text-center mt-4 text-sm text-red-600">{mensaje}</p>}
+            {mensaje && <div className="mensaje-flotante">{mensaje}</div>}
         </div>
     </div>
     );
