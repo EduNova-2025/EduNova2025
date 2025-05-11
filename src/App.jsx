@@ -16,6 +16,9 @@ import Foro from "./views/Foro";
 import DetalleLibro from "./views/DetalleLibro"; //Importacioón de la vista DetalleLibro
 import Conferencia from "./views/Conferencias"; //Importanción de la vista Conferencia
 import HistorialConferencias from "./views/HistorialVideollamadas"; //Importación de la vista Conferencias
+import Roles from "./views/Roles"; //Importación de la vista Roles para seleccionar el rol
+import RegistroDocente from "./views/RegistroDocente"; //Importación de la vista del formulario RegistroDocente
+import RegistroGestor from "./views/RegistroGestor"; //Importación de la vista del formulario RegistroGestor
 
 import './App.css'
 
@@ -33,6 +36,9 @@ function App() {
                 
                 <Route path="/" element={<Bienvenida />} />
                 <Route path="/login"  element={<Login />} />
+                <Route path="/roles"  element={<Roles />} />
+                <Route path="/registro-docente"  element={<RegistroDocente />} />
+                <Route path="/registro-gestor"  element={<RegistroGestor />} />
                 <Route path="/inicio" element={<ProtectedRoute element={<Inicio />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
                 <Route path="/books" element={<ProtectedRoute element={<Books />} allowedRoles={["Admin","Mined"]} />}/>
                 <Route path="/categorias" element={<ProtectedRoute element={<Categoria />} allowedRoles={["Admin","Mined"]} />}/>
@@ -44,6 +50,7 @@ function App() {
                 <Route path="/foro" element={<ProtectedRoute element={<Foro />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
                 <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
                 <Route path="/hisconferencia" element={<ProtectedRoute element={<HistorialConferencias />} allowedRoles={["Docente", "Mined", "Admin"]} />}/>
+                
               </Routes>
             </main>
           </div>
