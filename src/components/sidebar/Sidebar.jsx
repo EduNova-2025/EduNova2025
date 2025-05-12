@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaBars,
@@ -30,7 +30,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, userRole } = useAuth(); // Usamos el rol del usuario
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -66,13 +66,14 @@ const Sidebar = ({ ocultarHamburguesa }) => {
     setIsHovered(false);
   };
 
+  // Definir los items del sidebar según el rol
   const items = [
     { icon: <FaHome />, label: "Inicio", path: "/inicio" },
     {
       icon: <FaBoxOpen />, label: "Biblioteca Digital", submenuName: "biblioteca", subItems: [
-        { icon: <FaThList />, label: "Categorías", path: "/categorias" },
-        { icon: <FaBook />, label: "Gestión", path: "/books" },
-        { icon: <FaFolderOpen />, label: "Catálogo", path: "/catalogo" },
+        { icon: <FaThList />, label: "Categorías", path: "/categorias", rolesAllowed: ["admin"] }, // Solo para admin
+        { icon: <FaBook />, label: "Gestión", path: "/books", rolesAllowed: ["admin"] }, // Solo para admin
+        { icon: <FaFolderOpen />, label: "Catálogo", path: "/catalogo" }, // Disponible para todos
       ]
     },
     {
@@ -81,8 +82,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
         { icon: <FaListAlt />, label: "Documentos", path: "/teleclase" },
       ]
     },
-    {
-      icon: <FaRobot />, label: "Master IA", path:"/ia"},
+    { icon: <FaRobot />, label: "Master IA", path:"/ia" },
     { icon: <FaComment />, label: "Foro", path: "/foro" },
     { icon: <FaVideo />, label: "Conferencias", path: "/conferencia" },
     { icon: <FaCog />, label: "Ajustes", path: "/configuracion" },
@@ -91,6 +91,22 @@ const Sidebar = ({ ocultarHamburguesa }) => {
   const bottomItems = [
     { icon: <FaSignOutAlt />, label: "Cerrar Sesión", path: "/logout" },
   ];
+
+  // Filtrar los items del sidebar según el rol
+  const filteredItems = items.filter(item => {
+    if (userRole === "Admin") {
+      return true; // Admin ve todo
+    }
+    if (userRole === "Docente") {
+      // Solo mostrar elementos relevantes para Docente
+      return item.label === "Inicio" || item.label === "Biblioteca Digital" || item.label === "Teleclases" || item.label === "Master IA" || item.label === "Foro" || item.label === "Conferencias";
+    }
+    if (userRole === "Mined") {
+      // Solo mostrar elementos relevantes para MINED
+      return item.label === "Biblioteca Digital" || item.label === "Teleclases" || item.label === "Master IA";
+    }
+    return false;
+  });
 
   if (!isLoggedIn) return null;
 
@@ -112,7 +128,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
         </div>
 
         <div className="sidebar-section">
-          {items.map((item) =>
+          {filteredItems.map((item) =>
             item.subItems ? (
               <div key={item.label}>
                 <SidebarItem
@@ -122,14 +138,16 @@ const Sidebar = ({ ocultarHamburguesa }) => {
                 />
                 {openSubmenu === item.submenuName && (
                   <div className="submenu">
-                    {item.subItems.map((subItem) => (
-                      <SidebarItem
-                        key={subItem.label}
-                        {...subItem}
-                        active={location.pathname === subItem.path}
-                        onClick={handleNavigate}
-                        isSubmenu={true}
-                      />
+                    {item.subItems
+                      .filter(subItem => subItem.rolesAllowed ? subItem.rolesAllowed.includes(userRole) : true) // Filtrar según el rol
+                      .map((subItem) => (
+                        <SidebarItem
+                          key={subItem.label}
+                          {...subItem}
+                          active={location.pathname === subItem.path}
+                          onClick={handleNavigate}
+                          isSubmenu={true}
+                        />
                     ))}
                   </div>
                 )}
