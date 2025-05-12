@@ -1,4 +1,4 @@
-    /* Reset universal para evitar márgenes y paddings inesperados */
+/* Reset universal para evitar márgenes y paddings inesperados */
     *,
     *::before,
     *::after {
@@ -26,8 +26,31 @@
     background: #003e81;
     overflow: hidden;
     padding: 1rem;
+    position: relative;
+    z-index: 1;
     }
 
+    .seleccionar-rol-container::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background: linear-gradient(270deg,#e5007d,#6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d);
+    background-size: 1000% 1000%;
+    animation: rave-bg 12s ease-in-out infinite;
+    opacity: 1;
+    pointer-events: none;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    }
+
+    @keyframes rave-bg {
+    0% {background-position: 0% 50%;}
+    25% {background-position: 50% 100%;}
+    50% {background-position: 100% 50%;}
+    75% {background-position: 50% 0%;}
+    100% {background-position: 0% 50%;}
+    }
     /* Título */
     .seleccionar-rol-title {
     font-size: 2rem;
@@ -69,10 +92,18 @@
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
+    background-color: #0057b7;
+    box-shadow: 0 4px 16px 0 rgba(255,255,255,0.35), 0 2px 8px 0 rgba(255,255,255,0.19);
+    display: block;
     }
 
-    .seleccionar-rol-button:hover {
-    transform: scale(1.05);
+    .seleccionar-rol-button:hover,
+    .docente-button:hover,
+    .gestor-button:hover {
+        background-color: #0057b7;
+        background-image: none;
+        box-shadow: 0 6px 20px 0 rgba(255,255,255,0.45), 0 2px 8px 0 rgba(255,255,255,0.19);
+        transform: scale(1.05);
     }
 
     .seleccionar-rol-button:active {
