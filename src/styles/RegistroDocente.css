@@ -4,30 +4,55 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 4rem 2rem 2rem;
   background-color: #f0f4f8;
-  padding: 4rem 2rem 2rem; /* Aumentamos el padding-top */
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
+.registro-docente-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  background: linear-gradient(270deg,#e5007d,#6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d);
+  background-size: 1000% 1000%;
+  animation: rave-bg 12s ease-in-out infinite;
+  opacity: 1;
+  pointer-events: none;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+@keyframes rave-bg {
+  0% {background-position: 0% 50%;}
+  25% {background-position: 50% 100%;}
+  50% {background-position: 100% 50%;}
+  75% {background-position: 50% 0%;}
+  100% {background-position: 0% 50%;}
+}
 /* Contenedor del formulario */
 .registro-docente-container {
   width: 100%;
   max-width: 850px;
-  background: white;
+  background: rgba(17, 16, 16, 0.40);
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   margin: 1rem;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(255,255,255,0.35);
 }
 
 /* Título */
 .registro-docente-titulo {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
-  color: #0057b7;
+  color: #ffff;
 }
 
 /* Formulario */
@@ -44,7 +69,8 @@
 }
 
 /* Inputs */
-.registro-docente-formulario input {
+.registro-docente-formulario input,
+.registro-docente-formulario select {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #cbd5e1;
@@ -63,10 +89,14 @@
   font-weight: bold;
   transition: background-color 0.3s ease;
   border: none;
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 .registro-docente-boton:hover {
-  background-color: #6300e5;
+  background: linear-gradient(90deg, #6300e5 0%, #e5007d 100%);
 }
 
 /* Mensaje de error */
