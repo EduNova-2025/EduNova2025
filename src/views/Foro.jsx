@@ -313,76 +313,269 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
     }
   };
 
+  // --- MODAL DE ELIMINACIÓN GLOBAL ---
+  const modalEliminar = (
+    <Modal show={showModalEliminar} onHide={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {mensajeAEliminar ? (
+          <>
+            <p>¿Está seguro que desea eliminar este mensaje?</p>
+            <p className="text-danger">Esta acción no se puede deshacer.</p>
+          </>
+        ) : (
+          <p className="text-danger">No tienes permisos para eliminar mensajes.</p>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }}>
+          Cancelar
+        </Button>
+        {mensajeAEliminar && (
+          <Button variant="danger" onClick={eliminarMensaje}>
+            Eliminar
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
+  );
+
   // Renderizado condicional según dispositivo
   if (isMobile) {
     return (
-      <div className="foro-container" style={{ flexDirection: 'column', height: '100vh' }}>
-        {!grupoSeleccionado ? (
-          <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0, height: '100vh', overflowY: 'auto' }}>
-            <div className="chats-header">
-              <button
-                className="menu-button"
-                aria-label="Abrir menú"
-                style={{
-                  position: grupoSeleccionado ? 'fixed' : 'static',
-                  top: grupoSeleccionado ? 20 : undefined,
-                  left: grupoSeleccionado ? 20 : undefined,
-                  zIndex: grupoSeleccionado ? 2000 : undefined,
-                  background: 'white',
-                  border: '1px solid #eee',
-                  borderRadius: '50%',
-                  fontSize: 26,
-                  color: '#1a73e8',
-                  cursor: 'pointer',
-                  marginRight: grupoSeleccionado ? 0 : 12,
-                  marginLeft: grupoSeleccionado ? 0 : 0,
-                  marginTop: grupoSeleccionado ? 0 : 44,
-                  height: 40,
-                  width: 40,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 0,
-                  boxShadow: grupoSeleccionado ? '0 2px 8px rgba(0,0,0,0.08)' : undefined
-                }}
-              >
-                <span style={{fontSize: 28}}>☰</span>
-              </button>
-              <h2 style={{ margin: 0, flex: 1, textAlign: 'left' }}>EduNova</h2>
-            </div>
-            <div className="chats-list">
-              {gruposPredefinidos.map((grupo) => {
-                const ultimo = ultimosMensajes[grupo.id];
-                return (
-                  <div
-                    key={grupo.id}
-                    className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
-                    onClick={() => handleSeleccionarGrupo(grupo)}
-                  >
-                    <div className="chat-icon">{grupo.icono}</div>
-                    <div className="chat-info">
-                      <div className="chat-name">
-                        <span>{grupo.nombre}</span>
+      <>
+        <div className="foro-container" style={{ flexDirection: 'column', height: '100vh' }}>
+          {!grupoSeleccionado ? (
+            <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0, height: '100vh', overflowY: 'auto' }}>
+              <div className="chats-header">
+                <button
+                  className="menu-button"
+                  aria-label="Abrir menú"
+                  style={{
+                    position: grupoSeleccionado ? 'fixed' : 'static',
+                    top: grupoSeleccionado ? 20 : undefined,
+                    left: grupoSeleccionado ? 20 : undefined,
+                    zIndex: grupoSeleccionado ? 2000 : undefined,
+                    background: 'white',
+                    border: '1px solid #eee',
+                    borderRadius: '50%',
+                    fontSize: 26,
+                    color: '#1a73e8',
+                    cursor: 'pointer',
+                    marginRight: grupoSeleccionado ? 0 : 12,
+                    marginLeft: grupoSeleccionado ? 0 : 0,
+                    marginTop: grupoSeleccionado ? 0 : 44,
+                    height: 40,
+                    width: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                    boxShadow: grupoSeleccionado ? '0 2px 8px rgba(0,0,0,0.08)' : undefined
+                  }}
+                >
+                  <span style={{fontSize: 28}}>☰</span>
+                </button>
+                <h2 style={{ margin: 0, flex: 1, textAlign: 'left' }}>EduNova</h2>
+              </div>
+              <div className="chats-list">
+                {gruposPredefinidos.map((grupo) => {
+                  const ultimo = ultimosMensajes[grupo.id];
+                  return (
+                    <div
+                      key={grupo.id}
+                      className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
+                      onClick={() => handleSeleccionarGrupo(grupo)}
+                    >
+                      <div className="chat-icon">{grupo.icono}</div>
+                      <div className="chat-info">
+                        <div className="chat-name">
+                          <span>{grupo.nombre}</span>
+                          {ultimo && (
+                            <span className="chat-time">
+                              {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                            </span>
+                          )}
+                        </div>
                         {ultimo && (
-                          <span className="chat-time">
-                            {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                          </span>
+                          <div className="chat-message">
+                            <span>{ultimo.usuario}:</span> {ultimo.contenido}
+                          </div>
                         )}
                       </div>
-                      {ultimo && (
-                        <div className="chat-message">
-                          <span>{ultimo.usuario}:</span> {ultimo.contenido}
-                        </div>
+                      {noLeidos[grupo.id] > 0 && (
+                        <span className="chat-notifications">{noLeidos[grupo.id]}</span>
                       )}
                     </div>
-                    {noLeidos[grupo.id] > 0 && (
-                      <span className="chat-notifications">{noLeidos[grupo.id]}</span>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
+              <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
+                <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
+                  ←
+                </button>
+                <h2 style={{ margin: 0 }}>{grupoSeleccionado.nombre}</h2>
+              </div>
+              <div className="chat-messages" ref={chatMessagesRef}>
+                {mensajes.map((mensaje) => (
+                  <div
+                    key={mensaje.id}
+                    className={`message${mensaje.esMio ? ' mine' : ''}`}
+                  >
+                    <div className="message-content">
+                      <div className="message-author">
+                        {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                        {/* Botón eliminar solo para Mined y Admin */}
+                        {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
+                          <button
+                            onClick={() => solicitarEliminarMensaje(mensaje.id)}
+                            style={{ marginLeft: 8, color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
+                            title="Eliminar mensaje"
+                          >🗑️</button>
+                        )}
+                      </div>
+                      <div className="message-text">{mensaje.contenido}</div>
+                      {/* Mostrar audio si el mensaje es de audio */}
+                      {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('audio/') && (
+                        <audio controls src={mensaje.archivoUrl} style={{ marginTop: 8, width: '100%' }} />
+                      )}
+                      {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') && (
+                        <img
+                          src={mensaje.archivoUrl}
+                          alt={mensaje.archivoNombre}
+                          style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
+                          onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
+                        />
+                      )}
+                      {mensaje.archivoUrl && mensaje.archivoTipo && !mensaje.archivoTipo.startsWith('image/') && !mensaje.archivoTipo.startsWith('audio/') && (
+                        <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
+                          📄 {mensaje.archivoNombre}
+                        </a>
+                      )}
+                      <div className="message-time">
+                        {mensaje.timestamp?.toDate ?
+                          new Date(mensaje.timestamp.toDate()).toLocaleTimeString() :
+                          new Date(mensaje.timestamp).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="chat-input">
+                {subiendoArchivo && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    color: '#1a73e8',
+                    fontWeight: 500,
+                    marginBottom: 8
+                  }}>
+                    <span className="spinner" style={{
+                      width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
+                      borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
+                    }}></span>
+                    Subiendo archivo...
+                  </div>
+                )}
+                <button
+                  className="attach-button"
+                  type="button"
+                  onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                  aria-label="Adjuntar archivo"
+                  style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+                >
+                  📎
+                </button>
+                <button
+                  className="audio-button"
+                  type="button"
+                  onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
+                  aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
+                  style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
+                >
+                  {grabandoAudio ? '⏹️' : '🎤'}
+                </button>
+                {audioSubiendo && (
+                  <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
+                )}
+                <input
+                  type="file"
+                  style={{ display: 'none' }}
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+                <input
+                  type="text"
+                  value={nuevoMensaje}
+                  onChange={(e) => setNuevoMensaje(e.target.value)}
+                  placeholder="Escribe un mensaje..."
+                  onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
+                  style={{ flex: 1 }}
+                />
+                <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        {modalEliminar}
+      </>
+    );
+  }
+
+  console.log("isMobile:", isMobile);
+
+  return (
+    <>
+      <div className="foro-container">
+        <div className="chats-sidebar">
+          <div className="chats-header">
+            <h2>EduNova</h2>
+          </div>
+          <div className="chats-list">
+            {gruposPredefinidos.map((grupo) => {
+              const ultimo = ultimosMensajes[grupo.id];
+              return (
+                <div
+                  key={grupo.id}
+                  className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
+                  onClick={() => handleSeleccionarGrupo(grupo)}
+                >
+                  <div className="chat-icon">{grupo.icono}</div>
+                  <div className="chat-info" style={{ flex: 1, minWidth: 0 }}>
+                    <div className="chat-name" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>{grupo.nombre}</span>
+                      {ultimo && (
+                        <span className="chat-time" style={{ marginLeft: 8, fontSize: '0.85em', color: '#888', minWidth: 60, textAlign: 'right' }}>
+                          {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      )}
+                    </div>
+                    {ultimo && (
+                      <div className="chat-message" style={{ fontSize: '0.92em', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <span style={{ fontWeight: 500 }}>{ultimo.usuario}:</span> {ultimo.contenido}
+                      </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
+                  {noLeidos[grupo.id] > 0 && (
+                    <span className="chat-notifications">{noLeidos[grupo.id]}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ) : (
+        </div>
+        {/* Solo mostrar el área del chat si hay grupo seleccionado */}
+        {grupoSeleccionado ? (
           <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
               <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
@@ -427,8 +620,8 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                       </a>
                     )}
                     <div className="message-time">
-                      {mensaje.timestamp?.toDate ?
-                        new Date(mensaje.timestamp.toDate()).toLocaleTimeString() :
+                      {mensaje.timestamp?.toDate ? 
+                        new Date(mensaje.timestamp.toDate()).toLocaleTimeString() : 
                         new Date(mensaje.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
@@ -495,242 +688,58 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
               </button>
             </div>
           </div>
-        )}
-      </div>
-    );
-  }
-
-  console.log("isMobile:", isMobile);
-
-  return (
-    <div className="foro-container">
-      <div className="chats-sidebar">
-        <div className="chats-header">
-          <h2>EduNova</h2>
-        </div>
-        <div className="chats-list">
-          {gruposPredefinidos.map((grupo) => {
-            const ultimo = ultimosMensajes[grupo.id];
-            return (
-              <div
-                key={grupo.id}
-                className={`chat-item${grupoSeleccionado && grupoSeleccionado.id === grupo.id ? ' selected' : ''}`}
-                onClick={() => handleSeleccionarGrupo(grupo)}
-              >
-                <div className="chat-icon">{grupo.icono}</div>
-                <div className="chat-info" style={{ flex: 1, minWidth: 0 }}>
-                  <div className="chat-name" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>{grupo.nombre}</span>
-                    {ultimo && (
-                      <span className="chat-time" style={{ marginLeft: 8, fontSize: '0.85em', color: '#888', minWidth: 60, textAlign: 'right' }}>
-                        {ultimo.hora ? new Date(ultimo.hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </span>
-                    )}
-                  </div>
-                  {ultimo && (
-                    <div className="chat-message" style={{ fontSize: '0.92em', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      <span style={{ fontWeight: 500 }}>{ultimo.usuario}:</span> {ultimo.contenido}
-                    </div>
-                  )}
-                </div>
-                {noLeidos[grupo.id] > 0 && (
-                  <span className="chat-notifications">{noLeidos[grupo.id]}</span>
-                )}
+        ) : (
+          !isMobile && (
+            <div className="chat-placeholder">
+              <div className="placeholder-content">
+                <h1>Selecciona un grupo</h1>
+                <p>para comenzar a chatear</p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-      {/* Solo mostrar el área del chat si hay grupo seleccionado */}
-      {grupoSeleccionado ? (
-        <div className="chat-main" style={{ width: '100%', borderRadius: 0, minWidth: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <div className="chat-header" style={{ display: 'flex', alignItems: 'center' }}>
-            <button onClick={handleBackToList} style={{ marginRight: 16, background: 'none', border: 'none', fontSize: 22, color: '#1a73e8', cursor: 'pointer' }} aria-label="Volver">
-              ←
-            </button>
-            <h2 style={{ margin: 0 }}>{grupoSeleccionado.nombre}</h2>
-          </div>
-          <div className="chat-messages" ref={chatMessagesRef}>
-            {mensajes.map((mensaje) => (
-              <div
-                key={mensaje.id}
-                className={`message${mensaje.esMio ? ' mine' : ''}`}
-              >
-                <div className="message-content">
-                  <div className="message-author">
-                    {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
-                    {/* Botón eliminar solo para Mined y Admin */}
-                    {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
-                      <button
-                        onClick={() => solicitarEliminarMensaje(mensaje.id)}
-                        style={{ marginLeft: 8, color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
-                        title="Eliminar mensaje"
-                      >🗑️</button>
-                    )}
-                  </div>
-                  <div className="message-text">{mensaje.contenido}</div>
-                  {/* Mostrar audio si el mensaje es de audio */}
-                  {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('audio/') && (
-                    <audio controls src={mensaje.archivoUrl} style={{ marginTop: 8, width: '100%' }} />
-                  )}
-                  {mensaje.archivoUrl && mensaje.archivoTipo && mensaje.archivoTipo.startsWith('image/') && (
-                    <img
-                      src={mensaje.archivoUrl}
-                      alt={mensaje.archivoNombre}
-                      style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px', cursor: 'pointer' }}
-                      onClick={() => setVisorImagen({ abierto: true, url: mensaje.archivoUrl, nombre: mensaje.archivoNombre })}
-                    />
-                  )}
-                  {mensaje.archivoUrl && mensaje.archivoTipo && !mensaje.archivoTipo.startsWith('image/') && !mensaje.archivoTipo.startsWith('audio/') && (
-                    <a href={mensaje.archivoUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', marginTop: '8px', display: 'block' }}>
-                      📄 {mensaje.archivoNombre}
-                    </a>
-                  )}
-                  <div className="message-time">
-                    {mensaje.timestamp?.toDate ? 
-                      new Date(mensaje.timestamp.toDate()).toLocaleTimeString() : 
-                      new Date(mensaje.timestamp).toLocaleTimeString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="chat-input">
-            {subiendoArchivo && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                color: '#1a73e8',
-                fontWeight: 500,
-                marginBottom: 8
-              }}>
-                <span className="spinner" style={{
-                  width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
-                  borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
-                }}></span>
-                Subiendo archivo...
-              </div>
-            )}
-            <button
-              className="attach-button"
-              type="button"
-              onClick={() => fileInputRef.current && fileInputRef.current.click()}
-              aria-label="Adjuntar archivo"
-              style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
-            >
-              📎
-            </button>
-            <button
-              className="audio-button"
-              type="button"
-              onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
-              aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
-              style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
-            >
-              {grabandoAudio ? '⏹️' : '🎤'}
-            </button>
-            {audioSubiendo && (
-              <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
-            )}
-            <input
-              type="file"
-              style={{ display: 'none' }}
-              ref={fileInputRef}
-              onChange={handleFileChange}
-            />
-            <input
-              type="text"
-              value={nuevoMensaje}
-              onChange={(e) => setNuevoMensaje(e.target.value)}
-              placeholder="Escribe un mensaje..."
-              onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
-              style={{ flex: 1 }}
-            />
-            <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </div>
-        </div>
-      ) : (
-        !isMobile && (
-          <div className="chat-placeholder">
-            <div className="placeholder-content">
-              <h1>Selecciona un grupo</h1>
-              <p>para comenzar a chatear</p>
             </div>
-          </div>
-        )
-      )}
-      {visorImagen.abierto && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, width: '100vw', height: '100vh',
-            background: 'rgba(0,0,0,0.8)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 9999
-          }}
-          onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
-        >
-          <img
-            src={visorImagen.url}
-            alt={visorImagen.nombre}
-            style={{
-              maxWidth: '90vw',
-              maxHeight: '90vh',
-              borderRadius: '12px',
-              boxShadow: '0 4px 32px rgba(0,0,0,0.5)'
-            }}
-            onClick={e => e.stopPropagation()}
-          />
-          <button
-            onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
+          )
+        )}
+        {visorImagen.abierto && (
+          <div
             style={{
               position: 'fixed',
-              top: 24,
-              right: 32,
-              fontSize: 32,
-              color: '#fff',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              zIndex: 10000
+              top: 0, left: 0, width: '100vw', height: '100vh',
+              background: 'rgba(0,0,0,0.8)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 9999
             }}
-            aria-label='Cerrar visor'
-          >✕</button>
-        </div>
-      )}
-      {/* Modal de confirmación de eliminación */}
-      <Modal show={showModalEliminar} onHide={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }} centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {mensajeAEliminar ? (
-            <>
-              <p>¿Está seguro que desea eliminar este mensaje?</p>
-              <p className="text-danger">Esta acción no se puede deshacer.</p>
-            </>
-          ) : (
-            <p className="text-danger">No tienes permisos para eliminar mensajes.</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }}>
-            Cancelar
-          </Button>
-          {mensajeAEliminar && (
-            <Button variant="danger" onClick={eliminarMensaje}>
-              Eliminar
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    </div>
+            onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
+          >
+            <img
+              src={visorImagen.url}
+              alt={visorImagen.nombre}
+              style={{
+                maxWidth: '90vw',
+                maxHeight: '90vh',
+                borderRadius: '12px',
+                boxShadow: '0 4px 32px rgba(0,0,0,0.5)'
+              }}
+              onClick={e => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setVisorImagen({ abierto: false, url: '', nombre: '' })}
+              style={{
+                position: 'fixed',
+                top: 24,
+                right: 32,
+                fontSize: 32,
+                color: '#fff',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                zIndex: 10000
+              }}
+              aria-label='Cerrar visor'
+            >✕</button>
+          </div>
+        )}
+      </div>
+      {modalEliminar}
+    </>
   );
 };
 
