@@ -24,8 +24,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const Foro = () => {
-  const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
   const [mensajes, setMensajes] = useState([]);
   const [nuevoMensaje, setNuevoMensaje] = useState('');
   const [usuarioActual, setUsuarioActual] = useState(null);
@@ -325,20 +324,25 @@ const Foro = () => {
                 className="menu-button"
                 aria-label="Abrir menú"
                 style={{
-                  background: 'none',
-                  border: 'none',
+                  position: grupoSeleccionado ? 'fixed' : 'static',
+                  top: grupoSeleccionado ? 20 : undefined,
+                  left: grupoSeleccionado ? 20 : undefined,
+                  zIndex: grupoSeleccionado ? 2000 : undefined,
+                  background: 'white',
+                  border: '1px solid #eee',
+                  borderRadius: '50%',
                   fontSize: 26,
                   color: '#1a73e8',
                   cursor: 'pointer',
-                  marginRight: 12,
-                  marginLeft: 0,
-                  marginTop: 44,
-                  display: isMobile ? 'block' : 'none',
+                  marginRight: grupoSeleccionado ? 0 : 12,
+                  marginLeft: grupoSeleccionado ? 0 : 0,
+                  marginTop: grupoSeleccionado ? 0 : 44,
                   height: 40,
                   width: 40,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: 0
+                  padding: 0,
+                  boxShadow: grupoSeleccionado ? '0 2px 8px rgba(0,0,0,0.08)' : undefined
                 }}
               >
                 <span style={{fontSize: 28}}>☰</span>

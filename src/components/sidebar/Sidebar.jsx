@@ -24,7 +24,7 @@ const SidebarItem = ({ icon, label, path, active, onClick, isSubmenu }) => (
   </div>
 );
 
-const Sidebar = () => {
+const Sidebar = ({ ocultarHamburguesa }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -96,9 +96,11 @@ const Sidebar = () => {
 
   return (
     <>
-      <button className="hamburger-btn" onClick={toggleSidebar}>
-        <FaBars />
-      </button>
+      {!ocultarHamburguesa && (
+        <button className="hamburger-btn" onClick={toggleSidebar}>
+          <FaBars />
+        </button>
+      )}
 
       <div
         className={`modern-sidebar hover-expand ${isOpen ? "open" : ""} ${isHovered ? "open" : ""}`}
