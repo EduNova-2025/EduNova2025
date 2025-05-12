@@ -76,3 +76,61 @@
   color: #dc2626;
   font-size: 0.95rem;
 }
+
+.mensaje-flotante {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #f44336;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: fadein 0.3s ease, fadeout 0.3s ease 4.5s;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeout {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .registro-docente-container {
+    padding: 1.5rem;
+  }
+
+  .registro-docente-formulario {
+    gap: 1.25rem;
+  }
+
+  .registro-docente-formulario input,
+  .registro-docente-formulario select {
+    font-size: 1rem;
+    padding: 0.65rem;
+  }
+
+  .registro-docente-boton {
+    grid-column: span 1;
+    width: 100%;
+  }
+
+  .registro-docente-titulo {
+    font-size: 1.5rem;
+  }
+}
