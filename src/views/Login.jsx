@@ -1,4 +1,4 @@
-    import React, { useState } from "react";
+import React, { useState } from "react";
     import { useNavigate } from "react-router-dom";
     import { Container } from "react-bootstrap";
     import LoginForm from "../components/LoginForm";
@@ -6,12 +6,13 @@
     import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
     import { useAuth } from "../database/authcontext";
 
-    import "../App.css";
+    import "../styles/LoginForm.css";
 
     const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -42,16 +43,18 @@
 
     return (
         <Container className="d-flex vh-100 justify-content-center align-items-center">
-        <LoginForm
-            email={email}
-            password={password}
-            error={error}
-            setEmail={setEmail}
-            setPassword={setPassword}
-            handleSubmit={handleSubmit}
-        />
+            <LoginForm
+                email={email}
+                password={password}
+                error={error}
+                setEmail={setEmail}
+                setPassword={setPassword}
+                handleSubmit={handleSubmit}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+            />
         </Container>
     );
-    };
+};
 
-    export default Login;
+export default Login;

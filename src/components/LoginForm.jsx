@@ -10,34 +10,32 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
     <Row className="w-100 justify-content-center">
       <Col xs={12} sm={10} md={8} lg={6} xl={5}>
         <div className="login-container">
-          <div className="main">
-            <div className="login">
-              <form onSubmit={handleSubmit}>
-                <label htmlFor="chk" aria-hidden="true" className="label-login">
-                  Iniciar Sesión
-                </label>
-                {error && <div className="error-message">{error}</div>}
-                <input 
-                  type="email" 
-                  name="email" 
-                  placeholder="Correo electrónico" 
-                  required 
-                  className="input-login"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <input 
-                  type="password" 
-                  name="pswd" 
-                  placeholder="Contraseña" 
-                  required 
-                  className="input-login"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit" className="button-login">Iniciar Sesión</button>
-              </form>
-            </div>
+          <div className="login-card">
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="chk" aria-hidden="true" className="label-login">
+                Iniciar Sesión
+              </label>
+              {error && <div className="error-message">{error}</div>}
+              <input 
+                type="email" 
+                name="email" 
+                placeholder="Correo electrónico" 
+                required 
+                className="input-login"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input 
+                type="password" 
+                name="pswd" 
+                placeholder="Contraseña" 
+                required 
+                className="input-login"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button type="submit" className="button-login">Iniciar Sesión</button>
+            </form>
           </div>
         </div>
       </Col>
