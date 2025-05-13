@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { AuthProvider, useAuth } from "./database/authcontext";
+import { AuthProvider} from "./database/authcontext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from './views/Login';
