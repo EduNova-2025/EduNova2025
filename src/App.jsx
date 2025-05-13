@@ -21,6 +21,7 @@ import HistorialConferencias from "./views/HistorialVideollamadas";
 import Roles from "./views/Roles";
 import RegistroDocente from "./views/RegistroDocente";
 import RegistroGestor from "./views/RegistroGestor";
+import Estadisticas from "./views/Estadisticas";
 
 import './App.css';
 
@@ -51,6 +52,7 @@ function AppRoutes() {
           <Route path="/foro" element={<ProtectedRoute element={<Foro grupoSeleccionado={grupoSeleccionado} setGrupoSeleccionado={setGrupoSeleccionado} />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
           <Route path="/conferencia" element={<ProtectedRoute element={<Conferencia />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
           <Route path="/hisconferencia" element={<ProtectedRoute element={<HistorialConferencias />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
+          <Route path="/estadisticas" element={<ProtectedRoute element={<Estadisticas />} allowedRoles={["Admin", "Mined"]} />} />
         </Routes>
       </main>
     </div>

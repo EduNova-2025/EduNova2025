@@ -14,6 +14,7 @@ import {
   FaBook,
   FaThList,
   FaVideo,
+  FaChartBar,
 } from "react-icons/fa";
 import { useAuth } from "../../database/authcontext";
 import "../../styles/Sidebar.css";
@@ -86,6 +87,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
     { icon: <FaRobot />, label: "Master IA", path: "/ia", rolesAllowed: ["Admin", "Docente"] },
     { icon: <FaComment />, label: "Foro", path: "/foro", rolesAllowed: ["Admin", "Docente", "Mined"] },
     { icon: <FaVideo />, label: "Conferencias", path: "/conferencia", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaChartBar />, label: "Estadisticas", path: "/estadisticas", rolesAllowed: ["Admin", "Docente", "Mined"] },
     { icon: <FaCog />, label: "Ajustes", path: "/configuracion", rolesAllowed: ["Admin", "Docente", "Mined"] },
   ];
 
