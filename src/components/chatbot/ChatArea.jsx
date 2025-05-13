@@ -9,13 +9,9 @@ const ChatArea = () => {
 
   const handleSend = async () => {
     if (!message.trim()) return;
-
-    // Primero, obtenemos la respuesta de Firebase y OpenAI
     const response = await getAnswerFromFirebase(message);
-    
-    // Actualizamos las respuestas del chat
     setResponses([...responses, { user: message, ai: response }]);
-    setMessage(''); // Limpiamos el campo de entrada
+    setMessage('');
   };
 
   return (

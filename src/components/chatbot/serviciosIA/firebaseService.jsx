@@ -1,20 +1,17 @@
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../database/firebaseconfig';
-import { getStorage,} from 'firebase/storage';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// API Key de OpenAI
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY; // Usando una variable de entorno
+// Usa una variable de entorno para la API Key de Gemini
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyCr4IaBh12XZEMoLIxSjgqokiobm8_ws0M";
 
 export const getAnswerFromFirebase = async (question) => {
   try {
-    const docsSnap = await getDocs(collection(db, 'libros')); // Accede a la colección "libros"
+    const docsSnap = await getDocs(collection(db, 'libros'));
     let context = '';
 
-    // Accede al storage de Firebase para obtener las URLs de los PDFs
-    const storage = getStorage();
+    // Recopilar URLs de PDFs
     const pdfUrls = [];
-
     docsSnap.forEach(doc => {
       const data = doc.data();
       if (data.pdfUrl) {
@@ -22,47 +19,99 @@ export const getAnswerFromFirebase = async (question) => {
       }
     });
 
-    // Extraer texto de cada PDF y agregarlo al contexto
-    for (let pdfUrl of pdfUrls) {
-      const pdfData = await fetch(pdfUrl).then(res => res.arrayBuffer());
-      const pdfDocument = await pdfjsLib.getDocument(pdfData).promise;
-      let pdfText = '';
+    if (pdfUrls.length === 0) {
+      context = 'No se encontraron libros en la base de datos.';
+    } else {
+      // Limitar la cantidad de PDFs a procesar para evitar bloqueos
+      const maxPdfs = 3;
+      for (let i = 0; i < Math.min(pdfUrls.length, maxPdfs); i++) {
+        const pdfUrl = pdfUrls[i];
+        try {
+          const response = await fetch(pdfUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const pdfData = await response.arrayBuffer();
+          const pdfDocument = await pdfjsLib.getDocument({ data: pdfData }).promise;
+          let pdfText = '';
 
-      // Leer cada página del PDF
-      for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
-        const page = await pdfDocument.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map(item => item.str).join(' ');
-        pdfText += pageText + '\n';
+          // Limitar páginas por PDF para evitar respuestas demasiado largas
+          const maxPages = Math.min(pdfDocument.numPages, 5);
+          for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+            const page = await pdfDocument.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            pdfText += pageText + '\n';
+          }
+
+          context += `Contenido del PDF (${pdfUrl}):\n${pdfText}\n`;
+        } catch (pdfError) {
+          context += `Error al procesar el PDF en ${pdfUrl}: ${pdfError.message}\n`;
+        }
       }
-
-      context += `Contenido del PDF: \n${pdfText}\n`;
     }
 
-    const prompt = `
-      Contexto educativo: ${context}
-      Pregunta: ${question}
-      Responde como un asistente pedagógico para docentes de quinto grado de primaria.
-    `;
+    // Construir el prompt para Gemini
+    const prompt = `Contexto educativo: ${context}\nPregunta: ${question}\nResponde como un asistente pedagógico para docentes de quinto grado de primaria.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7
-      })
-    });
+    // Llamada a la API de Gemini
+    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    let data;
+    let answer;
+    try {
+      const response = await fetch(geminiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: prompt }
+              ]
+            }
+          ]
+        })
+      });
 
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || 'No se pudo obtener una respuesta adecuada.';
+      data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Error desconocido al consultar Gemini');
+      }
+      console.log('Respuesta de Gemini:', data);
+    } catch (apiError) {
+      answer = `Ocurrió un error al consultar la IA de Gemini: ${apiError.message || apiError}`;
+      await saveChatHistory(question, answer);
+      return answer;
+    }
+
+    if (data && data.candidates && data.candidates.length > 0) {
+      answer = (data.candidates[0].content.parts[0].text || 'No se pudo obtener una respuesta adecuada.').trim();
+    } else if (data && data.error) {
+      answer = `Error de Gemini: ${data.error.message || 'No se pudo obtener una respuesta adecuada.'}`;
+    } else {
+      answer = 'No se pudo obtener una respuesta adecuada.';
+    }
+
+    // Guarda la consulta y respuesta en Firestore
+    await saveChatHistory(question, answer);
+    return answer;
   } catch (error) {
-    console.error('Error consultando la IA:', error);
-    return 'Ocurrió un error al obtener la respuesta.';
+    const answer = `Ocurrió un error al obtener la respuesta: ${error.message || error}`;
+    await saveChatHistory(question, answer);
+    return answer;
+  }
+};
+
+// Guarda la consulta y respuesta en Firestore
+export const saveChatHistory = async (question, answer) => {
+  try {
+    await addDoc(collection(db, 'chatHistory'), {
+      question,
+      answer,
+      timestamp: serverTimestamp()
+    });
+  } catch (error) {
+    console.error('Error guardando el historial de chat:', error);
   }
 };
  

@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { BsList, BsPlus, BsChatDots } from 'react-icons/bs'; // Importamos los íconos de React Icons
-import './InputBox.css'; // Importamos el archivo CSS
+import { BsList, BsPlus, BsChatDots } from 'react-icons/bs';
+import './InputBox.css';
+import { db } from '../../database/firebaseconfig';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [chatHistory] = useState([
-    { id: 1, title: 'Consulta sobre planes de clase' },
-    { id: 2, title: 'Ayuda con matemáticas' },
-    { id: 3, title: 'Ideas para actividades' }
-  ]);
+  const [chatHistory, setChatHistory] = useState([]);
+
+  useEffect(() => {
+    // Escucha en tiempo real el historial de chats
+    const q = query(collection(db, 'chatHistory'), orderBy('timestamp', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const history = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setChatHistory(history);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -55,7 +66,7 @@ const Sidebar = () => {
             {chatHistory.map(chat => (
               <li key={chat.id} className="chat-item">
                 <BsChatDots className="chat-icon" />
-                <span>{chat.title}</span>
+                <span>{chat.question}</span>
               </li>
             ))}
           </ul>

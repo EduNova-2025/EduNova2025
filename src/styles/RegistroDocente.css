@@ -69,8 +69,7 @@
 }
 
 /* Inputs */
-.registro-docente-formulario input,
-.registro-docente-formulario select {
+.registro-docente-formulario input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #cbd5e1;

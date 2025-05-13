@@ -2,7 +2,7 @@
 .login-container {
   width: 100%;
   max-width: 1200px;
-  height: 100vh;
+  min-height: 100vh;
   padding: 4rem 2rem 2rem;
   border-radius: 1rem;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
@@ -114,7 +114,7 @@
 }
 
 .button-login:hover {
-  background: linear-gradient(90deg, #6300e5 0%, #e5007d 100%);
+  background-color: #6300e5;
 }
 
 .separator-or {
