@@ -196,7 +196,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
           usuarioId: usuarioActual.uid,
           contenido: nuevoMensaje,
           timestamp: Timestamp.now(),
-          nombreUsuario: usuarioActual.username || 'Usuario'
+          nombreUsuario: usuarioActual.nombre || 'Usuario'
         });
         
         console.log('Mensaje enviado con ID:', mensajeRef.id);
@@ -225,7 +225,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
         archivoNombre: file.name,
         archivoTipo: file.type,
         timestamp: Timestamp.now(),
-        nombreUsuario: usuarioActual.username || 'Usuario'
+        nombreUsuario: usuarioActual.nombre || 'Usuario'
       });
     } catch (error) {
       console.error('Error al subir archivo:', error);
@@ -269,7 +269,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
           archivoNombre: audioFileName,
           archivoTipo: 'audio/webm',
           timestamp: Timestamp.now(),
-          nombreUsuario: usuarioActual.username || 'Usuario'
+          nombreUsuario: usuarioActual.nombre || 'Usuario'
         });
         setAudioSubiendo(false);
         setAudioChunks([]);
@@ -428,7 +428,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                   >
                     <div className="message-content">
                       <div className="message-author">
-                        {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                        {usuarios[mensaje.usuarioId]?.nombre || 'Usuario'}
                         {/* Botón eliminar solo para Mined y Admin */}
                         {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
                           <button
@@ -591,7 +591,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                 >
                   <div className="message-content">
                     <div className="message-author">
-                      {usuarios[mensaje.usuarioId]?.username || 'Usuario'}
+                      {usuarios[mensaje.usuarioId]?.nombre || 'Usuario'}
                       {/* Botón eliminar solo para Mined y Admin */}
                       {usuarioActual && (usuarioActual.rol === 'Mined' || usuarioActual.rol === 'Admin') && (
                         <button
