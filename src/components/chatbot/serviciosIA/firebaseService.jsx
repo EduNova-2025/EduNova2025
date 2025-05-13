@@ -19,6 +19,7 @@ export const getAnswerFromFirebase = async (question) => {
       }
     });
 
+    // Descarga y lectura de PDFs
     if (pdfUrls.length === 0) {
       context = 'No se encontraron libros en la base de datos.';
     } else {

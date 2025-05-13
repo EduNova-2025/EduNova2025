@@ -45,6 +45,8 @@
       padding: 8px;
     }
   }
+
+
   
   /* ===== ChatArea Styles ===== */
   .chat-area {
@@ -427,4 +429,82 @@
     padding: 5px 8px;
     font-size: 13px;
   }
+}
+
+/* Botones de enviar y adjuntar archivos en el input de chat */
+.icon-btn.attach-btn,
+.icon-btn.send-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 1.5px solid #e0e0e0;
+  margin-left: 8px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.icon-btn.attach-btn:hover,
+.icon-btn.send-btn:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.input-container .icon-btn {
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .icon-btn.attach-btn,
+  .icon-btn.send-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    margin-left: 6px;
+  }
+}
+
+.attached-file-preview {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to right, #3357FF, rgb(81, 27, 101), #FF33A6);
+  border: 1.5px solid #ffff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-bottom: 5rem;
+  max-width: 70%;
+  margin-left: 11rem;      /* Cambiado para alinear a la izquierda */
+  margin-right: auto;  /* Mantener alineación izquierda */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  font-size: 1rem;
+}
+
+.attached-file-name {
+  flex: 1;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discard-file-btn {
+  background: transparent;
+  border: none;
+  color: #ffff;
+  font-size: 1.2rem;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+.discard-file-btn:hover {
+  background: #ffeaea;
+  color: #c0392b;
 }
