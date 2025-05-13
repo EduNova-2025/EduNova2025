@@ -166,17 +166,17 @@
   border-bottom-left-radius: 18px;
 }
 
-/* Burbuja de la IA */
-.chat-bubble.ai {
-  background-color: #A9B2BB;
-  color: #333;
-  align-self: flex-start;
-  margin-right: auto;
-  text-align: left;
-  border-top-right-radius: 18px;
-  border-top-left-radius: 18px;
-  border-bottom-right-radius: 18px;
-}
+/* Burbuja de la IA */ 
+.chat-bubble.ai { 
+  background-image: linear-gradient(90deg, #0057b7 0%, #6300e5 46%, #e5007d 100%);
+  color: #fff; 
+  align-self: flex-start; 
+  margin-right: auto; 
+  text-align: left; 
+  border-top-right-radius: 18px; 
+  border-top-left-radius: 18px; 
+  border-bottom-right-radius: 18px; 
+} 
 
 /* Estilos para los botones en la esquina superior derecha */
 .top-right-buttons {
