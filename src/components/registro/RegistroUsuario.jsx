@@ -2,6 +2,7 @@
     import { createUserWithEmailAndPassword } from 'firebase/auth';
     import { doc, setDoc } from 'firebase/firestore';
     import { auth, db } from '../../database/firebaseconfig';
+    import ReactGA from "react-ga4";
 
     export async function registrarUsuario(usuario) {
     const {
@@ -52,7 +53,12 @@
         }
 
         await setDoc(doc(db, 'usuarios', uid), datosFinales);
-
+        // Tracking GA
+        ReactGA.event({
+            category: "Usuarios",
+            action: "Registro de Usuario",
+            label: correo,
+        });
         return uid;
     } catch (error) {
         throw new Error(error.message);

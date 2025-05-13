@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-    import { useNavigate } from "react-router-dom";
-    import { Container } from "react-bootstrap";
-    import LoginForm from "../components/LoginForm";
-    import { appfirebase } from "../database/firebaseconfig";
-    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-    import { useAuth } from "../database/authcontext";
+import { useNavigate } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import LoginForm from "../components/LoginForm";
+import { appfirebase } from "../database/firebaseconfig";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from "../database/authcontext";
+import ReactGA from "react-ga4";
 
-    import "../styles/LoginForm.css";
+import "../styles/LoginForm.css";
 
-    const Login = () => {
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
@@ -23,7 +24,12 @@ import React, { useState } from "react";
 
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            console.log("Usuario autenticado:", userCredential.user);
+            // Tracking GA
+            ReactGA.event({
+              category: "Usuarios",
+              action: "Inicio de Sesión",
+              label: email,
+            });
             // Guardar las credenciales en localStorage
             localStorage.setItem("adminEmail", email);
             localStorage.setItem("adminPassword", password);
