@@ -305,7 +305,7 @@ const Conferencia = () => {
           <Videoconferencia roomName={roomName} displayName={displayName} />
         ) : (
           <div className="formulario">
-            <h2>Programar Clase</h2>
+            <h2>Video Conferencias</h2>
             <input
               type="text"
               placeholder="Nombre de la clase"

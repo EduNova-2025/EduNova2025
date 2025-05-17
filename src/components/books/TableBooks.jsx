@@ -2,7 +2,7 @@
     import { Table, Button, Image } from "react-bootstrap";
     import "bootstrap-icons/font/bootstrap-icons.css";
 
-    const TablaLibros = ({ libros, openEditModal, openDeleteModal }) => {
+    const TablaLibros = ({ libros, openEditModal, openDeleteModal, handleCopy }) => {
     return (
         <div style={{ overflowX: "auto" }}>
         <Table striped bordered hover responsive>
@@ -61,6 +61,13 @@
                     onClick={() => openDeleteModal(libro)}
                     >
                     <i className="bi bi-trash"></i>
+                    </Button>
+                    <Button
+                    variant="outline-info"
+                    size="sm"
+                    onClick={() => handleCopy(libro)}
+                    >
+                    <i className="bi bi-clipboard"></i>
                     </Button>
                 </td>
                 </tr>

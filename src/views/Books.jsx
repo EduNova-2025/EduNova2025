@@ -117,6 +117,19 @@ const Libros = () => {
         setLibrosFiltrados(filtrados);
     };
 
+    // Método para copiar datos al portapapeles
+    const handleCopy = (libro) => {
+    const rowData = `Título: ${libro.titulo}\nÁrea educativa: ${libro.area_edu}\nDirigido a: ${libro.dirigido}\nEdición: ${libro.edicion}\nCategoría: ${libro.categoria}\nDescripción: ${libro.descripcion}`;
+    navigator.clipboard
+        .writeText(rowData)
+        .then(() => {
+        console.log("Datos de la fila copiados al portapapeles:\n" + rowData);
+        })
+        .catch((err) => {
+        console.error("Error al copiar al portapapeles:", err);
+        });
+    };
+
     // Manejador de cambios en inputs del formulario de nuevo libro
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -288,9 +301,6 @@ const Libros = () => {
         setShowDeleteModal(true);
     };
 
-    // Evento: Descarga de PDF
-    const handlePdfDownload = (libro) => {
-    };
 
     // Renderizado del componente
     return (
@@ -317,6 +327,7 @@ const Libros = () => {
                 itemsPerPage={itemsPerPage}   // Elementos por página
                 currentPage={currentPage}     // Página actual
                 setCurrentPage={setCurrentPage} // Método para cambiar página
+                handleCopy={handleCopy}
             />
             <Paginacion
                 itemsPerPage={itemsPerPage}
