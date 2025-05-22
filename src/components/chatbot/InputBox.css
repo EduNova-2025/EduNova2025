@@ -170,8 +170,8 @@
 
 /* Burbuja de la IA */ 
 .chat-bubble.ai { 
-  background-image: linear-gradient(90deg, #0057b7 0%, #6300e5 46%, #e5007d 100%);
-  color: #fff; 
+  background-image: #5e5a5a ;
+  color: #000; 
   align-self: flex-start; 
   margin-right: auto; 
   text-align: left; 

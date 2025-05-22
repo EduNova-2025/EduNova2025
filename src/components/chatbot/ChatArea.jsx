@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Chatbot from './Chatbot';
-import { getAnswerFromFirebase } from '../chatbot/serviciosIA/firebaseService';
+import { getAnswerFromFirebase, resetChat, processUploadedPdf } from '../chatbot/serviciosIA/firebaseService';
 import './InputBox.css';
 
 const ChatArea = () => {
@@ -9,12 +9,21 @@ const ChatArea = () => {
   const [attachedFile, setAttachedFile] = useState(null);
   const fileInputRef = useRef(null);
 
+  // Verificar conexión inicial con la IA
+  useEffect(() => {
+    const checkConnection = async () => {
+      const testResponse = await getAnswerFromFirebase("Test connection");
+      console.log("Estado de la conexión con la IA:", testResponse);
+    };
+    checkConnection();
+  }, []);
+
   const handleSend = async () => {
     if (!message.trim()) return;
     const response = await getAnswerFromFirebase(message);
     setResponses([...responses, { user: message, ai: response }]);
     setMessage('');
-    setAttachedFile(null); // Limpiar archivo adjunto después de enviar
+    setAttachedFile(null); // Limpiar archivo después de enviar (opcional)
   };
 
   const handleAttachClick = () => {
@@ -23,13 +32,23 @@ const ChatArea = () => {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setAttachedFile(file);
-      // Aquí puedes manejar el archivo seleccionado
-      console.log('Archivo adjuntado:', file.name);
+      const success = await processUploadedPdf(file);
+      if (success) {
+        console.log('PDF procesado exitosamente.');
+      } else {
+        console.log('Error al procesar el PDF.');
+      }
     }
+  };
+
+  const handleNewChat = () => {
+    resetChat();
+    setResponses([]);
+    setAttachedFile(null);
   };
 
   return (
@@ -41,9 +60,8 @@ const ChatArea = () => {
         </>
       )}
 
-      <Chatbot responses={responses} /> {/* Mostramos las respuestas del chat */}
+      <Chatbot responses={responses} />
 
-      {/* Mostrar archivo adjunto arriba del input */}
       {attachedFile && (
         <div className="attached-file-preview">
           <span className="attached-file-name">{attachedFile.name}</span>
@@ -51,7 +69,10 @@ const ChatArea = () => {
             className="discard-file-btn"
             type="button"
             title="Descartar archivo"
-            onClick={() => setAttachedFile(null)}
+            onClick={() => {
+              setAttachedFile(null);
+              uploadedPdfText = ''; // Limpiar el texto del PDF si se descarta
+            }}
           >
             ✖
           </button>
@@ -65,13 +86,14 @@ const ChatArea = () => {
           value={message}
           placeholder="Escribe tu pregunta..."
           onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()} // Permite enviar con Enter
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           style={{ flex: 1 }}
         />
         <input
           type="file"
           ref={fileInputRef}
           style={{ display: 'none' }}
+          accept=".pdf"
           onChange={handleFileChange}
         />
         <button
@@ -80,9 +102,7 @@ const ChatArea = () => {
           onClick={handleAttachClick}
           title="Adjuntar archivo"
         >
-          <span role="img" aria-label="Adjuntar">
-            📎
-          </span>
+          <span role="img" aria-label="Adjuntar">📎</span>
         </button>
         <button
           className="icon-btn send-btn"
@@ -90,9 +110,15 @@ const ChatArea = () => {
           onClick={handleSend}
           title="Enviar"
         >
-          <span role="img" aria-label="Enviar">
-            📤
-          </span>
+          <span role="img" aria-label="Enviar">📤</span>
+        </button>
+        <button
+          className="new-chat-btn"
+          type="button"
+          onClick={handleNewChat}
+          title="Nuevo Chat"
+        >
+          <span role="img" aria-label="Nuevo Chat">+</span>
         </button>
       </div>
     </div>
