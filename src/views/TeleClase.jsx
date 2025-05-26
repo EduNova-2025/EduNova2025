@@ -9,6 +9,7 @@ import BuscadorTeleclases from '../components/teleclases/BuscadorTeleclases';
 import { Row, Container } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Paginacion from '../components/ordenamiento/Paginacion';
+import ModalQR from '../components/qr/ModalQR';
 
 const TeleClase = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -25,6 +26,8 @@ const TeleClase = () => {
         videoUrl: '',
     });
     const [videoFile, setVideoFile] = useState(null);
+    const [showQR, setShowQR] = useState(false);
+    const [qrUrl, setQrUrl] = useState('');
 
     const teleclasesCollection = collection(db, 'teleclases');
 
@@ -97,6 +100,11 @@ const TeleClase = () => {
         setCurrentPage(1);
     };
 
+    const handleShowQR = (videoUrl) => {
+        setQrUrl(videoUrl);
+        setShowQR(true);
+    };
+
     const filteredTeleclases = teleclases
         .filter(teleclase => {
             const matchesSearch = teleclase.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -130,12 +138,14 @@ const TeleClase = () => {
                     <Container fluid>
                         <Row>
                             {currentTeleclases.map((teleclase) => (
-                                <TarjetaTeleclases 
-                                    key={teleclase.id} 
-                                    teleclase={teleclase} 
-                                    openEditModal={() => { /* Implementar lógica de edición si es necesario */ }} 
-                                    onVerTeleclase={() => handleVerTeleclase(teleclase)}
-                                />
+                                <div key={teleclase.id} style={{ position: 'relative', marginBottom: '20px' }}>
+                                    <TarjetaTeleclases 
+                                        teleclase={teleclase} 
+                                        openEditModal={() => { /* Implementar lógica de edición si es necesario */ }} 
+                                        onVerTeleclase={() => handleVerTeleclase(teleclase)}
+                                        onShowQR={handleShowQR}
+                                    />
+                                </div>
                             ))}
                         </Row>
                     </Container>
@@ -157,6 +167,12 @@ const TeleClase = () => {
                     handleAddTeleclase={handleAddTeleclase}
                 />
             </div>
+
+            <ModalQR
+                show={showQR}
+                handleClose={() => setShowQR(false)}
+                qrUrl={qrUrl}
+            />
         </div>
     );
 };

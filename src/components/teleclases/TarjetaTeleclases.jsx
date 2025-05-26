@@ -3,7 +3,7 @@ import { Card, Col } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ReactGA from 'react-ga4';
 
-const TarjetaTeleclases = ({ teleclase }) => {
+const TarjetaTeleclases = ({ teleclase, onShowQR }) => {
   const handleVideoPlay = () => {
     ReactGA.event({
       category: teleclase.materia || 'Sin materia',
@@ -31,6 +31,14 @@ const TarjetaTeleclases = ({ teleclase }) => {
               Teleclases - {teleclase.materia}
             </h3>
             <p className="tarjeta-descripcion">{teleclase.descripcion}</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+              <button 
+                className="btn btn-outline-primary"
+                onClick={() => onShowQR(teleclase.videoUrl)}
+              >
+                <i className="bi bi-qr-code"></i> Compartir QR
+              </button>
+            </div>
           </div>
         </Card.Body>
       </Card>
