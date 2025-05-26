@@ -171,7 +171,7 @@ const TeleClase = () => {
             <ModalQR
                 show={showQR}
                 handleClose={() => setShowQR(false)}
-                qrUrl={qrUrl}
+                qrURL={qrUrl}
             />
         </div>
     );
