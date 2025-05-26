@@ -24,6 +24,7 @@ import ModalEliminacionLibro from "../components/books/ModalDeleteBook";
 import { useAuth } from "../database/authcontext";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
 import Paginacion from "../components/ordenamiento/Paginacion";
+import ModalQR from "../components/qr/ModalQR"; //Importación del componente QR
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -51,14 +52,28 @@ const Libros = () => {
     const [searchText, setSearchText] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // Número de productos por página
+    const itemsPerPage = 5; // Número de libros por página
 
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
 
+    const [showQRModal, setShowQRModal] = useState(false);
+    const [selectedUrl, setSelectedUrl] = useState("");
+
+
     // Referencia a las colecciones en Firestore
     const librosCollection = collection(db, "libros");
     const categoriasCollection = collection(db, "categorias");
+
+    const openQRModal = (url) => {
+        setSelectedUrl(url);
+        setShowQRModal(true);
+        };
+
+        const handleCloseQRModal = () => {
+        setShowQRModal(false);
+        setSelectedUrl("");
+        };
 
     // Función para obtener todos los libros y categorías de Firestore
     const fetchData = async () => {
@@ -115,6 +130,19 @@ const Libros = () => {
         );
     
         setLibrosFiltrados(filtrados);
+    };
+
+    // Método para copiar datos al portapapeles
+    const handleCopy = (libro) => {
+    const rowData = `Título: ${libro.titulo}\nÁrea educativa: ${libro.area_edu}\nDirigido a: ${libro.dirigido}\nEdición: ${libro.edicion}\nCategoría: ${libro.categoria}\nDescripción: ${libro.descripcion}`;
+    navigator.clipboard
+        .writeText(rowData)
+        .then(() => {
+        console.log("Datos de la fila copiados al portapapeles:\n" + rowData);
+        })
+        .catch((err) => {
+        console.error("Error al copiar al portapapeles:", err);
+        });
     };
 
     // Manejador de cambios en inputs del formulario de nuevo libro
@@ -288,9 +316,6 @@ const Libros = () => {
         setShowDeleteModal(true);
     };
 
-    // Evento: Descarga de PDF
-    const handlePdfDownload = (libro) => {
-    };
 
     // Renderizado del componente
     return (
@@ -317,6 +342,8 @@ const Libros = () => {
                 itemsPerPage={itemsPerPage}   // Elementos por página
                 currentPage={currentPage}     // Página actual
                 setCurrentPage={setCurrentPage} // Método para cambiar página
+                handleCopy={handleCopy}
+                openQRModal={openQRModal}
             />
             <Paginacion
                 itemsPerPage={itemsPerPage}
@@ -348,6 +375,11 @@ const Libros = () => {
                 showDeleteModal={showDeleteModal}
                 setShowDeleteModal={setShowDeleteModal}
                 handleDeleteLibro={handleDeleteLibro}
+            />
+            <ModalQR
+            show={showQRModal}
+            handleClose={handleCloseQRModal}
+            qrURL={selectedUrl}
             />
         </Container>
     );
