@@ -12,6 +12,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import ModalEdicionTeleclases from '../components/teleclases/ModalEdicionTeleclases';
 import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacionTeleclases';
 import Paginacion from '../components/ordenamiento/Paginacion';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -222,6 +224,76 @@ const TeleClaseMINED = () => {
         setShowDeleteModal(true);
     };
 
+    const generarPDFTeleclases = () => {
+        const doc = new jsPDF();
+        doc.setFillColor(28, 41, 51);
+        doc.rect(0, 0, 220, 30, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.text("Reporte de Teleclases", doc.internal.pageSize.width / 2, 18, 'center');
+
+        const columnas = [
+          "#",
+          "Título",
+          "Materia",
+          "Descripción"
+        ];
+
+        const filas = teleclases.map((teleclase, index) => [
+          index + 1,
+          teleclase.titulo,
+          teleclase.materia,
+          teleclase.descripcion
+        ]);
+
+        const totalPaginas = "{total_pages_count_string}";
+
+        autoTable(doc, {
+          head: [columnas],
+          body: filas,
+          startY: 40,
+          theme: "grid",
+          styles: {
+            cellPadding: 2,
+            fontSize: 10,
+          },
+          margin: {
+            top: 20,
+            right: 20,
+            left: 20
+          },
+          tableWidth: "auto",
+          columnStyles: {
+            0: { cellWidth: "auto" },
+            1: { cellWidth: "auto" },
+            2: { cellWidth: "auto" },
+            3: { cellWidth: 60 },
+          },
+          pageBreak: "auto",
+          rowPageBreak: "auto",
+          didDrawPage: function (data) {
+            const alturaPagina = doc.internal.pageSize.height;
+            const anchoPagina = doc.internal.pageSize.width;
+            const numeroPagina = doc.internal.getNumberOfPages();
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            const piePagina = `Página ${numeroPagina} de ${totalPaginas}`;
+            doc.text(piePagina, anchoPagina / 2 + 15, alturaPagina - 10, 'center');
+          },
+        });
+
+        if (typeof doc.putTotalPages === "function") {
+          doc.putTotalPages(totalPaginas);
+        }
+
+        const dia = String(new Date().getDate()).padStart(2, '0');
+        const mes = String(new Date().getMonth() + 1).padStart(2, '0');
+        const anio = new Date().getFullYear();
+        const nombreArchivo = `Reporte de Teleclases ${dia}-${mes}-${anio}.pdf`;
+
+        doc.save(nombreArchivo);
+    };
+
     return (
         <div className="contenedor-teleclase-mined" style={{}}> 
             <BuscadorTeleclases onSearch={handleSearch} />
@@ -238,9 +310,14 @@ const TeleClaseMINED = () => {
                     </button>
                 ))}
             </div>
-            <button className="btn-agregar" onClick={() => setShowModal(true)}>
-                <i className="bi bi-plus-lg"></i> Agregar Teleclase
-            </button>
+            <div className="d-flex justify-content-center gap-2 mb-3">
+                <button className="btn-agregar" onClick={generarPDFTeleclases}>
+                    <i className="bi bi-file-earmark-arrow-down"></i> Descargar Reporte PDF
+                </button>
+                <button className="btn-agregar" onClick={() => setShowModal(true)}>
+                    <i className="bi bi-plus-lg"></i> Agregar Teleclase
+                </button>
+            </div>
             <div className="catalogo-teleclases">
                 <Container fluid>
                     <Row>
