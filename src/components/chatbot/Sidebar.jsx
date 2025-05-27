@@ -33,31 +33,8 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Botones en la esquina superior derecha */}
-      <div className="top-right-buttons">
-        <Button
-          variant="light"
-          className="icon-btn new-chat-btn"
-          onClick={handleNewChat}
-          title="Iniciar nuevo chat"
-        >
-          <BsPlus size={20} />
-        </Button>
-        <Button
-          variant="light"
-          className="icon-btn menu-btn"
-          onClick={toggleSidebar}
-          title="Abrir menú de historial"
-        >
-          <BsList size={20} />
-        </Button>
-      </div>
-
       {/* Barra lateral */}
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <h4>EduNova AI</h4>
-        </div>
 
         {/* Contenido de la barra lateral (historial de chats) */}
         <div className="chat-history">
