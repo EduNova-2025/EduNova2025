@@ -6,7 +6,7 @@ import { db, auth } from '../../database/firebaseconfig';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
-const Sidebar = () => {
+const Sidebar = ({ onChatSelect, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
 
@@ -29,11 +29,21 @@ const Sidebar = () => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+    if (!isOpen && onClose) {
+      onClose();
+    }
   };
 
   const handleSignOut = async () => {
     await signOut(auth);
     console.log('Sesión cerrada');
+  };
+
+  const handleChatSelect = (session) => {
+    if (onChatSelect) {
+      onChatSelect(session);
+    }
+    setIsOpen(false);
   };
 
   return (
@@ -49,7 +59,12 @@ const Sidebar = () => {
           <h5>Historial de Sesiones</h5>
           <ul className="chat-list">
             {chatHistory.map(session => (
-              <li key={session.id} className="chat-item">
+              <li 
+                key={session.id} 
+                className="chat-item"
+                onClick={() => handleChatSelect(session)}
+                style={{ cursor: 'pointer' }}
+              >
                 <BsChatDots className="chat-icon" />
                 <span>
                   {session.title || 'Sin título'} -{' '}

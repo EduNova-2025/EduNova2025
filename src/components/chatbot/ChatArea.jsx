@@ -14,6 +14,7 @@ const ChatArea = () => {
   const [attachedFile, setAttachedFile] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
   const fileInputRef = useRef(null);
 
   // Monitorear el estado de autenticación y cargar mensajes
@@ -58,6 +59,22 @@ const ChatArea = () => {
     return () => unsubscribe();
   }, []);
 
+  const handleChatSelect = async (session) => {
+    setCurrentSessionId(session.id);
+    const messagesCollection = collection(db, `chatSessions/${session.id}/messages`);
+    const q = query(messagesCollection, orderBy('timestamp', 'asc'));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map(doc => ({
+        user: doc.data().question,
+        ai: doc.data().answer,
+      }));
+      setResponses(messages);
+    });
+
+    return () => unsubscribe();
+  };
+
   const handleSend = async () => {
     if (!message.trim()) {
       console.log('No se puede enviar un mensaje vacío.');
@@ -101,7 +118,8 @@ const ChatArea = () => {
     await resetChat();
     setResponses([]);
     setAttachedFile(null);
-    setMessage(''); // Limpiar el input
+    setMessage('');
+    setCurrentSessionId(null);
     console.log('Nuevo chat iniciado');
   };
 
@@ -127,7 +145,12 @@ const ChatArea = () => {
           <h5>Historial de Sesiones</h5>
           <ul className="chat-list">
             {chatHistory.map(session => (
-              <li key={session.id} className="chat-item">
+              <li 
+                key={session.id} 
+                className="chat-item"
+                onClick={() => handleChatSelect(session)}
+                style={{ cursor: 'pointer' }}
+              >
                 <BsChatDots className="chat-icon" />
                 <span>
                   {session.title || 'Sin título'} -{' '}

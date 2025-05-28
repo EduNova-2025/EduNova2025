@@ -46,7 +46,7 @@ function AppRoutes() {
           <Route path="/categorias" element={<ProtectedRoute element={<Categoria />} allowedRoles={["Admin", "Mined"]} />} />
           <Route path="/catalogo" element={<ProtectedRoute element={<Catalogo />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
           <Route path="/libro/:id" element={<DetalleLibro />} />
-          <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} allowedRoles={["Admin", "Docente"]} />} />
+          <Route path="/ia" element={<ProtectedRoute element={<MasterIA />} allowedRoles={["Admin", "Docente","Mined"]} />} />
           <Route path="/teleclase" element={<ProtectedRoute element={<TeleClase />} allowedRoles={["Docente", "Admin", "Mined"]} />} />
           <Route path="/teleclasemined" element={<ProtectedRoute element={<TeleClaseMINED />} allowedRoles={["Mined", "Admin"]} />} />
           <Route path="/foro" element={<ProtectedRoute element={<Foro grupoSeleccionado={grupoSeleccionado} setGrupoSeleccionado={setGrupoSeleccionado} />} allowedRoles={["Docente", "Mined", "Admin"]} />} />
