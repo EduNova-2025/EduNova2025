@@ -508,3 +508,17 @@
   background: #ffeaea;
   color: #c0392b;
 }
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+.chat-item span {
+  display: block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

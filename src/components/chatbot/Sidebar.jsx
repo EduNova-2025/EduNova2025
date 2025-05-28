@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { BsList, BsPlus, BsChatDots } from 'react-icons/bs';
+import { BsList, BsChatDots } from 'react-icons/bs';
 import './InputBox.css';
-import { db } from '../../database/firebaseconfig';
+import { db, auth } from '../../database/firebaseconfig';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
-    // Escucha en tiempo real el historial de chats
-    const q = query(collection(db, 'chatHistory'), orderBy('timestamp', 'desc'));
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(collection(db, 'chatSessions'), orderBy('timestamp', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const history = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const history = snapshot.docs
+        .filter(doc => doc.data().userId === user.uid)
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
       setChatHistory(history);
     });
     return () => unsubscribe();
@@ -26,31 +31,42 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleNewChat = () => {
-    console.log('Nuevo chat iniciado');
-    // Aquí puedes agregar la lógica para iniciar un nuevo chat
+  const handleSignOut = async () => {
+    await signOut(auth);
+    console.log('Sesión cerrada');
   };
 
   return (
     <>
-      {/* Barra lateral */}
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-
-        {/* Contenido de la barra lateral (historial de chats) */}
+        <div className="sidebar-header">
+          <h4>EduNova AI</h4>
+          <Button variant="danger" onClick={handleSignOut}>
+            Cerrar Sesión
+          </Button>
+        </div>
         <div className="chat-history">
-          <h5>Historial de Chats</h5>
+          <h5>Historial de Sesiones</h5>
           <ul className="chat-list">
-            {chatHistory.map(chat => (
-              <li key={chat.id} className="chat-item">
+            {chatHistory.map(session => (
+              <li key={session.id} className="chat-item">
                 <BsChatDots className="chat-icon" />
-                <span>{chat.question}</span>
+                <span>
+                  {session.title || 'Sin título'} -{' '}
+                  {session.timestamp?.toDate().toLocaleString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       </aside>
 
-      {/* Overlay para cerrar la barra lateral en dispositivos móviles */}
       {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
     </>
   );

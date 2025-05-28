@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { BsList, BsPlus, BsChatDots } from 'react-icons/bs';
 import Chatbot from './Chatbot';
-import { getAnswerFromFirebase, resetChat, processUploadedPdf } from '../chatbot/serviciosIA/firebaseService';
-import { db } from '../../database/firebaseconfig';
+import { getAnswerFromFirebase, resetChat, processUploadedPdf, loadSessionMessages, clearSession } from '../chatbot/serviciosIA/firebaseService';
+import { db, auth } from '../../database/firebaseconfig';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import './InputBox.css';
 
@@ -15,34 +16,66 @@ const ChatArea = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const fileInputRef = useRef(null);
 
-  // Verificar conexión inicial con la IA
+  // Monitorear el estado de autenticación y cargar mensajes
   useEffect(() => {
-    const checkConnection = async () => {
-      const testResponse = await getAnswerFromFirebase("Test connection");
-      console.log("Estado de la conexión con la IA:", testResponse);
+    let unsubscribeMessages = () => {};
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        unsubscribeMessages = loadSessionMessages((messages) => {
+          setResponses(messages.map(msg => ({
+            user: msg.question,
+            ai: msg.answer,
+          })));
+        });
+      } else {
+        setResponses([]);
+        clearSession();
+      }
+    });
+
+    return () => {
+      unsubscribeMessages();
+      unsubscribeAuth();
     };
-    checkConnection();
   }, []);
 
-  // Escucha en tiempo real el historial de chats
+  // Escucha en tiempo real el historial de sesiones
   useEffect(() => {
-    const q = query(collection(db, 'chatHistory'), orderBy('timestamp', 'desc'));
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(collection(db, 'chatSessions'), orderBy('timestamp', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const history = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const history = snapshot.docs
+        .filter(doc => doc.data().userId === user.uid)
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
       setChatHistory(history);
     });
     return () => unsubscribe();
   }, []);
 
   const handleSend = async () => {
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      console.log('No se puede enviar un mensaje vacío.');
+      return;
+    }
+
     const response = await getAnswerFromFirebase(message);
-    setResponses([...responses, { user: message, ai: response }]);
-    setMessage('');
-    setAttachedFile(null); // Limpiar archivo después de enviar (opcional)
+    if (response !== 'No se pudo enviar el mensaje.') {
+      setResponses([...responses, { user: message, ai: response }]);
+      setMessage('');
+      setAttachedFile(null);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && message.trim()) {
+      handleSend();
+    }
   };
 
   const handleAttachClick = () => {
@@ -64,11 +97,17 @@ const ChatArea = () => {
     }
   };
 
-  const handleNewChat = () => {
-    resetChat();
+  const handleNewChat = async () => {
+    await resetChat();
     setResponses([]);
     setAttachedFile(null);
+    setMessage(''); // Limpiar el input
     console.log('Nuevo chat iniciado');
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    console.log('Sesión cerrada');
   };
 
   const toggleSidebar = () => {
@@ -77,30 +116,38 @@ const ChatArea = () => {
 
   return (
     <div className="d-flex">
-      {/* Barra lateral */}
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h4>EduNova AI</h4>
+          <Button variant="danger" onClick={handleSignOut}>
+            Cerrar Sesión
+          </Button>
         </div>
         <div className="chat-history">
-          <h5>Historial de Chats</h5>
+          <h5>Historial de Sesiones</h5>
           <ul className="chat-list">
-            {chatHistory.map(chat => (
-              <li key={chat.id} className="chat-item">
+            {chatHistory.map(session => (
+              <li key={session.id} className="chat-item">
                 <BsChatDots className="chat-icon" />
-                <span>{chat.question}</span>
+                <span>
+                  {session.title || 'Sin título'} -{' '}
+                  {session.timestamp?.toDate().toLocaleString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       </aside>
 
-      {/* Overlay para cerrar la barra lateral en dispositivos móviles */}
       {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
 
-      {/* Área de chat */}
       <div className="chat-area justify-content-center text-center flex-grow-1 p-5">
-        {/* Botones en la esquina superior derecha */}
         <div className="top-right-buttons">
           <button
             className="new-chat-btn"
@@ -108,7 +155,7 @@ const ChatArea = () => {
             onClick={handleNewChat}
             title="Nuevo Chat"
           >
-            <span role="img" aria-label="Nuevo Chat">+</span>
+            <BsPlus size={20} />
           </button>
           <Button
             variant="light"
@@ -138,8 +185,6 @@ const ChatArea = () => {
               title="Descartar archivo"
               onClick={() => {
                 setAttachedFile(null);
-                // Limpiar el texto del PDF si se descarta
-                // Nota: `uploadedPdfText` no está definido en el código original, así que asegúrate de manejarlo si es necesario
               }}
             >
               ✖
@@ -154,7 +199,7 @@ const ChatArea = () => {
             value={message}
             placeholder="Escribe tu pregunta..."
             onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            onKeyDown={handleKeyDown}
             style={{ flex: 1 }}
           />
           <input
