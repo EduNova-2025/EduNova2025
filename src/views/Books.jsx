@@ -521,7 +521,7 @@ const Libros = () => {
 
     // Renderizado del componente
     return (
-        <Container className="mt-4" centered>
+        <Container className="mt-4">
             <br />
             <h4 className="title-gestion">Gestión de Libros</h4>
             {error && <Alert variant="danger">{error}</Alert>}
