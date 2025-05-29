@@ -14,6 +14,8 @@ import ModalEliminacionTeleclases from '../components/teleclases/ModalEliminacio
 import Paginacion from '../components/ordenamiento/Paginacion';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const TeleClaseMINED = () => {
     const [teleclases, setTeleclases] = useState([]);
@@ -294,6 +296,29 @@ const TeleClaseMINED = () => {
         doc.save(nombreArchivo);
     };
 
+    const exportarExcelTeleclases = () => {
+        const datos = teleclases.map((teleclase, index) => ({
+            "#": index + 1,
+            "Título": teleclase.titulo,
+            "Materia": teleclase.materia,
+            "Descripción": teleclase.descripcion,
+        }));
+
+        const hoja = XLSX.utils.json_to_sheet(datos);
+        const libro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(libro, hoja, "Teleclases");
+
+        const excelBuffer = XLSX.write(libro, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+
+        const dia = String(new Date().getDate()).padStart(2, '0');
+        const mes = String(new Date().getMonth() + 1).padStart(2, '0');
+        const anio = new Date().getFullYear();
+        const nombreArchivo = `Reporte de Teleclases ${dia}-${mes}-${anio}.xlsx`;
+
+        saveAs(blob, nombreArchivo);
+    };
+
     return (
         <div className="contenedor-teleclase-mined" style={{}}> 
             <BuscadorTeleclases onSearch={handleSearch} />
@@ -313,6 +338,9 @@ const TeleClaseMINED = () => {
             <div className="d-flex justify-content-center gap-2 mb-3">
                 <button className="btn-agregar" onClick={generarPDFTeleclases}>
                     <i className="bi bi-file-earmark-arrow-down"></i> Descargar Reporte PDF
+                </button>
+                <button className="btn-agregar" onClick={exportarExcelTeleclases}>
+                    <i className="bi bi-file-earmark-excel"></i> Descargar Excel
                 </button>
                 <button className="btn-agregar" onClick={() => setShowModal(true)}>
                     <i className="bi bi-plus-lg"></i> Agregar Teleclase
