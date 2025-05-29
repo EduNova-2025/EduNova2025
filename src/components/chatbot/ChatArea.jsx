@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { BsList, BsPlus, BsChatDots } from 'react-icons/bs';
+import { BsList, BsPlus, BsX, BsTrash, BsPencil } from 'react-icons/bs';
 import Chatbot from './Chatbot';
-import { getAnswerFromFirebase, resetChat, processUploadedPdf, loadSessionMessages, clearSession } from '../chatbot/serviciosIA/firebaseService';
+import { getAnswerFromFirebase, resetChat, processUploadedPdf, loadSessionMessages, clearSession, deleteSession, updateSessionTitle } from '../chatbot/serviciosIA/firebaseService';
 import { db, auth } from '../../database/firebaseconfig';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
@@ -12,12 +12,13 @@ const ChatArea = () => {
   const [message, setMessage] = useState('');
   const [responses, setResponses] = useState([]);
   const [attachedFile, setAttachedFile] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [newTitle, setNewTitle] = useState('');
   const fileInputRef = useRef(null);
 
-  // Monitorear el estado de autenticación y cargar mensajes
   useEffect(() => {
     let unsubscribeMessages = () => {};
 
@@ -41,7 +42,6 @@ const ChatArea = () => {
     };
   }, []);
 
-  // Escucha en tiempo real el historial de sesiones
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) return;
@@ -70,6 +70,7 @@ const ChatArea = () => {
         ai: doc.data().answer,
       }));
       setResponses(messages);
+      setIsModalOpen(false);
     });
 
     return () => unsubscribe();
@@ -126,49 +127,117 @@ const ChatArea = () => {
   const handleSignOut = async () => {
     await signOut(auth);
     console.log('Sesión cerrada');
+    setIsModalOpen(false);
   };
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleDeleteSession = async (sessionId) => {
+    const user = auth.currentUser;
+    if (user && await deleteSession(sessionId, user.uid)) {
+      setChatHistory(chatHistory.filter(session => session.id !== sessionId));
+      if (currentSessionId === sessionId) {
+        setResponses([]);
+        setCurrentSessionId(null);
+      }
+    }
+  };
+
+  const handleEditTitle = (sessionId, currentTitle) => {
+    setEditingSessionId(sessionId);
+    setNewTitle(currentTitle || 'Sin título');
+  };
+
+  const handleSaveTitle = async () => {
+    const user = auth.currentUser;
+    if (user && editingSessionId && await updateSessionTitle(editingSessionId, newTitle, user.uid)) {
+      setChatHistory(chatHistory.map(session =>
+        session.id === editingSessionId ? { ...session, title: newTitle } : session
+      ));
+      setEditingSessionId(null);
+      setNewTitle('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingSessionId(null);
+    setNewTitle('');
   };
 
   return (
     <div className="d-flex">
-      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
+      <div className={`history-modal ${isModalOpen ? 'open' : ''}`}>
+        <div className="history-modal-header">
           <h4>EduNova AI</h4>
-          <Button variant="danger" onClick={handleSignOut}>
-            Cerrar Sesión
-          </Button>
+          <button className="history-modal-close" onClick={toggleModal}>
+            <BsX size={24} />
+          </button>
         </div>
-        <div className="chat-history">
-          <h5>Historial de Sesiones</h5>
+        <div className="history-modal-body">
+          <h5>Historial</h5>
           <ul className="chat-list">
             {chatHistory.map(session => (
-              <li 
-                key={session.id} 
-                className="chat-item"
-                onClick={() => handleChatSelect(session)}
-                style={{ cursor: 'pointer' }}
-              >
-                <BsChatDots className="chat-icon" />
-                <span>
-                  {session.title || 'Sin título'} -{' '}
-                  {session.timestamp?.toDate().toLocaleString('es-ES', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
+              <li key={session.id} className="chat-item" onClick={() => handleChatSelect(session)}>
+                <div className="chat-item-content">
+                  {editingSessionId === session.id ? (
+                    <div className="edit-title-container">
+                      <input
+                        type="text"
+                        value={newTitle}
+                        onChange={(e) => setNewTitle(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
+                        className="title-input"
+                      />
+                      <button onClick={handleSaveTitle} className="action-btn save-btn">✓</button>
+                      <button onClick={handleCancelEdit} className="action-btn cancel-btn">✗</button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="chat-item-title">
+                        {session.title || 'Sin título'}
+                      </span>
+                      <span className="chat-item-date">
+                        {session.timestamp?.toDate().toLocaleString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }) || 'Fecha no disponible'}
+                      </span>
+                    </>
+                  )}
+                  <div className="action-buttons">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
+                      className="action-btn edit-btn"
+                      title="Renombrar"
+                    >
+                      <BsPencil size={14} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
+                      className="action-btn delete-btn"
+                      title="Eliminar"
+                    >
+                      <BsTrash size={14} />
+                    </button>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
         </div>
-      </aside>
+        <div className="history-modal-footer">
+          <Button variant="danger" onClick={handleSignOut}>
+            Cerrar Sesión
+          </Button>
+        </div>
+      </div>
 
-      {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
+      {isModalOpen && <div className="history-modal-overlay" onClick={toggleModal}></div>}
 
       <div className="chat-area justify-content-center text-center flex-grow-1 p-5">
         <div className="top-right-buttons">
@@ -183,8 +252,8 @@ const ChatArea = () => {
           <Button
             variant="light"
             className="icon-btn menu-btn"
-            onClick={toggleSidebar}
-            title="Abrir menú de historial"
+            onClick={toggleModal}
+            title="Abrir historial"
           >
             <BsList size={20} />
           </Button>

@@ -1,7 +1,6 @@
 import React from 'react';
 import './InputBox.css';
 
-
 const Chatbot = ({ responses }) => {
   return (
     <div className="chat-container">
@@ -23,4 +22,3 @@ const Chatbot = ({ responses }) => {
 };
 
 export default Chatbot;
-
