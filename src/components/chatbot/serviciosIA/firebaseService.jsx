@@ -5,8 +5,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const apiKey = import.meta.env.VITE_GOOGLE_AI_API_KEY;
 
-let mensajes = [];
-let cargando = false;
+// Variables globales (se podrían mover a un estado global en el futuro)
 let uploadedPdfText = '';
 let currentSessionId = null;
 let forceNewSession = false;
@@ -14,7 +13,7 @@ let forceNewSession = false;
 const auth = getAuth();
 
 // Función para crear o cargar una sesión activa
-const getOrCreateSession = async (userId, firstPrompt = '') => {
+export const getOrCreateSession = async (userId, firstPrompt = '') => {
   if (!userId) {
     console.error('No userId provided for session creation.');
     return null;
@@ -48,8 +47,8 @@ const getOrCreateSession = async (userId, firstPrompt = '') => {
   }
 };
 
-// Efecto para cargar mensajes de la sesión activa
-const loadMessages = (sessionId, callback) => {
+// Función para cargar mensajes de la sesión activa
+export const loadMessages = (sessionId, callback) => {
   if (!sessionId) {
     console.log('No sessionId provided, returning empty messages.');
     callback([]);
@@ -59,12 +58,12 @@ const loadMessages = (sessionId, callback) => {
   const messagesCollection = collection(db, `chatSessions/${sessionId}/messages`);
   const q = query(messagesCollection, orderBy('timestamp', 'asc'));
   const unsubscribe = onSnapshot(q, (snapshot) => {
-    mensajes = snapshot.docs.map((doc) => ({
+    const messages = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
-    console.log('Messages loaded for session', sessionId, ':', mensajes);
-    callback(mensajes);
+    console.log('Messages loaded for session', sessionId, ':', messages);
+    callback(messages); // Usamos 'messages' en lugar de la variable global 'mensajes'
   }, (error) => {
     console.error('Error loading messages:', error);
     callback([]);
@@ -101,7 +100,6 @@ export const processUploadedPdf = async (file) => {
 // Función para resetear el chat
 export const resetChat = async () => {
   try {
-    mensajes = [];
     uploadedPdfText = '';
     currentSessionId = null;
     forceNewSession = true;
@@ -114,7 +112,6 @@ export const resetChat = async () => {
 // Función para cerrar sesión
 export const clearSession = async () => {
   try {
-    mensajes = [];
     uploadedPdfText = '';
     currentSessionId = null;
     forceNewSession = false;
@@ -142,7 +139,7 @@ export const deleteSession = async (sessionId) => {
   }
 };
 
-// Función enviarMensaje
+// Función para enviar mensaje
 const enviarMensaje = async (question, userId) => {
   if (!question || !question.trim()) {
     console.log('Cannot send empty message.');
@@ -168,8 +165,6 @@ const enviarMensaje = async (question, userId) => {
     timestamp: serverTimestamp(),
   };
 
-  cargando = true;
-
   try {
     const messagesCollection = collection(db, `chatSessions/${currentSessionId}/messages`);
     console.log('Saving user message:', nuevoMensaje);
@@ -186,22 +181,18 @@ const enviarMensaje = async (question, userId) => {
     return true;
   } catch (error) {
     console.error('Error sending message:', error);
-    const messagesCollection = collection(db, `chatSessions/${currentSessionId}/messages`);
     await addDoc(messagesCollection, {
       answer: 'Hubo un error al procesar tu solicitud. Por favor, intenta de nuevo más tarde.',
       emisor: 'ia',
       timestamp: serverTimestamp(),
     });
     return false;
-  } finally {
-    cargando = false;
   }
 };
 
-// Función obtenerRespuestaIA
+// Función para obtener respuesta de IA
 const obtenerRespuestaIA = async (promptUsuario) => {
   try {
-    // Verificar la API Key
     if (!apiKey) {
       throw new Error('API Key is missing. Please check VITE_GOOGLE_AI_API_KEY in .env file.');
     }
@@ -331,9 +322,8 @@ export const getAnswerFromFirebase = async (question) => {
     return 'No se pudo enviar el mensaje.';
   }
 
-  const ultimaRespuesta = mensajes.length > 0 ? mensajes[mensajes.length - 1].answer : 'No hay respuestas disponibles.';
-  console.log('Returning last response:', ultimaRespuesta);
-  return ultimaRespuesta;
+  // Nota: 'mensajes' ya no se usa como variable global, se gestiona en loadMessages
+  return 'Respuesta procesada (usa loadMessages para obtener los mensajes actualizados)';
 };
 
 // Función para cargar mensajes de la sesión activa
@@ -345,7 +335,7 @@ export const loadSessionMessages = (callback) => {
     return () => {};
   }
 
-  getOrCreateSession(user.uid).then((sessionId) => {
+  return getOrCreateSession(user.uid).then((sessionId) => {
     if (sessionId) {
       return loadMessages(sessionId, callback);
     } else {
@@ -372,5 +362,49 @@ export const saveChatHistory = async (question, answer) => {
     console.log('Chat history saved:', { question, answer });
   } catch (error) {
     console.error('Error saving chat history:', error);
+  }
+};
+
+// Función para eliminar una sesión
+export const deleteSession = async (sessionId, userId) => {
+  try {
+    const sessionDoc = doc(db, `chatSessions/${sessionId}`);
+    const sessionSnapshot = await getDoc(sessionDoc);
+    if (sessionSnapshot.exists() && sessionSnapshot.data().userId === userId) {
+      await deleteDoc(sessionDoc);
+      console.log(`Session ${sessionId} deleted successfully`);
+      if (currentSessionId === sessionId) {
+        currentSessionId = null;
+      }
+      return true;
+    } else {
+      console.error('Session does not exist or user does not have permission');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    return false;
+  }
+};
+
+// Función para actualizar el título de una sesión
+export const updateSessionTitle = async (sessionId, newTitle, userId) => {
+  try {
+    const sessionDoc = doc(db, `chatSessions/${sessionId}`);
+    const sessionSnapshot = await getDoc(sessionDoc);
+    if (sessionSnapshot.exists() && sessionSnapshot.data().userId === userId) {
+      await setDoc(sessionDoc, { title: newTitle, timestamp: serverTimestamp() }, { merge: true });
+      console.log(`Session ${sessionId} title updated to ${newTitle}`);
+      if (currentSessionId === sessionId) {
+        currentSessionId = sessionId; // Refresca el estado si es la sesión actual
+      }
+      return true;
+    } else {
+      console.error('Session does not exist or user does not have permission');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error updating session title:', error);
+    return false;
   }
 };

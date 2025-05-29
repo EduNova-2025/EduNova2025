@@ -2,7 +2,7 @@
     import { Table, Button, Image } from "react-bootstrap";
     import "bootstrap-icons/font/bootstrap-icons.css";
 
-    const TablaLibros = ({ libros, openEditModal, openDeleteModal, handleCopy, openQRModal }) => {
+    const TablaLibros = ({ libros, openEditModal, openDeleteModal, handleCopy, openQRModal, generarPDFDetalleLibro }) => {
     return (
         <div style={{ overflowX: "auto" }}>
         <Table striped bordered hover responsive>
@@ -38,16 +38,19 @@
                     <Button
                         variant="outline-info"
                         size="sm"
+                        as="a"
                         href={libro.pdfUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                    >
-                        Ver PDF
+                        title="Ver PDF del libro"
+                        >
+                        <i className="bi bi-file-earmark-text"></i>
                     </Button>
+
                     )}
                     <Button
                         variant="outline-dark"
-                        className="ml-1"
+                        className="me-2 mt-2"
                         size="sm"
                         onClick={() => openQRModal(libro.pdfUrl)}
                         >
@@ -61,21 +64,31 @@
                     className="me-2"
                     onClick={() => openEditModal(libro)}
                     >
-                    <i className="bi bi-pencil"></i>
+                    <i className="bi bi-pencil-fill"></i>
                     </Button>
+                    <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    className="me-2 mt-2"
+                    onClick={() => generarPDFDetalleLibro(libro)}
+                    >
+                        <i className="bi bi-filetype-pdf"></i>
+                </Button>
                     <Button
                     variant="outline-danger"
                     size="sm"
+                    className="me-2 mt-2"
                     onClick={() => openDeleteModal(libro)}
                     >
-                    <i className="bi bi-trash"></i>
+                    <i className="bi bi-trash-fill"></i>
                     </Button>
                     <Button
                     variant="outline-info"
                     size="sm"
+                    className="me-2 mt-2"
                     onClick={() => handleCopy(libro)}
                     >
-                    <i className="bi bi-clipboard"></i>
+                    <i className="bi bi-clipboard-fill"></i>
                     </Button>
                 </td>
                 </tr>

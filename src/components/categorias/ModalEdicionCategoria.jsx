@@ -37,13 +37,13 @@ const handleEditCategoriaWithTracking = () => {
 };
 
 return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+    <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
     <Modal.Header closeButton>
         <Modal.Title className="modal-title-custom">Editar Categoría</Modal.Title>
     </Modal.Header>
     <Modal.Body>
         <Form>
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-4">
             <Form.Label className="form-label-custom">Nombre</Form.Label>
             <Form.Control
             type="text"

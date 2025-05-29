@@ -1,6 +1,6 @@
     // Importaciones
     import React, { useState, useEffect } from "react";
-    import { Container, Button } from "react-bootstrap";
+    import { Container, Button, Row, Col } from "react-bootstrap";
     import { db } from "../database/firebaseconfig";
     import {
         collection,
@@ -283,18 +283,30 @@
 
     // Renderizado del componente
     return (
-        <Container className="mt-5">
+        <Container className="mt-4">
         <br />
-        <h4 className="title-gestion">Gestión de Categorías</h4>
-        <div className="busqueda-agregar-container">
+        <h4 className="title-gestion">Categorías</h4>
+        <Row className="align-items-center mb-4 g-2">
+        {/* Cuadro de búsqueda */}
+        <Col xs={12} md={8}>
             <CuadroBusquedas
-                    searchText={searchText}
-                    handleSearchChange={handleSearchChange}
-                />
-            <Button className="btn-agregar" onClick={() => setShowModal(true)}>
-        <i className="bi bi-plus-lg"></i> Agregar categoría
-        </Button>
-        </div>
+            searchText={searchText}
+            handleSearchChange={handleSearchChange}
+            className="busqueda"
+            />
+        </Col>
+
+        {/* Botón Agregar categoría */}
+        <Col xs={12} md={4} className="text-md-end">
+            <Button
+            className="btn-agregar w-100"
+            onClick={() => setShowModal(true)}
+            >
+            <i className="bi bi-plus-lg me-2"></i> Agregar categoría
+            </Button>
+        </Col>
+        </Row>
+
         
         <TablaCategorias
             categorias={categoriasFiltradas}
@@ -306,12 +318,14 @@
             currentPage={currentPage}     // Página actual
             setCurrentPage={setCurrentPage} // Método para cambiar página
         />
+        <div className="pagination">
         <Paginacion
             itemsPerPage={itemsPerPage}
             totalItems={categoriasFiltradas.length}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
         />
+        </div>
         <ModalRegistroCategoria
             showModal={showModal}
             setShowModal={setShowModal}

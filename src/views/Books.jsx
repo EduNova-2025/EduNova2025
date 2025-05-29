@@ -1,6 +1,6 @@
 // Importaciones
 import React, { useState, useEffect } from "react";
-import { Container, Button, Alert } from "react-bootstrap";
+import { Container, Button, Alert, Col, Row } from "react-bootstrap";
 import { db, storage} from "../database/firebaseconfig";
 import { useNavigate } from "react-router-dom";
 import {
@@ -25,6 +25,10 @@ import { useAuth } from "../database/authcontext";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"; //Importación del componente de búsqueda
 import Paginacion from "../components/ordenamiento/Paginacion";
 import ModalQR from "../components/qr/ModalQR"; //Importación del componente QR
+import jsPDF from "jspdf"; 
+import autoTable from "jspdf-autotable";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const Libros = () => {
     // Estados para manejo de datos
@@ -316,34 +320,267 @@ const Libros = () => {
         setShowDeleteModal(true);
     };
 
+    const generarPDFLibros = () => {
+        if (!librosFiltrados || librosFiltrados.length === 0) {
+            alert("No hay libros para exportar.");
+            return;
+        }
+
+        const doc = new jsPDF("p", "mm", "a4");
+
+        // ENCABEZADO
+        doc.setFillColor(28, 41, 51);
+        doc.rect(0, 0, 210, 25, "F"); // 210mm = ancho A4
+
+        doc.setFontSize(20);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Lista de Libros", 105, 16, { align: "center" });
+
+        const columnas = [
+            { header: "#", dataKey: "num" },
+            { header: "Título", dataKey: "titulo" },
+            { header: "Área educativa", dataKey: "area" },
+            { header: "Dirigido a", dataKey: "dirigido" },
+            { header: "Edición", dataKey: "edicion" },
+            { header: "Categoría", dataKey: "categoria" },
+            { header: "Descripción", dataKey: "descripcion" }
+        ];
+
+        const filas = librosFiltrados.map((libro, index) => ({
+            num: index + 1,
+            titulo: libro.titulo,
+            area: libro.area_edu,
+            dirigido: libro.dirigido,
+            edicion: libro.edicion,
+            categoria: libro.categoria,
+            descripcion: libro.descripcion
+        }));
+
+        const totalPaginas = "{total_pages_count_string}";
+
+        autoTable(doc, {
+            columns: columnas,
+            body: filas,
+            startY: 30,
+            theme: "striped",
+            headStyles: {
+                fillColor: [0, 173, 181],
+                textColor: 255,
+                halign: "center",
+                valign: "middle"
+            },
+            styles: {
+                fontSize: 9,
+                cellPadding: 2,
+                valign: "top",
+                overflow: "linebreak"
+            },
+            columnStyles: {
+                num: { cellWidth: 10, halign: "center" },
+                titulo: { cellWidth: 35 },
+                area: { cellWidth: 25 },
+                dirigido: { cellWidth: 20 },
+                edicion: { cellWidth: 30 },
+                categoria: { cellWidth: 25 },
+                descripcion: { cellWidth: 55 }
+            },
+            margin: { top: 30, left: 5, right: 14 },
+            didDrawPage: function (data) {
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageNumber = doc.internal.getNumberOfPages();
+
+                doc.setFontSize(9);
+                doc.setTextColor(0);
+                doc.text(`Página ${pageNumber} de ${totalPaginas}`, pageWidth / 2, pageHeight - 10, { align: "center" });
+            }
+        });
+
+        if (typeof doc.putTotalPages === "function") {
+            doc.putTotalPages(totalPaginas);
+        }
+
+        const fecha = new Date();
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        const nombreArchivo = `libros_${dia}${mes}${anio}.pdf`;
+
+        doc.save(nombreArchivo);
+    };
+
+    const generarPDFDetalleLibro = (libro) => {
+    const pdf = new jsPDF();
+    const anchoPagina = pdf.internal.pageSize.getWidth();
+
+    // ENCABEZADO
+    pdf.setFillColor(28, 41, 51);
+    pdf.rect(0, 0, anchoPagina, 30, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(20);
+
+    // Título centrado (recortado si es muy largo)
+    const titulo = libro.titulo.length > 70 ? libro.titulo.slice(0, 67) + "..." : libro.titulo;
+    pdf.text(titulo, anchoPagina / 2, 18, { align: "center" });
+
+    let cursorY = 40;
+
+    // IMAGEN (si existe)
+    if (libro.imagen) {
+        try {
+            const propiedadesImagen = pdf.getImageProperties(libro.imagen);
+            const anchoImagen = 70;
+            const altoImagen = (propiedadesImagen.height * anchoImagen) / propiedadesImagen.width;
+            const posicionX = (anchoPagina - anchoImagen) / 2;
+            pdf.addImage(libro.imagen, 'JPEG', posicionX, cursorY, anchoImagen, altoImagen);
+            cursorY += altoImagen + 12;
+        } catch (error) {
+            console.warn("Error al cargar la imagen del libro:", error);
+        }
+    }
+
+    // DATOS DEL LIBRO
+    pdf.setFontSize(12);
+    pdf.setTextColor(0, 0, 0);
+    const margenX = 20;
+    const anchoTexto = anchoPagina - margenX * 2;
+
+    const datos = [
+        `Área educativa: ${libro.area_edu}`,
+        `Dirigido a: ${libro.dirigido}`,
+        `Edición: ${libro.edicion}`,
+        `Categoría: ${libro.categoria}`,
+        `Descripción:`,
+    ];
+
+    datos.forEach((linea, i) => {
+        pdf.text(linea, margenX, cursorY);
+        cursorY += 8;
+    });
+
+    // DESCRIPCIÓN (multi-línea si es muy larga)
+    const descripcionFormateada = pdf.splitTextToSize(libro.descripcion, anchoTexto);
+    pdf.text(descripcionFormateada, margenX, cursorY);
+
+    // GUARDAR PDF
+    const tituloLimpio = libro.titulo.replace(/[\\/:*?"<>|]/g, ""); // evitar caracteres no válidos en nombre de archivo
+    pdf.save(`${tituloLimpio}.pdf`);
+    };
+
+    const exportarExcelLibros = () => {
+    // Preparar los datos para la hoja de Excel
+    const datos = librosFiltrados.map((libro, index) => ({
+        "#": index + 1,
+        "Título": libro.titulo,
+        "Área educativa": libro.area_edu,
+        "Dirigido a": libro.dirigido,
+        "Edición": libro.edicion,
+        "Categoría": libro.categoria,
+        "Descripción": libro.descripcion,
+    }));
+
+    // Crear la hoja de cálculo desde los datos
+    const hoja = XLSX.utils.json_to_sheet(datos, {
+        origin: 'A2'  // Deja espacio para un título
+    });
+
+    // Agregar un título personalizado
+    XLSX.utils.sheet_add_aoa(hoja, [["Listado de libros disponibles"]], { origin: "A1" });
+
+    // Aplicar estilo al título (requiere SheetJS Pro o aplicar estilo luego con otra herramienta)
+    hoja['A1'].s = {
+        font: { bold: true, sz: 14 },
+        alignment: { horizontal: "center" }
+    };
+
+    // Crear el libro Excel y agregar la hoja
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, 'Libros');
+
+    // Ajustar el ancho de columnas automáticamente
+    const anchoColumnas = datos.length > 0 
+        ? Object.keys(datos[0]).map(key => ({ wch: Math.max(key.length + 2, 20) }))
+        : [];
+    hoja['!cols'] = anchoColumnas;
+
+    // Generar buffer y guardar el archivo
+    const excelBuffer = XLSX.write(libro, { bookType: 'xlsx', type: 'array' });
+
+    // Fecha para el nombre del archivo
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const anio = fecha.getFullYear();
+    const nombreArchivo = `Libros_${dia}${mes}${anio}.xlsx`;
+
+    // Descargar archivo
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, nombreArchivo);
+};
+
 
     // Renderizado del componente
     return (
-        <Container className="mt-5">
+        <Container className="mt-4">
             <br />
             <h4 className="title-gestion">Gestión de Libros</h4>
             {error && <Alert variant="danger">{error}</Alert>}
-            <div className="busqueda-agregar-container">
+            <Row className="align-items-center mb-4">
+        {/* Cuadro de búsqueda */}
+        <Col xs={12} sm={3} md={6} className="mt-2">
+            <div className="d-flex">
                 <CuadroBusquedas
                     searchText={searchText}
                     handleSearchChange={handleSearchChange}
+                    className="w-100"
                 />
-                <Button className="btn-agregar" onClick={() => setShowModal(true)}>
-                <i className="bi bi-plus-lg"></i> Agregar libro
-                </Button>
             </div>
+        </Col>
+    </Row>
 
-            <TablaLibros
-                libros={librosFiltrados}             
+    {/* Botones de exportación */}
+    <Row className="mb-3">
+        {/* Botón Agregar libro */}
+        <Col xs={12} sm={6} md={3} className="mb-2">
+            <Button className="btn-block btn-agregar  w-100" 
+            onClick={() => setShowModal(true)}>
+                <i className="bi bi-plus-lg"></i> Agregar libro
+            </Button>
+        </Col>
+        <Col xs={12} sm={6} md={3} className="mb-2">
+            <Button
+                className="btn-block btn-agregar w-100"
+                onClick={exportarExcelLibros}
+                variant="primary"
+            >
+                <i className="bi bi-file-earmark-excel me-2"></i>
+                Generar Excel
+            </Button>
+        </Col>
+        <Col xs={12} sm={6} md={3} className="mb-2">
+            <Button
+                className="btn-block btn-agregar w-100"
+                onClick={generarPDFLibros}
+                variant="primary"
+            >
+                <i className="bi bi-file-earmark-pdf me-2"></i>
+                Descargar Reporte PDF
+            </Button>
+        </Col>
+    </Row>
+
+
+            <TablaLibros            
                 openEditModal={openEditModal}
                 openDeleteModal={openDeleteModal}
-                Libros={paginatedLibros} // Pasar productos paginados
+                libros={paginatedLibros} // Pasar productos paginados
                 totalItems={librosFiltrados.length} // Total de productos
                 itemsPerPage={itemsPerPage}   // Elementos por página
                 currentPage={currentPage}     // Página actual
                 setCurrentPage={setCurrentPage} // Método para cambiar página
                 handleCopy={handleCopy}
                 openQRModal={openQRModal}
+                generarPDFDetalleLibro={generarPDFDetalleLibro}
             />
             <Paginacion
                 itemsPerPage={itemsPerPage}

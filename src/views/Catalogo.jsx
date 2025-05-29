@@ -69,7 +69,7 @@
     const paginatedLibros = librosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
-        <Container>
+        <Container className="mt-4">
         <br />
         <h4 className="title-gestion">Catálogo de Libros</h4>
 
