@@ -124,6 +124,24 @@ export const clearSession = async () => {
   }
 };
 
+// Función para eliminar una sesión y sus mensajes
+export const deleteSession = async (sessionId) => {
+  if (!sessionId) {
+    console.error('No sessionId provided for deletion.');
+    return false;
+  }
+
+  try {
+    // Eliminar la sesión
+    await deleteDoc(doc(db, 'chatSessions', sessionId));
+    console.log('Session deleted:', sessionId);
+    return true;
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    return false;
+  }
+};
+
 // Función enviarMensaje
 const enviarMensaje = async (question, userId) => {
   if (!question || !question.trim()) {

@@ -283,11 +283,9 @@
 .chat-item {
   display: flex;
   align-items: center;
-  padding: 10px 15px;
-  margin: 5px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  gap: 10px;
 }
 
 .chat-item:hover {
@@ -516,9 +514,32 @@
   border-bottom: 1px solid #eee;
 }
 .chat-item span {
+  flex: 1;
   display: block;
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Botón de eliminar chat en el historial */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  margin-left: auto;
+  margin-right: 0;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background: #ffeaea;
+  color: #c0392b;
 }

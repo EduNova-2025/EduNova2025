@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { BsList, BsChatDots } from 'react-icons/bs';
+import { BsList, BsChatDots, BsTrash } from 'react-icons/bs';
 import './InputBox.css';
 import { db, auth } from '../../database/firebaseconfig';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import { deleteSession } from './serviciosIA/firebaseService';
 
 const Sidebar = ({ onChatSelect, onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState(null);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -46,6 +49,22 @@ const Sidebar = ({ onChatSelect, onClose }) => {
     setIsOpen(false);
   };
 
+  const handleDeleteClick = (session) => {
+    setSessionToDelete(session);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (sessionToDelete) {
+      const success = await deleteSession(sessionToDelete.id);
+      if (success) {
+        setChatHistory(chatHistory.filter(chat => chat.id !== sessionToDelete.id));
+      }
+    }
+    setShowConfirmDialog(false);
+    setSessionToDelete(null);
+  };
+
   return (
     <>
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
@@ -76,6 +95,17 @@ const Sidebar = ({ onChatSelect, onClose }) => {
                     minute: '2-digit',
                   })}
                 </span>
+                <button
+                  className="delete-btn"
+                  style={{ background: 'red', color: 'white', border: '2px solid black', zIndex: 9999 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick(session);
+                  }}
+                  title="Eliminar chat"
+                >
+                  ELIMINAR <BsTrash style={{ color: 'white', fontSize: '1.5rem' }} />
+                </button>
               </li>
             ))}
           </ul>
@@ -83,6 +113,14 @@ const Sidebar = ({ onChatSelect, onClose }) => {
       </aside>
 
       {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
+
+      {showConfirmDialog && (
+        <div className="confirm-dialog">
+          <p>¿Estás seguro de que deseas eliminar este chat?</p>
+          <Button variant="danger" onClick={handleConfirmDelete}>Eliminar</Button>
+          <Button variant="secondary" onClick={() => setShowConfirmDialog(false)}>Cancelar</Button>
+        </div>
+      )}
     </>
   );
 };
