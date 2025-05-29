@@ -153,17 +153,24 @@ aside button:hover {
   font-weight: bold;
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.178);
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 
-.busqueda-agregar-container {
+.pagination {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap; /* Opcional para responsividad */
-  gap: 10px; /* Espacio entre los elementos */
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
 }
+@media (max-width: 576px) {
+  .pagination {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
 
 .busqueda-agregar-container .btn-agregar {
   white-space: nowrap;
@@ -250,6 +257,8 @@ aside button:hover {
   background-color: white;
   display: flex;
 }
+
+
 
 /* Elimina bordes internos para evitar separación visual */
 .animated-border .no-border {

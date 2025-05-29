@@ -24,14 +24,15 @@
                     className="me-2"
                     onClick={() => openEditModal(categoria)}
                 >
-                    <i className="bi bi-pencil"></i>
+                    <i className="bi bi-pencil-fill"></i>
                 </Button>
                 <Button
                     variant="outline-danger"
                     size="sm"
+                    className="me-2 mt-2"
                     onClick={() => openDeleteModal(categoria)}
                 >
-                    <i className="bi bi-trash"></i>
+                    <i className="bi bi-trash-fill"></i>
                 </Button>
                 </td>
             </tr>

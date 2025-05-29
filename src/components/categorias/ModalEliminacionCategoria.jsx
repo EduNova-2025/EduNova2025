@@ -33,7 +33,7 @@ const handleDeleteCategoriaWithTracking = () => {
 };
 
 return (
-    <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+    <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
     <Modal.Header closeButton>
         <Modal.Title className="modal-title-custom">Confirmar Eliminación</Modal.Title>
     </Modal.Header>
