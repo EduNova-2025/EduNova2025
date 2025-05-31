@@ -58,7 +58,7 @@
 .masteria-title {
   position: absolute;
   top: 40px;
-  left: 20px;
+  left: 170px;
   font-size: 30px;
   font-weight: bold;
   background: linear-gradient(to right, #3357FF, rgb(81, 27, 101), #FF33A6);
@@ -106,8 +106,8 @@
   }
   
   .masteria-title {
-    top: 20px;
-    left: 20px;
+    top: 16px;
+    left: 60px;
     font-size: 24px;
   }
   
