@@ -43,6 +43,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Ver PDF del libro"
+                        className="mt-2"
                         >
                         <i className="bi bi-file-earmark-text"></i>
                     </Button>
@@ -61,7 +62,7 @@
                     <Button
                     variant="outline-warning"
                     size="sm"
-                    className="me-2"
+                    className="me-2 mt-2"
                     onClick={() => openEditModal(libro)}
                     >
                     <i className="bi bi-pencil-fill"></i>

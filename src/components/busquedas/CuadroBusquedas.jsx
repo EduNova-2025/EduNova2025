@@ -6,14 +6,14 @@ const CuadroBusquedas = ({ searchText, handleSearchChange }) => {
   return (
     <InputGroup className="mb-3 animated-border" style={{ width: "400px" }}>
       <InputGroup.Text className="no-border">
-        <i className="bi bi-search"></i>
+        <i className="bi bi-search" data-testid="icono-busqueda"></i>
       </InputGroup.Text>
       <Form.Control
         type="text"
         placeholder="Buscar ..."
         value={searchText}
         onChange={handleSearchChange}
-        className="no-border"
+        className="input-busqueda"
       />
     </InputGroup>
   );

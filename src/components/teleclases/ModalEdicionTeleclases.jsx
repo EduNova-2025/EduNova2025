@@ -21,7 +21,6 @@ const ModalEdicionTeleclases = ({
 }) => {
   if (!teleclase) return null;
 
-  // Función para rastrear la actualización de teleclases
   const trackTeleclaseUpdate = () => {
     ReactGA.event({
       category: "Teleclases",
@@ -31,7 +30,6 @@ const ModalEdicionTeleclases = ({
     });
   };
 
-  // Modificar handleEditTeleclase para incluir el tracking
   const handleEditTeleclaseWithTracking = () => {
     handleEditTeleclase();
     trackTeleclaseUpdate();
@@ -45,8 +43,9 @@ const ModalEdicionTeleclases = ({
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Título</Form.Label>
+            <Form.Label htmlFor="titulo" className="form-label-custom">Título</Form.Label>
             <Form.Control
+              id="titulo"
               type="text"
               name="titulo"
               value={teleclase.titulo}
@@ -56,8 +55,9 @@ const ModalEdicionTeleclases = ({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Materia</Form.Label>
+            <Form.Label htmlFor="materia" className="form-label-custom">Materia</Form.Label>
             <Form.Select
+              id="materia"
               name="materia"
               value={teleclase.materia}
               onChange={handleInputChange}
@@ -73,8 +73,9 @@ const ModalEdicionTeleclases = ({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Descripción</Form.Label>
+            <Form.Label htmlFor="descripcion" className="form-label-custom">Descripción</Form.Label>
             <Form.Control
+              id="descripcion"
               type="text"
               name="descripcion"
               value={teleclase.descripcion}
@@ -94,8 +95,9 @@ const ModalEdicionTeleclases = ({
                 />
               </div>
             )}
-            <Form.Label className="form-label-custom">Cambiar Video (opcional)</Form.Label>
+            <Form.Label htmlFor="video" className="form-label-custom">Cambiar Video (opcional)</Form.Label>
             <Form.Control
+              id="video"
               type="file"
               accept="video/*"
               onChange={handleVideoChange}

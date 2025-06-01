@@ -21,7 +21,7 @@
                 <Button
                     variant="outline-warning"
                     size="sm"
-                    className="me-2"
+                    className="me-2 mt-2"
                     onClick={() => openEditModal(categoria)}
                 >
                     <i className="bi bi-pencil-fill"></i>
