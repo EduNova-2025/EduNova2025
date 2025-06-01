@@ -352,9 +352,10 @@
 .action-buttons {
   position: absolute;
   top: 8px;
-  right: 8px;
+  right: -50px;
   display: flex;
-  gap: 4px;
+  gap: 1px;
+  margin-left: 50px;
 }
 
 .action-btn {
@@ -378,18 +379,31 @@
 
 .edit-title-container {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
+  width: 100%;
 }
 
 .title-input {
   flex: 1;
-  padding: 4px;
+  padding: 4px 8px;
   border: 1px solid #555;
   border-radius: 4px;
   background: #444;
   color: #e0e0e0;
   font-size: 14px;
+  min-width: 0;
+  height: 32px;
+}
+
+.save-btn, .cancel-btn {
+  font-size: 16px;
+  padding: 2px 6px;
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .history-modal-footer {
