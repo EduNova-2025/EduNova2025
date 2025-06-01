@@ -17,6 +17,7 @@ const ChatArea = () => {
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [newTitle, setNewTitle] = useState('');
+  const [isAIProcessing, setIsAIProcessing] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -76,22 +77,53 @@ const ChatArea = () => {
     return () => unsubscribe();
   };
 
+  const clearInputFields = () => {
+    setMessage('');
+    setAttachedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSend = async () => {
     if (!message.trim()) {
       console.log('No se puede enviar un mensaje vacío.');
       return;
     }
 
-    const response = await getAnswerFromFirebase(message);
-    if (response !== 'No se pudo enviar el mensaje.') {
-      setResponses([...responses, { user: message, ai: response }]);
-      setMessage('');
-      setAttachedFile(null);
+    const currentMessage = message;
+    clearInputFields();
+
+    // Mostrar mensaje del usuario inmediatamente
+    setResponses(prev => [...prev, { user: currentMessage, ai: null }]);
+    setIsAIProcessing(true);
+
+    try {
+      const response = await getAnswerFromFirebase(currentMessage);
+      if (response !== 'No se pudo enviar el mensaje.') {
+        // Actualizar con la respuesta de la IA
+        setResponses(prev => {
+          const updatedResponses = [...prev];
+          updatedResponses[updatedResponses.length - 1] = { user: currentMessage, ai: response };
+          return updatedResponses;
+        });
+      } else {
+        console.log('Error al enviar el mensaje desde Firebase');
+      }
+    } catch (error) {
+      console.error('Error en handleSend:', error);
+    } finally {
+      setIsAIProcessing(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && message.trim()) {
+    if (e.key === 'Enter') {
+      if (!message.trim()) {
+        console.log('No se puede enviar un mensaje vacío.');
+        return;
+      }
+
       handleSend();
     }
   };
@@ -115,11 +147,17 @@ const ChatArea = () => {
     }
   };
 
+  useEffect(() => {
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [responses, isAIProcessing]);
+
   const handleNewChat = async () => {
     await resetChat();
     setResponses([]);
-    setAttachedFile(null);
-    setMessage('');
+    clearInputFields();
     setCurrentSessionId(null);
     console.log('Nuevo chat iniciado');
   };
@@ -259,14 +297,14 @@ const ChatArea = () => {
           </Button>
         </div>
 
-        {responses.length === 0 && (
+        {responses.length === 0 && !isAIProcessing && (
           <>
             <div className="masteria-title">Master IA</div>
             <h1 className="plan-title text-primary fw-bold">¿Listo para planificar?</h1>
           </>
         )}
 
-        <Chatbot responses={responses} />
+        <Chatbot responses={responses} isAIProcessing={isAIProcessing} />
 
         {attachedFile && (
           <div className="attached-file-preview">
@@ -277,6 +315,9 @@ const ChatArea = () => {
               title="Descartar archivo"
               onClick={() => {
                 setAttachedFile(null);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = '';
+                }
               }}
             >
               ✖
