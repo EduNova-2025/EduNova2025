@@ -1,11 +1,11 @@
-/* Estilo general del sidebar */
+/* ===== Sidebar Styles ===== */
 .modern-sidebar {
   position: fixed;
   top: 10px;
   left: 0;
   height: 97vh;
   width: 60px;
-  background: linear-gradient( #0057b7, #6300e5, #e5007d);
+  background: linear-gradient(#0057b7, #6300e5, #e5007d);
   color: white;
   padding: 2rem 0.5rem;
   display: flex;
@@ -14,7 +14,7 @@
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 1002;
   overflow: hidden;
 }
 
@@ -23,13 +23,12 @@
   padding: 2rem 1rem;
 }
 
-/* Sección con scroll interno si hay muchos ítems */
 .sidebar-section {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   overflow-y: auto;
-  max-height: calc(115vh - 120px); /* Ajuste para evitar que rebalse */
+  max-height: calc(115vh - 120px);
 }
 
 .sidebar-section.bottom {
@@ -38,7 +37,6 @@
   border-top: 0.5px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Ítems del sidebar */
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -62,25 +60,21 @@
   border-radius: 10px;
 }
 
-/* Iconos siempre visibles */
 .sidebar-item svg {
   flex-shrink: 0;
   font-size: 1.2rem;
 }
 
-/* Etiquetas ocultas por defecto */
 .sidebar-item span {
   margin-left: 0.8rem;
   opacity: 0;
   transition: opacity 0.3s;
 }
 
-/* Mostrar etiquetas solo al hacer hover sobre el sidebar */
 .modern-sidebar:hover .sidebar-item span {
   opacity: 1;
 }
 
-/* Submenú */
 .submenu {
   padding-left: 20px;
 }
@@ -94,7 +88,6 @@
   color: #ffffff;
 }
 
-/* Título oculto por defecto */
 .sidebar-title {
   display: none;
   font-size: 1.2rem;
@@ -114,13 +107,10 @@
   margin-left: 15px;
 }
 
-
-/* Mostrar título al hacer hover */
 .modern-sidebar:hover .sidebar-title {
   display: block;
 }
 
-/* Ocultar el sidebar en móvil */
 @media (max-width: 768px) {
   .modern-sidebar {
     transform: translateX(-100%);
@@ -142,13 +132,11 @@
     border: none;
     color: rgb(36, 15, 158);
     font-size: 1.5rem;
-    z-index: 1001;
     padding: 0.4rem;
     border-radius: 8px;
     transition: background-color 0.3s ease;
     margin-top: 15px;
   }
-
 
   .overlay {
     position: fixed;
@@ -157,10 +145,14 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 900;
+    z-index: 1001; /* Ajustado para estar sobre chat-area pero bajo history-modal */
+    display: none;
   }
 
-  /* Mostrar etiquetas en móvil siempre */
+  .modern-sidebar.open + .overlay {
+    display: block;
+  }
+
   .sidebar-item span {
     opacity: 1;
   }
@@ -170,7 +162,6 @@
   }
 }
 
-/* Scrollbar estilo moderno */
 .sidebar-section::-webkit-scrollbar {
   width: 8px;
 }
@@ -190,18 +181,12 @@
   background-color: rgba(255, 255, 255, 0.6);
 }
 
-.modern-sidebar.open {
-  transform: translateX(0);
-}
-
-/* Esconder el botón hamburguesa en pantallas grandes */
 .hamburger-btn {
-  display: block; /* Visible por defecto */
+  display: block;
 }
 
 @media (min-width: 768px) {
   .hamburger-btn {
-    display: none; /* Ocultar el botón en pantallas grandes */
+    display: none;
   }
 }
-

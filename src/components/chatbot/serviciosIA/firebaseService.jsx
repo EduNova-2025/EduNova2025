@@ -5,14 +5,12 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const apiKey = import.meta.env.VITE_GOOGLE_AI_API_KEY;
 
-// Variables globales (se podrían mover a un estado global en el futuro)
 let uploadedPdfText = '';
 let currentSessionId = null;
 let forceNewSession = false;
 
 const auth = getAuth();
 
-// Función para crear o cargar una sesión activa
 export const getOrCreateSession = async (userId, firstPrompt = '') => {
   if (!userId) {
     console.error('No userId provided for session creation.');
@@ -47,7 +45,6 @@ export const getOrCreateSession = async (userId, firstPrompt = '') => {
   }
 };
 
-// Función para cargar mensajes de la sesión activa
 export const loadMessages = (sessionId, callback) => {
   if (!sessionId) {
     console.log('No sessionId provided, returning empty messages.');
@@ -63,7 +60,7 @@ export const loadMessages = (sessionId, callback) => {
       ...doc.data(),
     }));
     console.log('Messages loaded for session', sessionId, ':', messages);
-    callback(messages); // Usamos 'messages' en lugar de la variable global 'mensajes'
+    callback(messages);
   }, (error) => {
     console.error('Error loading messages:', error);
     callback([]);
@@ -72,7 +69,6 @@ export const loadMessages = (sessionId, callback) => {
   return unsubscribe;
 };
 
-// Función para procesar un PDF cargado
 export const processUploadedPdf = async (file) => {
   try {
     const arrayBuffer = await file.arrayBuffer();
@@ -97,7 +93,6 @@ export const processUploadedPdf = async (file) => {
   }
 };
 
-// Función para resetear el chat
 export const resetChat = async () => {
   try {
     uploadedPdfText = '';
@@ -109,7 +104,6 @@ export const resetChat = async () => {
   }
 };
 
-// Función para cerrar sesión
 export const clearSession = async () => {
   try {
     uploadedPdfText = '';
@@ -121,58 +115,53 @@ export const clearSession = async () => {
   }
 };
 
-// Función para enviar mensaje
-const enviarMensaje = async (question, userId) => {
+const enviarMensaje = async (question, userId, sessionId) => {
   if (!question || !question.trim()) {
     console.log('Cannot send empty message.');
-    return false;
+    return { success: false, response: 'No se puede enviar un mensaje vacío.' };
   }
 
   if (!userId) {
     console.error('No userId provided for sending message.');
-    return false;
+    return { success: false, response: 'No userId provided.' };
   }
 
-  if (!currentSessionId || forceNewSession) {
-    currentSessionId = await getOrCreateSession(userId, question);
-    if (!currentSessionId) {
+  let targetSessionId = sessionId || currentSessionId;
+  if (!targetSessionId || forceNewSession) {
+    targetSessionId = await getOrCreateSession(userId, question);
+    if (!targetSessionId) {
       console.error('Failed to create or get session.');
-      return false;
+      return { success: false, response: 'Failed to create or get session.' };
     }
   }
 
-  const nuevoMensaje = {
-    question,
-    emisor: 'usuario',
-    timestamp: serverTimestamp(),
-  };
-
   try {
-    const messagesCollection = collection(db, `chatSessions/${currentSessionId}/messages`);
-    console.log('Saving user message:', nuevoMensaje);
-    await addDoc(messagesCollection, nuevoMensaje);
-
+    const messagesCollection = collection(db, `chatSessions/${targetSessionId}/messages`);
     const respuestaIA = await obtenerRespuestaIA(question);
     console.log('IA response received:', respuestaIA);
 
     await addDoc(messagesCollection, {
+      question,
       answer: respuestaIA,
-      emisor: 'ia',
+      emisor: 'both',
       timestamp: serverTimestamp(),
     });
-    return true;
+
+    currentSessionId = targetSessionId;
+    return { success: true, response: respuestaIA };
   } catch (error) {
     console.error('Error sending message:', error);
+    const messagesCollection = collection(db, `chatSessions/${targetSessionId}/messages`);
     await addDoc(messagesCollection, {
+      question,
       answer: 'Hubo un error al procesar tu solicitud. Por favor, intenta de nuevo más tarde.',
-      emisor: 'ia',
+      emisor: 'both',
       timestamp: serverTimestamp(),
     });
-    return false;
+    return { success: false, response: 'Error processing request.' };
   }
 };
 
-// Función para obtener respuesta de IA
 const obtenerRespuestaIA = async (promptUsuario) => {
   try {
     if (!apiKey) {
@@ -285,8 +274,7 @@ const obtenerRespuestaIA = async (promptUsuario) => {
   }
 };
 
-// Función principal para obtener respuesta
-export const getAnswerFromFirebase = async (question) => {
+export const getAnswerFromFirebase = async (question, sessionId) => {
   if (!question || !question.trim()) {
     console.log('Cannot send empty question.');
     return 'No se puede enviar un mensaje vacío.';
@@ -298,17 +286,15 @@ export const getAnswerFromFirebase = async (question) => {
     return 'Debes iniciar sesión para enviar mensajes.';
   }
 
-  const success = await enviarMensaje(question, user.uid);
+  const { success, response } = await enviarMensaje(question, user.uid, sessionId);
   if (!success) {
     console.log('Message sending failed.');
-    return 'No se pudo enviar el mensaje.';
+    return response;
   }
 
-  // Nota: 'mensajes' ya no se usa como variable global, se gestiona en loadMessages
-  return 'Respuesta procesada (usa loadMessages para obtener los mensajes actualizados)';
+  return response;
 };
 
-// Función para cargar mensajes de la sesión activa
 export const loadSessionMessages = (callback) => {
   const user = auth.currentUser;
   if (!user) {
@@ -328,7 +314,6 @@ export const loadSessionMessages = (callback) => {
   });
 };
 
-// Función para guardar historial (opcional, para compatibilidad)
 export const saveChatHistory = async (question, answer) => {
   if (!currentSessionId) {
     console.log('No current session ID, cannot save history.');
@@ -339,6 +324,7 @@ export const saveChatHistory = async (question, answer) => {
     await addDoc(collection(db, `chatSessions/${currentSessionId}/messages`), {
       question,
       answer,
+      emisor: 'both',
       timestamp: serverTimestamp(),
     });
     console.log('Chat history saved:', { question, answer });
@@ -347,7 +333,6 @@ export const saveChatHistory = async (question, answer) => {
   }
 };
 
-// Función para eliminar una sesión
 export const deleteSession = async (sessionId, userId) => {
   try {
     const sessionDoc = doc(db, `chatSessions/${sessionId}`);
@@ -369,7 +354,6 @@ export const deleteSession = async (sessionId, userId) => {
   }
 };
 
-// Función para actualizar el título de una sesión
 export const updateSessionTitle = async (sessionId, newTitle, userId) => {
   try {
     const sessionDoc = doc(db, `chatSessions/${sessionId}`);
@@ -378,7 +362,7 @@ export const updateSessionTitle = async (sessionId, newTitle, userId) => {
       await setDoc(sessionDoc, { title: newTitle, timestamp: serverTimestamp() }, { merge: true });
       console.log(`Session ${sessionId} title updated to ${newTitle}`);
       if (currentSessionId === sessionId) {
-        currentSessionId = sessionId; // Refresca el estado si es la sesión actual
+        currentSessionId = sessionId;
       }
       return true;
     } else {
