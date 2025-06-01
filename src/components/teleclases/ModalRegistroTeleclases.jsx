@@ -55,9 +55,9 @@ const ModalRegistroTeleclases = ({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Materia</Form.Label>
+            <Form.Label htmlFor="materia" className="form-label-custom">Materia</Form.Label>
             <Form.Select
-              name="materia"
+              id="materia"
               value={nuevaTeleclase.materia}
               onChange={handleInputChange}
               className="form-control-custom"

@@ -292,7 +292,6 @@
             <CuadroBusquedas
             searchText={searchText}
             handleSearchChange={handleSearchChange}
-            className="busqueda"
             />
         </Col>
 

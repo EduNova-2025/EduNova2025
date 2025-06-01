@@ -227,9 +227,10 @@ const ChatArea = () => {
                         onChange={(e) => setNewTitle(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
                         className="title-input"
+                        onClick={(e) => e.stopPropagation()}
                       />
-                      <button onClick={handleSaveTitle} className="action-btn save-btn">✓</button>
-                      <button onClick={handleCancelEdit} className="action-btn cancel-btn">✗</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleSaveTitle(); }} className="action-btn save-btn">✓</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }} className="action-btn cancel-btn">✗</button>
                     </div>
                   ) : (
                     <>
@@ -245,24 +246,24 @@ const ChatArea = () => {
                           minute: '2-digit',
                         }) || 'Fecha no disponible'}
                       </span>
+                      <div className="action-buttons">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
+                          className="action-btn edit-btn"
+                          title="Renombrar"
+                        >
+                          <BsPencil size={14} />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
+                          className="action-btn delete-btn"
+                          title="Eliminar"
+                        >
+                          <BsTrash size={14} />
+                        </button>
+                      </div>
                     </>
                   )}
-                  <div className="action-buttons">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
-                      className="action-btn edit-btn"
-                      title="Renombrar"
-                    >
-                      <BsPencil size={14} />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
-                      className="action-btn delete-btn"
-                      title="Eliminar"
-                    >
-                      <BsTrash size={14} />
-                    </button>
-                  </div>
                 </div>
               </li>
             ))}

@@ -11,7 +11,8 @@ const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
             <video 
               className="card-img-top" 
               src={teleclase.videoUrl} 
-              controls
+              controls 
+              role="video"
             />
           </div>
         )}
@@ -27,6 +28,7 @@ const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
                 size="sm" 
                 className="btn-accion"
                 onClick={onEdit}
+                aria-label="Editar teleclase"
               >
                 <i className="bi bi-pencil-fill"></i>
               </Button>
@@ -35,6 +37,7 @@ const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
                 size="sm" 
                 className="btn-accion"
                 onClick={onDelete}
+                aria-label="Eliminar teleclase"
               >
                 <i className="bi bi-trash-fill"></i>
               </Button>
