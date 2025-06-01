@@ -1,4 +1,3 @@
-
 /* ===== Chatbot Styles ===== */
 .chat-area {
   background: #ffffff;
@@ -469,7 +468,7 @@
 .action-buttons {
   position: absolute;
   top: 8px;
-  right: 8px;
+  right: -50px;
   display: flex;
   gap: 4px;
 }
@@ -584,6 +583,17 @@
   .chat-bubble.ai {
     border-bottom-left-radius: 4px;
     margin-left: 5px;
+  }
+
+  .chat-item {
+    background: #2a2a2a !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+  .action-buttons {
+    background: transparent !important;
+    width: auto !important;
   }
 }
 
