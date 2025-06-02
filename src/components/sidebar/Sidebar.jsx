@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import {
   FaBars,
   FaHome,
@@ -15,6 +16,7 @@ import {
   FaThList,
   FaVideo,
   FaChartBar,
+  FaLanguage,
 } from "react-icons/fa";
 import { useAuth } from "../../database/authcontext";
 import "../../styles/Sidebar.css";
@@ -36,6 +38,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const { isLoggedIn, logout, userRole } = useAuth();
+  const { t, i18n } = useTranslation();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -66,33 +69,37 @@ const Sidebar = ({ ocultarHamburguesa }) => {
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
 
+  const cambiarIdioma = (lang) => {
+    i18n.changeLanguage(lang);
+  };
+
   const items = [
-    { icon: <FaHome />, label: "Inicio", path: "/inicio", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaHome />, label: t("menu.inicio"), path: "/inicio", rolesAllowed: ["Admin", "Docente", "Mined"] },
 
     {
-      icon: <FaBoxOpen />, label: "Biblioteca Digital", submenuName: "biblioteca", subItems: [
-        { icon: <FaThList />, label: "Categorías", path: "/categorias", rolesAllowed: ["Admin", "Mined"] },
-        { icon: <FaBook />, label: "Gestión", path: "/books", rolesAllowed: ["Admin", "Mined"] },
-        { icon: <FaFolderOpen />, label: "Catálogo", path: "/catalogo", rolesAllowed: ["Admin", "Docente"] },
+      icon: <FaBoxOpen />, label: t("menu.biblioteca"), submenuName: "biblioteca", subItems: [
+        { icon: <FaThList />, label: t("menu.categorias"), path: "/categorias", rolesAllowed: ["Admin", "Mined"] },
+        { icon: <FaBook />, label: t("menu.libros"), path: "/books", rolesAllowed: ["Admin", "Mined"] },
+        { icon: <FaFolderOpen />, label: t("menu.catalogo"), path: "/catalogo", rolesAllowed: ["Admin", "Docente"] },
       ], rolesAllowed: ["Admin", "Docente", "Mined"]
     },
 
     {
-      icon: <FaTags />, label: "Teleclases", submenuName: "teleclase", subItems: [
-        { icon: <FaBook />, label: "Gestión", path: "/teleclasemined", rolesAllowed: ["Admin", "Mined"] },
-        { icon: <FaListAlt />, label: "Documentos", path: "/teleclase", rolesAllowed: ["Admin", "Docente"] },
+      icon: <FaTags />, label: t("menu.teleclases"), submenuName: "teleclase", subItems: [
+        { icon: <FaBook />, label: t("menu.gestion"), path: "/teleclasemined", rolesAllowed: ["Admin", "Mined"] },
+        { icon: <FaListAlt />, label: t("menu.documentos"), path: "/teleclase", rolesAllowed: ["Admin", "Docente"] },
       ], rolesAllowed: ["Admin", "Docente", "Mined"]
     },
 
-    { icon: <FaRobot />, label: "Master IA", path: "/ia", rolesAllowed: ["Admin", "Docente"] },
-    { icon: <FaComment />, label: "Foro", path: "/foro", rolesAllowed: ["Admin", "Docente", "Mined"] },
-    { icon: <FaVideo />, label: "Conferencias", path: "/conferencia", rolesAllowed: ["Admin", "Docente", "Mined"] },
-    { icon: <FaChartBar />, label: "Estadisticas", path: "/estadisticas", rolesAllowed: ["Admin", "Docente", "Mined"] },
-    { icon: <FaCog />, label: "Ajustes", path: "/configuracion", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaRobot />, label: t("menu.masterIA"), path: "/ia", rolesAllowed: ["Admin", "Docente"] },
+    { icon: <FaComment />, label: t("menu.foro"), path: "/foro", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaVideo />, label: t("menu.conferencias"), path: "/conferencia", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaChartBar />, label: t("menu.estadisticas"), path: "/estadisticas", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaCog />, label: t("menu.ajustes"), path: "/configuracion", rolesAllowed: ["Admin", "Docente", "Mined"] },
   ];
 
   const bottomItems = [
-    { icon: <FaSignOutAlt />, label: "Cerrar Sesión", path: "/logout" },
+    { icon: <FaSignOutAlt />, label: t("menu.cerrarSesion"), path: "/logout" },
   ];
 
   const filteredItems = items.filter(item => {
@@ -155,6 +162,16 @@ const Sidebar = ({ ocultarHamburguesa }) => {
         </div>
 
         <div className="sidebar-section bottom">
+          <div className="language-selector">
+            <div className="sidebar-item" onClick={() => cambiarIdioma("es")}>
+              <FaLanguage />
+              <span>{t("menu.español")}</span>
+            </div>
+            <div className="sidebar-item" onClick={() => cambiarIdioma("en")}>
+              <FaLanguage />
+              <span>{t("menu.ingles")}</span>
+            </div>
+          </div>
           {bottomItems.map((item) => (
             <SidebarItem
               key={item.label}

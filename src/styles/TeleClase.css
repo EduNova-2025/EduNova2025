@@ -522,3 +522,96 @@
         font-size: 20px;
     }
 }
+
+.filtros-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filtros-header {
+    margin-bottom: 15px;
+}
+
+.filtros-header h4 {
+    color: #0057B7;
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.filtros-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.filtro-grupo {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filtro-grupo label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.filtro-acciones {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 10px;
+}
+
+.filtro-acciones button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filtro-acciones .btn-primary {
+    background-color: #0057B7;
+    color: white;
+}
+
+.filtro-acciones .btn-primary:hover {
+    background-color: #004494;
+}
+
+.filtro-acciones .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.filtro-acciones .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+@media (max-width: 768px) {
+    .filtros-body {
+        flex-direction: column;
+    }
+
+    .filtro-grupo {
+        width: 100%;
+    }
+
+    .filtro-acciones {
+        width: 100%;
+        justify-content: center;
+    }
+}

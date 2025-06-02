@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const BuscadorTeleclases = ({ onSearch }) => {
+    const { t } = useTranslation();
+
     const handleSearch = (e) => {
         const searchTerm = e.target.value.toLowerCase();
         onSearch(searchTerm);
@@ -8,11 +11,11 @@ const BuscadorTeleclases = ({ onSearch }) => {
 
     return (
         <div className="busqueda-contenedor">
-            <span className="titulo-busqueda">Teleclases</span>
+            <span className="titulo-busqueda">{t('teleclase.Teleclase')}</span>
             <div className="campo-busqueda-container">
                 <input 
                     type="text" 
-                    placeholder="Buscar por descripción" 
+                    placeholder={t('teleclase.buscarTeleclases')} 
                     className="campo-busqueda"
                     onChange={handleSearch}
                 />

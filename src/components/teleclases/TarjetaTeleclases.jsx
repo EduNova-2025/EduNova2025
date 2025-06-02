@@ -1,13 +1,16 @@
 import React from 'react';
 import { Card, Col } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ReactGA from 'react-ga4';
 
 const TarjetaTeleclases = ({ teleclase, onShowQR }) => {
+  const { t } = useTranslation();
+
   const handleVideoPlay = () => {
     ReactGA.event({
-      category: teleclase.materia || 'Sin materia',
-      action: 'Reproducir Video Teleclase',
+      category: teleclase.materia || t('teleclase.sinMateria'),
+      action: t('teleclase.reproducirVideo'),
       label: teleclase.titulo
     });
   };
@@ -28,7 +31,7 @@ const TarjetaTeleclases = ({ teleclase, onShowQR }) => {
         <Card.Body>
           <div className="tarjeta-contenido">
             <h3 className="tarjeta-titulo">
-              Teleclases - {teleclase.materia}
+              {t('teleclase.titulo')} - {teleclase.materia}
             </h3>
             <p className="tarjeta-descripcion">{teleclase.descripcion}</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
@@ -36,7 +39,7 @@ const TarjetaTeleclases = ({ teleclase, onShowQR }) => {
                 className="btn btn-outline-primary"
                 onClick={() => onShowQR(teleclase.videoUrl)}
               >
-                <i className="bi bi-qr-code"></i> Compartir QR
+                <i className="bi bi-qr-code"></i> {t('teleclase.compartirQR')}
               </button>
             </div>
           </div>

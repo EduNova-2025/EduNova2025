@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
+import { useTranslation } from 'react-i18next';
 import ReactGA from "react-ga4";
 
 ReactGA.initialize([
@@ -19,6 +20,8 @@ const ModalRegistroTeleclases = ({
   handleVideoChange,
   handleAddTeleclase,
 }) => {
+  const { t } = useTranslation();
+
   // Función para rastrear el registro de teleclases
   const trackTeleclaseRegistration = () => {
     ReactGA.event({
@@ -38,16 +41,16 @@ const ModalRegistroTeleclases = ({
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
-        <Modal.Title className="modal-title-custom">Agregar Teleclase</Modal.Title>
+        <Modal.Title className="modal-title-custom">{t('teleclase.agregarTeleclase')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Título</Form.Label>
+            <Form.Label className="form-label-custom">{t('teleclase.titulo')}</Form.Label>
             <Form.Control
               type="text"
               name="titulo"
-              placeholder="Agrega un título"
+              placeholder={t('teleclase.agregarTitulo')}
               value={nuevaTeleclase.titulo}
               onChange={handleInputChange}
               className="form-control-custom"
@@ -55,35 +58,35 @@ const ModalRegistroTeleclases = ({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="materia" className="form-label-custom">Materia</Form.Label>
+            <Form.Label htmlFor="materia" className="form-label-custom">{t('teleclase.materia')}</Form.Label>
             <Form.Select
               id="materia"
               value={nuevaTeleclase.materia}
               onChange={handleInputChange}
               className="form-control-custom"
             >
-              <option value="">Selecciona una materia</option>
-              <option value="Matematica">Matemática</option>
-              <option value="Lengua y literatura">Lengua y Literatura</option>
-              <option value="Ciencias naturales">Ciencias Naturales</option>
-              <option value="Estudios sociales">Estudios Sociales</option>
-              <option value="Inglés">Inglés</option>
+              <option value="">{t('teleclase.seleccionarMateria')}</option>
+              <option value="Matematica">{t('teleclase.matematica')}</option>
+              <option value="Lengua y literatura">{t('teleclase.lengua')}</option>
+              <option value="Ciencias naturales">{t('teleclase.ciencias')}</option>
+              <option value="Estudios sociales">{t('teleclase.estudiosSociales')}</option>
+              <option value="Inglés">{t('teleclase.ingles')}</option>
             </Form.Select>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Descripción</Form.Label>
+            <Form.Label className="form-label-custom">{t('teleclase.descripcion')}</Form.Label>
             <Form.Control
               type="text"
               name="descripcion"
-              placeholder="Escribe aqui"
+              placeholder={t('teleclase.escribirDescripcion')}
               value={nuevaTeleclase.descripcion}
               onChange={handleInputChange}
               className="form-control-custom"
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label className="form-label-custom">Archivo de Video</Form.Label>
+            <Form.Label className="form-label-custom">{t('teleclase.archivoVideo')}</Form.Label>
             <Form.Control
               type="file"
               accept="video/*"
@@ -95,10 +98,10 @@ const ModalRegistroTeleclases = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
-          Cancelar
+          {t('common.cancelar')}
         </Button>
         <Button className="btn-style" onClick={handleAddTeleclaseWithTracking}>
-          Guardar
+          {t('common.guardar')}
         </Button>
       </Modal.Footer>
     </Modal>

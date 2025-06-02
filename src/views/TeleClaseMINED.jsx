@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../styles/TeleClase.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { db, storage} from '../database/firebaseconfig';
@@ -18,16 +19,17 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 const TeleClaseMINED = () => {
+    const { t } = useTranslation();
     const [teleclases, setTeleclases] = useState([]);
-    const [materias, setMaterias] = useState(['Todos']);
-    const [materiaSeleccionada, setMateriaSeleccionada] = useState('Todos');
+    const [materias, setMaterias] = useState([t('teleclase.todas')]);
+    const [materiaSeleccionada, setMateriaSeleccionada] = useState(t('teleclase.todas'));
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedTeleclase, setSelectedTeleclase] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6; // Número de teleclases por página
+    const itemsPerPage = 6;
 
     const [nuevaTeleclase, setNuevaTeleclase] = useState({
         titulo: '',
@@ -48,17 +50,16 @@ const TeleClaseMINED = () => {
             }));
             setTeleclases(fetchedTeleclases);
 
-            // Obtener materias únicas
-            const uniqueMaterias = ['Todos', ...new Set(fetchedTeleclases.map(teleclase => teleclase.materia))];
+            const uniqueMaterias = [t('teleclase.todas'), ...new Set(fetchedTeleclases.map(teleclase => teleclase.materia))];
             setMaterias(uniqueMaterias);
         } catch (error) {
-            console.error("Error al obtener teleclases:", error);
+            console.error(t('teleclase.errorObtener'), error);
         }
     };
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [t]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -70,40 +71,37 @@ const TeleClaseMINED = () => {
         if (file) {
             setVideoFile(file);
         } else {
-            alert('Por favor, selecciona un archivo de video.');
+            alert(t('teleclase.seleccionarVideo'));
         }
     };
 
     const handleAddTeleclase = async () => {
-        // Validaciones para agregar teleclase
         if (!nuevaTeleclase.titulo.trim()) {
-            alert('Por favor, ingrese un título para la teleclase.');
+            alert(t('teleclase.agregarTitulo'));
             return;
         }
         if (!nuevaTeleclase.materia.trim()) {
-            alert('Por favor, seleccione una materia para la teleclase.');
+            alert(t('teleclase.seleccionarMateria'));
             return;
         }
         if (!nuevaTeleclase.descripcion.trim()) {
-            alert('Por favor, ingrese una descripción para la teleclase.');
+            alert(t('teleclase.escribirDescripcion'));
             return;
         }
         if (!videoFile) {
-            alert('Por favor, seleccione un video para la teleclase.');
+            alert(t('teleclase.archivoVideo'));
             return;
         }
 
-        // Validar el formato del video
         const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
         if (!allowedTypes.includes(videoFile.type)) {
-            alert('Por favor, seleccione un archivo de video válido (MP4, WebM, o OGG).');
+            alert(t('teleclase.seleccionarVideo'));
             return;
         }
 
-        // Validar el tamaño del video (máximo 100MB)
-        const maxSize = 100 * 1024 * 1024; // 100MB en bytes
+        const maxSize = 100 * 1024 * 1024;
         if (videoFile.size > maxSize) {
-            alert('El archivo de video es demasiado grande. El tamaño máximo permitido es 100MB.');
+            alert(t('teleclase.errorAgregar'));
             return;
         }
 
@@ -118,40 +116,37 @@ const TeleClaseMINED = () => {
             setVideoFile(null);
             await fetchData();
         } catch (error) {
-            console.error('Error al agregar teleclase:', error);
-            alert('Ocurrió un error al agregar la teleclase. Por favor, intente nuevamente.');
+            console.error(t('teleclase.errorAgregar'), error);
+            alert(t('teleclase.errorAgregar'));
         }
     };
 
     const handleEditTeleclase = async () => {
         if (!selectedTeleclase) return;
 
-        // Validaciones para editar teleclase
         if (!selectedTeleclase.titulo.trim()) {
-            alert('Por favor, ingrese un título para la teleclase.');
+            alert(t('teleclase.agregarTitulo'));
             return;
         }
         if (!selectedTeleclase.materia.trim()) {
-            alert('Por favor, seleccione una materia para la teleclase.');
+            alert(t('teleclase.seleccionarMateria'));
             return;
         }
         if (!selectedTeleclase.descripcion.trim()) {
-            alert('Por favor, ingrese una descripción para la teleclase.');
+            alert(t('teleclase.escribirDescripcion'));
             return;
         }
 
         if (videoFile) {
-            // Validar el formato del video si se está actualizando
             const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
             if (!allowedTypes.includes(videoFile.type)) {
-                alert('Por favor, seleccione un archivo de video válido (MP4, WebM, o OGG).');
+                alert(t('teleclase.seleccionarVideo'));
                 return;
             }
 
-            // Validar el tamaño del video si se está actualizando
-            const maxSize = 100 * 1024 * 1024; // 100MB en bytes
+            const maxSize = 100 * 1024 * 1024;
             if (videoFile.size > maxSize) {
-                alert('El archivo de video es demasiado grande. El tamaño máximo permitido es 100MB.');
+                alert(t('teleclase.errorAgregar'));
                 return;
             }
         }
@@ -175,8 +170,8 @@ const TeleClaseMINED = () => {
             setVideoFile(null);
             await fetchData();
         } catch (error) {
-            console.error('Error al actualizar teleclase:', error);
-            alert('Ocurrió un error al actualizar la teleclase. Por favor, intente nuevamente.');
+            console.error(t('teleclase.errorAgregar'), error);
+            alert(t('teleclase.errorAgregar'));
         }
     };
 
@@ -189,7 +184,7 @@ const TeleClaseMINED = () => {
             setSelectedTeleclase(null);
             await fetchData();
         } catch (error) {
-            console.error('Error al eliminar teleclase:', error);
+            console.error(t('teleclase.errorAgregar'), error);
         }
     };
 
@@ -205,22 +200,19 @@ const TeleClaseMINED = () => {
     const filteredTeleclases = teleclases
         .filter(teleclase => {
             const matchesSearch = teleclase.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesMateria = materiaSeleccionada === 'Todos' || teleclase.materia === materiaSeleccionada;
+            const matchesMateria = materiaSeleccionada === t('teleclase.todas') || teleclase.materia === materiaSeleccionada;
             return matchesSearch && matchesMateria;
         });
 
-    // Calcular las teleclases para la página actual
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentTeleclases = filteredTeleclases.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Evento: Visualización de teleclase (edición)
     const openEditModal = (teleclase) => {
         setSelectedTeleclase(teleclase);
         setShowEditModal(true);
     };
 
-    // Evento: Visualización de teleclase (eliminación)
     const openDeleteModal = (teleclase) => {
         setSelectedTeleclase(teleclase);
         setShowDeleteModal(true);
@@ -232,76 +224,51 @@ const TeleClaseMINED = () => {
         doc.rect(0, 0, 220, 30, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(16);
-        doc.text("Reporte de Teleclases", doc.internal.pageSize.width / 2, 18, 'center');
+        doc.text(t('teleclase.reportes'), doc.internal.pageSize.width / 2, 18, 'center');
 
         const columnas = [
-          "#",
-          "Título",
-          "Materia",
-          "Descripción"
+            "#",
+            t('teleclase.titulo'),
+            t('teleclase.materia'),
+            t('teleclase.descripcion')
         ];
 
-        const filas = teleclases.map((teleclase, index) => [
-          index + 1,
-          teleclase.titulo,
-          teleclase.materia,
-          teleclase.descripcion
+        const datos = teleclases.map((teleclase, index) => [
+            index + 1,
+            teleclase.titulo,
+            teleclase.materia,
+            teleclase.descripcion
         ]);
 
-        const totalPaginas = "{total_pages_count_string}";
-
-        autoTable(doc, {
-          head: [columnas],
-          body: filas,
-          startY: 40,
-          theme: "grid",
-          styles: {
-            cellPadding: 2,
-            fontSize: 10,
-          },
-          margin: {
-            top: 20,
-            right: 20,
-            left: 20
-          },
-          tableWidth: "auto",
-          columnStyles: {
-            0: { cellWidth: "auto" },
-            1: { cellWidth: "auto" },
-            2: { cellWidth: "auto" },
-            3: { cellWidth: 60 },
-          },
-          pageBreak: "auto",
-          rowPageBreak: "auto",
-          didDrawPage: function (data) {
-            const alturaPagina = doc.internal.pageSize.height;
-            const anchoPagina = doc.internal.pageSize.width;
-            const numeroPagina = doc.internal.getNumberOfPages();
-            doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            const piePagina = `Página ${numeroPagina} de ${totalPaginas}`;
-            doc.text(piePagina, anchoPagina / 2 + 15, alturaPagina - 10, 'center');
-          },
+        doc.autoTable({
+            head: [columnas],
+            body: datos,
+            startY: 40,
+            theme: 'grid',
+            styles: {
+                fontSize: 10,
+                cellPadding: 3,
+            },
+            headStyles: {
+                fillColor: [28, 41, 51],
+                textColor: 255,
+                fontSize: 12,
+                fontStyle: 'bold',
+            },
         });
-
-        if (typeof doc.putTotalPages === "function") {
-          doc.putTotalPages(totalPaginas);
-        }
 
         const dia = String(new Date().getDate()).padStart(2, '0');
         const mes = String(new Date().getMonth() + 1).padStart(2, '0');
         const anio = new Date().getFullYear();
-        const nombreArchivo = `Reporte de Teleclases ${dia}-${mes}-${anio}.pdf`;
-
-        doc.save(nombreArchivo);
+        doc.save(`Reporte_Teleclases_${dia}-${mes}-${anio}.pdf`);
     };
 
     const exportarExcelTeleclases = () => {
         const datos = teleclases.map((teleclase, index) => ({
             "#": index + 1,
-            "Título": teleclase.titulo,
-            "Materia": teleclase.materia,
-            "Descripción": teleclase.descripcion,
+            [t('teleclase.titulo')]: teleclase.titulo,
+            [t('teleclase.materia')]: teleclase.materia,
+            [t('teleclase.descripcion')]: teleclase.descripcion,
         }));
 
         const hoja = XLSX.utils.json_to_sheet(datos);
@@ -314,38 +281,39 @@ const TeleClaseMINED = () => {
         const dia = String(new Date().getDate()).padStart(2, '0');
         const mes = String(new Date().getMonth() + 1).padStart(2, '0');
         const anio = new Date().getFullYear();
-        const nombreArchivo = `Reporte de Teleclases ${dia}-${mes}-${anio}.xlsx`;
+        const nombreArchivo = `Reporte_Teleclases_${dia}-${mes}-${anio}.xlsx`;
 
         saveAs(blob, nombreArchivo);
     };
 
     return (
-        <div className="contenedor-teleclase-mined" style={{}}> 
+        <div className="contenedor-teleclase-mined">
             <BuscadorTeleclases onSearch={handleSearch} />
+
             <div className="botones-filtro">
                 {materias.map((materia, index) => (
                     <button 
                         key={index}
-                        onClick={() => {
-                            handleMateriaFilter(materia);
-                        }}
+                        onClick={() => handleMateriaFilter(materia)}
                         className={materiaSeleccionada === materia ? 'active' : ''}
                     >
                         {materia}
                     </button>
                 ))}
             </div>
+
             <div className="d-flex justify-content-center gap-2 mb-3">
                 <button className="btn-agregar" onClick={generarPDFTeleclases}>
-                    <i className="bi bi-file-earmark-arrow-down"></i> Descargar Reporte PDF
+                    <i className="bi bi-file-earmark-arrow-down"></i> {t('teleclase.generarReportePDF')}
                 </button>
                 <button className="btn-agregar" onClick={exportarExcelTeleclases}>
-                    <i className="bi bi-file-earmark-excel"></i> Descargar Excel
+                    <i className="bi bi-file-earmark-excel"></i> {t('teleclase.generarReporteExcel')}
                 </button>
                 <button className="btn-agregar" onClick={() => setShowModal(true)}>
-                    <i className="bi bi-plus-lg"></i> Agregar Teleclase
+                    <i className="bi bi-plus-lg"></i> {t('teleclase.agregarTeleclase')}
                 </button>
             </div>
+
             <div className="catalogo-teleclases">
                 <Container fluid>
                     <Row>
@@ -353,12 +321,8 @@ const TeleClaseMINED = () => {
                             <TarjetaTeleclasesMINED 
                                 key={teleclase.id} 
                                 teleclase={teleclase}
-                                onEdit={() => {
-                                    openEditModal(teleclase);
-                                }}
-                                onDelete={() => {
-                                    openDeleteModal(teleclase);
-                                }}
+                                onEdit={() => openEditModal(teleclase)}
+                                onDelete={() => openDeleteModal(teleclase)}
                             />
                         ))}
                     </Row>

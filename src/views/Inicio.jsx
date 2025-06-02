@@ -1,9 +1,11 @@
-    import { useNavigate } from "react-router-dom";
-    import { motion } from "framer-motion";
-    import '../App.css'; // Importa el archivo CSS
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useTranslation } from 'react-i18next';
+import '../App.css'; // Importa el archivo CSS
 
-    const Inicio = () => {
+const Inicio = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleNavigate = (path) => {
         navigate(path);
@@ -28,7 +30,7 @@
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
             >
-            ¡Bienvenido a EduNova!
+             {t('inicio.titulo')}
             </motion.h1>
 
             <motion.p
@@ -37,8 +39,7 @@
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 1 }}
             >
-            Plataforma que facilita la gestión y planificación de planes de 
-            clases para docentes de quinto grado de primaria.
+            {t('inicio.descripcion')}
             </motion.p>
 
             <div className="button-group">
@@ -49,7 +50,7 @@
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
             >
-                Biblioteca Digital
+                {t('menu.biblioteca')}
             </motion.button>
             <motion.button
                 className="inicio-button"
@@ -58,7 +59,7 @@
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
             >
-                Teleclases
+                {t('menu.teleclases')}
             </motion.button>
             <motion.button
                 className="inicio-button"
@@ -67,7 +68,7 @@
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
             >
-                Master IA
+                {t('menu.masterIA')}
             </motion.button>
             <motion.button
                 className="inicio-button"
@@ -76,7 +77,7 @@
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
             >
-                Foro
+                {t('menu.foro')}
             </motion.button>
             <motion.button
                 className="inicio-button"
@@ -85,7 +86,7 @@
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
             >
-                Video Conferencias
+                {t('menu.conferencias')}
             </motion.button>
             </div>
         </div>
