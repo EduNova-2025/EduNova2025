@@ -6,19 +6,21 @@ import '../styles/Conferencias.css';
 import { useNavigate } from 'react-router-dom';
 // --- Add this import for the bell icon ---
 import { BsBell } from 'react-icons/bs';
+import { useTranslation } from 'react-i18next';
 
 // Modal de alerta flotante
 const ModalAlerta = ({ mensaje, onClose }) => (
   <div className="modal-overlay">
     <div className="modal-contenido">
       <p>{mensaje}</p>
-      <button onClick={onClose}>Cerrar</button>
+      <button onClick={onClose}>{t('conferencias.cerrar')}</button>
     </div>
   </div>
 );
 
 // Modal para ingresar enlace externo
 const ModalEntradaEnlace = ({ plataforma, onAceptar, onCancelar }) => {
+  const { t } = useTranslation();
   const [valorInput, setValorInput] = useState('');
 
   const manejarAceptar = () => {
@@ -29,7 +31,7 @@ const ModalEntradaEnlace = ({ plataforma, onAceptar, onCancelar }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-contenido">
-        <h3>Pega aquí el enlace de la reunión en {plataforma.toUpperCase()}</h3>
+        <h3>{t('conferencias.pegarEnlace')} {plataforma.toUpperCase()}</h3>
         <input
           type="text"
           value={valorInput}
@@ -38,8 +40,8 @@ const ModalEntradaEnlace = ({ plataforma, onAceptar, onCancelar }) => {
           style={{ width: '100%', padding: '8px', marginTop: '10px' }}
         />
         <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between' }}>
-          <button onClick={onCancelar}>Cancelar</button>
-          <button onClick={manejarAceptar}>Aceptar</button>
+          <button onClick={onCancelar}>{t('conferencias.cancelar')}</button>
+          <button onClick={manejarAceptar}>{t('conferencias.aceptar')}</button>
         </div>
       </div>
     </div>
@@ -73,6 +75,7 @@ const FloatingNotification = ({ notification, onClose, onJoin }) => (
 );
 
 const Conferencia = () => {
+  const { t } = useTranslation();
   const [roomName, setRoomName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [platform, setPlatform] = useState('interna');
@@ -234,7 +237,7 @@ const Conferencia = () => {
             zIndex: 4000,
             minWidth: 400
           }}>
-            <h4 style={{ marginTop: 0 }}>Notificaciones</h4>
+            <h4 style={{ marginTop: 0 }}>{t('conferencias.notificaciones')}</h4>
             {/* Make the notifications list scrollable */}
             <ul
               style={{
@@ -286,14 +289,14 @@ const Conferencia = () => {
                           fontSize: 13
                         }}
                       >
-                        Unirse
+                        {t('conferencias.unirse')}
                       </button>
                     )}
                   </li>
                 );
               })}
               {notificaciones.length === 0 && (
-                <li>No hay notificaciones recientes.</li>
+                <li>{t('conferencias.noHayNotificaciones')}</li>
               )}
             </ul>
           </div>
@@ -305,27 +308,27 @@ const Conferencia = () => {
           <Videoconferencia roomName={roomName} displayName={displayName} />
         ) : (
           <div className="formulario">
-            <h2>Video Conferencias</h2>
+            <h2>{t('conferencias.titulo')}</h2>
             <input
               type="text"
-              placeholder="Nombre de la clase"
+              placeholder={t('conferencias.nombreClase')}
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
             />
             <input
               type="text"
-              placeholder="Tu nombre"
+              placeholder={t('conferencias.tuNombre')}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
             <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
-              <option value="interna">Videollamada Interna (Jitsi)</option>
-              <option value="webex">Webex Meetings</option>
+              <option value="interna">{t('conferencias.videollamadaInterna')}</option>
+              <option value="webex">{t('conferencias.webexMeetings')}</option>
             </select>
-            <button onClick={handleStartMeeting}>Iniciar Videollamada</button>
+            <button onClick={handleStartMeeting}>{t('conferencias.iniciarVideollamada')}</button>
 
             <button onClick={handleGoToHistorial} className="boton-historial">
-              Ver historial de videollamadas
+              {t('conferencias.verHistorial')}
             </button>
           </div>
         )}

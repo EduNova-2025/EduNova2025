@@ -5,6 +5,8 @@ import { getAuth } from 'firebase/auth';
 import '../styles/Foro.css';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Modal, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from "../database/authcontext";
 
 const gruposPredefinidos = [
   { id: 'matematicas', nombre: 'Matemáticas', icono: '🧮' },
@@ -25,6 +27,8 @@ const useIsMobile = () => {
 };
 
 const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const [mensajes, setMensajes] = useState([]);
   const [nuevoMensaje, setNuevoMensaje] = useState('');
   const [usuarioActual, setUsuarioActual] = useState(null);
@@ -43,6 +47,16 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
   const [audioSubiendo, setAudioSubiendo] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [mensajeAEliminar, setMensajeAEliminar] = useState(null);
+  const [temas, setTemas] = useState([]);
+  const [nuevoTema, setNuevoTema] = useState({
+    titulo: "",
+    contenido: "",
+    autor: user?.email || "",
+    fecha: new Date().toISOString(),
+    respuestas: [],
+    estado: "activo"
+  });
+  const [error, setError] = useState(null);
 
   const marcarComoLeido = async (userId, grupoId) => {
     try {
@@ -322,25 +336,87 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
       <Modal.Body>
         {mensajeAEliminar ? (
           <>
-            <p>¿Está seguro que desea eliminar este mensaje?</p>
-            <p className="text-danger">Esta acción no se puede deshacer.</p>
+            <p>{t('foro.confirmarEliminacion')}</p>
+            <p className="text-danger">{t('foro.accionNoSePuedeDeshacer')}</p>
           </>
         ) : (
-          <p className="text-danger">No tienes permisos para eliminar mensajes.</p>
+          <p className="text-danger">{t('foro.noTienesPermisosEliminar')}</p>
         )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => { setShowModalEliminar(false); setMensajeAEliminar(null); }}>
-          Cancelar
+          {t('foro.cancelar')}
         </Button>
         {mensajeAEliminar && (
           <Button variant="danger" onClick={eliminarMensaje}>
-            Eliminar
+            {t('foro.eliminar')}
           </Button>
         )}
       </Modal.Footer>
     </Modal>
   );
+
+  useEffect(() => {
+    const fetchTemas = async () => {
+      try {
+        const temasSnapshot = await getDocs(collection(db, "temas"));
+        const temasData = temasSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTemas(temasData);
+      } catch (error) {
+        console.error("Error al obtener temas:", error);
+        setError(t('foro.errorObtener'));
+      }
+    };
+
+    fetchTemas();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNuevoTema(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!nuevoTema.titulo || !nuevoTema.contenido) {
+      setError(t('foro.camposRequeridos'));
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "temas"), nuevoTema);
+      setNuevoTema({
+        titulo: "",
+        contenido: "",
+        autor: user?.email || "",
+        fecha: new Date().toISOString(),
+        respuestas: [],
+        estado: "activo"
+      });
+      setError(null);
+    } catch (error) {
+      console.error("Error al agregar tema:", error);
+      setError(t('foro.errorAgregar'));
+    }
+  };
+
+  const handleEliminarTema = async (temaId) => {
+    if (window.confirm(t('foro.confirmarEliminacion'))) {
+      try {
+        await deleteDoc(doc(db, "temas", temaId));
+        setTemas(temas.filter(tema => tema.id !== temaId));
+      } catch (error) {
+        console.error("Error al eliminar tema:", error);
+        setError(t('foro.errorEliminar'));
+      }
+    }
+  };
 
   // Renderizado condicional según dispositivo
   if (isMobile) {
@@ -479,14 +555,14 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                       width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
                       borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
                     }}></span>
-                    Subiendo archivo...
+                    {t('foro.subiendoArchivo')}
                   </div>
                 )}
                 <button
                   className="attach-button"
                   type="button"
                   onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                  aria-label="Adjuntar archivo"
+                  aria-label={t('foro.adjuntarArchivo')}
                   style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
                 >
                   📎
@@ -495,13 +571,13 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                   className="audio-button"
                   type="button"
                   onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
-                  aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
+                  aria-label={grabandoAudio ? t('foro.detenerGrabacion') : t('foro.grabarAudio')}
                   style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
                 >
                   {grabandoAudio ? '⏹️' : '🎤'}
                 </button>
                 {audioSubiendo && (
-                  <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
+                  <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>{t('foro.subiendoAudio')}</span>
                 )}
                 <input
                   type="file"
@@ -513,11 +589,11 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                   type="text"
                   value={nuevoMensaje}
                   onChange={(e) => setNuevoMensaje(e.target.value)}
-                  placeholder="Escribe un mensaje..."
+                  placeholder={t('foro.escribeMensaje')}
                   onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
                   style={{ flex: 1 }}
                 />
-                <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
+                <button className="send-button" onClick={enviarMensaje} aria-label={t('foro.enviar')}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -597,7 +673,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                         <button
                           onClick={() => solicitarEliminarMensaje(mensaje.id)}
                           style={{ marginLeft: 8, color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}
-                          title="Eliminar mensaje"
+                          title={t('foro.eliminarMensaje')}
                         >🗑️</button>
                       )}
                     </div>
@@ -642,14 +718,14 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                     width: 20, height: 20, border: '3px solid #1a73e8', borderTop: '3px solid #fff',
                     borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite'
                   }}></span>
-                  Subiendo archivo...
+                  {t('foro.subiendoArchivo')}
                 </div>
               )}
               <button
                 className="attach-button"
                 type="button"
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                aria-label="Adjuntar archivo"
+                aria-label={t('foro.adjuntarArchivo')}
                 style={{ background: 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
               >
                 📎
@@ -658,13 +734,13 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                 className="audio-button"
                 type="button"
                 onClick={grabandoAudio ? detenerGrabacion : iniciarGrabacion}
-                aria-label={grabandoAudio ? 'Detener grabación' : 'Grabar audio'}
+                aria-label={grabandoAudio ? t('foro.detenerGrabacion') : t('foro.grabarAudio')}
                 style={{ background: grabandoAudio ? '#e57373' : 'none', border: 'none', fontSize: 22, marginRight: 8, cursor: 'pointer' }}
               >
                 {grabandoAudio ? '⏹️' : '🎤'}
               </button>
               {audioSubiendo && (
-                <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>Subiendo audio...</span>
+                <span style={{ color: '#1a73e8', fontWeight: 500, marginRight: 8 }}>{t('foro.subiendoAudio')}</span>
               )}
               <input
                 type="file"
@@ -676,11 +752,11 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                 type="text"
                 value={nuevoMensaje}
                 onChange={(e) => setNuevoMensaje(e.target.value)}
-                placeholder="Escribe un mensaje..."
+                placeholder={t('foro.escribeMensaje')}
                 onKeyPress={(e) => e.key === 'Enter' && enviarMensaje()}
                 style={{ flex: 1 }}
               />
-              <button className="send-button" onClick={enviarMensaje} aria-label="Enviar">
+              <button className="send-button" onClick={enviarMensaje} aria-label={t('foro.enviar')}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -692,8 +768,8 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
           !isMobile && (
             <div className="chat-placeholder">
               <div className="placeholder-content">
-                <h1>Selecciona un grupo</h1>
-                <p>para comenzar a chatear</p>
+                <h1>{t('foro.seleccionaGrupo')}</h1>
+                <p>{t('foro.paraComenzarChat')}</p>
               </div>
             </div>
           )
@@ -733,7 +809,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                 cursor: 'pointer',
                 zIndex: 10000
               }}
-              aria-label='Cerrar visor'
+              aria-label={t('foro.cerrarVisor')}
             >✕</button>
           </div>
         )}

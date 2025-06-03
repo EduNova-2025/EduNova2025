@@ -29,8 +29,10 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useTranslation } from 'react-i18next';
 
 const Libros = () => {
+    const { t } = useTranslation();
     // Estados para manejo de datos
     const [libros, setLibros] = useState([]);
     const [categorias, setCategorias] = useState([]);
@@ -210,7 +212,7 @@ const Libros = () => {
     // Función para agregar un nuevo libro (CREATE)
         const handleAddLibro = async () => {
             if (!isLoggedIn) {
-            alert("Debes iniciar sesión para agregar un libro.");
+            alert(t('libros.debeIniciarSesion'));
             navigate("/login");
             return;
             }
@@ -225,7 +227,7 @@ const Libros = () => {
             !nuevoLibro.categoria ||
             !pdfFile
             ) {
-            alert("Por favor, completa todos los campos y selecciona una imagen y un archivo PDF.");
+            alert(t('libros.camposRequeridosImagen'));
             return;
             }
             try {
@@ -239,7 +241,7 @@ const Libros = () => {
             setPdfFile(null);
             } catch (error) {
             console.error("Error al agregar libro:", error);
-            setError("Error al agregar el libro. Intenta de nuevo.");
+            setError(t('libros.errorAgregar'));
             }
         };
 
@@ -523,7 +525,7 @@ const Libros = () => {
     return (
         <Container className="mt-4">
             <br />
-            <h4 className="title-gestion">Gestión de Libros</h4>
+            <h4 className="title-gestion">{t('libros.gestionLibros')}</h4>
             {error && <Alert variant="danger">{error}</Alert>}
             <Row className="align-items-center mb-4">
         {/* Cuadro de búsqueda */}
@@ -544,7 +546,7 @@ const Libros = () => {
         <Col xs={12} sm={6} md={3} className="mb-2">
             <Button className="btn-block btn-agregar  w-100" 
             onClick={() => setShowModal(true)}>
-                <i className="bi bi-plus-lg"></i> Agregar libro
+                <i className="bi bi-plus-lg"></i> {t('libros.agregarLibro')}
             </Button>
         </Col>
         <Col xs={12} sm={6} md={3} className="mb-2">
@@ -554,7 +556,7 @@ const Libros = () => {
                 variant="primary"
             >
                 <i className="bi bi-file-earmark-excel me-2"></i>
-                Generar Excel
+                {t('libros.generarExcel')}
             </Button>
         </Col>
         <Col xs={12} sm={6} md={3} className="mb-2">
@@ -564,7 +566,7 @@ const Libros = () => {
                 variant="primary"
             >
                 <i className="bi bi-file-earmark-pdf me-2"></i>
-                Descargar Reporte PDF
+                {t('libros.descargarReportePDF')}
             </Button>
         </Col>
     </Row>

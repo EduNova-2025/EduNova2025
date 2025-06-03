@@ -10,6 +10,8 @@
         deleteDoc,
         doc,
     } from "firebase/firestore";
+  
+    import { useTranslation } from 'react-i18next';
 
     // Importaciones de componentes personalizados
     import TablaCategorias from "../components/categorias/TablaCategorias";
@@ -21,6 +23,7 @@
 
 
     const Categorias = () => {
+        const { t } = useTranslation();
     
     // Estados para manejo de datos
     const [categorias, setCategorias] = useState([]);
@@ -285,7 +288,7 @@
     return (
         <Container className="mt-4">
         <br />
-        <h4 className="title-gestion">Categorías</h4>
+        <h4 className="title-gestion">{t('categorias.titulo')}</h4>
         <Row className="align-items-center mb-4 g-2">
         {/* Cuadro de búsqueda */}
         <Col xs={12} md={8}>
@@ -301,7 +304,7 @@
             className="btn-agregar w-100"
             onClick={() => setShowModal(true)}
             >
-            <i className="bi bi-plus-lg me-2"></i> Agregar categoría
+            <i className="bi bi-plus-lg me-2"></i> {t('categorias.agregarCategoria')}
             </Button>
         </Col>
         </Row>

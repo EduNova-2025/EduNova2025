@@ -90,3 +90,63 @@
     font-size: 14px;
   }
 }
+
+.historial-videollamadas-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.historial-search-input {
+  border: 2px solid #e83e8c;
+  border-radius: 8px;
+  font-size: 18px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px rgba(232, 62, 140, 0.08);
+  transition: border 0.2s;
+}
+.historial-search-input:focus {
+  border: 2px solid #007bff;
+  outline: none;
+}
+
+.historial-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  border: none;
+  transition: box-shadow 0.2s;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.historial-card .card-title {
+  color: #007bff;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .historial-videollamadas-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .historial-card {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .historial-videollamadas-container {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  .historial-card {
+    min-height: 140px;
+    font-size: 15px;
+  }
+  .historial-search-input {
+    font-size: 15px;
+    padding: 8px 10px;
+  }
+}

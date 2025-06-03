@@ -1,0 +1,67 @@
+/* src/components/estadisticas/estadisticas.css */
+
+/* Agrega tus estilos personalizados aquí para la vista de Estadísticas */ 
+
+.estadisticas-container {
+    max-width: 1200px;
+    margin: 32px auto 32px auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1200px) {
+    .estadisticas-container {
+        padding-left: -200px; /* Deja espacio para la barra lateral solo en pantallas grandes */
+    }
+}
+
+.title-gestion {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0d47a1;
+    margin-bottom: 2rem;
+    text-shadow: 1px 2px 4px #e3e3e3;
+}
+
+.card, .estadisticas-container .card {
+    border-radius: 18px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
+    border: none;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.13);
+}
+
+.card-body h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-body h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.row.g-3 {
+    row-gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+    .estadisticas-container {
+        max-width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 900px) {
+    .estadisticas-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+} 

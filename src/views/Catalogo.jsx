@@ -1,15 +1,17 @@
-    import React, { useState, useEffect } from "react";
-    import { Container, Row, Form, Col } from "react-bootstrap";
-    import { db } from "../database/firebaseconfig";
-    import { collection, getDocs } from "firebase/firestore";
-    import TarjetaLibro from "../components/catalogo/TarjetaLibro";
-    import Paginacion from "../components/ordenamiento/Paginacion";
-    import "../styles/Catalogo.css";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Form, Col } from "react-bootstrap";
+import { db } from "../database/firebaseconfig";
+import { collection, getDocs } from "firebase/firestore";
+import { useTranslation } from 'react-i18next';
+import TarjetaLibro from "../components/catalogo/TarjetaLibro";
+import Paginacion from "../components/ordenamiento/Paginacion";
+import "../styles/Catalogo.css";
 
-    const Catalogo = () => {
+const Catalogo = () => {
+    const { t } = useTranslation();
     const [libros, setLibros] = useState([]);
     const [categorias, setCategorias] = useState([]);
-    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(t('catalogo.todas'));
     const [searchText, setSearchText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8; // Número de libros por página
@@ -50,7 +52,7 @@
     // Filtrado por búsqueda y categoría
     const librosFiltrados = libros.filter((libro) => {
         const coincideCategoria =
-        categoriaSeleccionada === "Todas" || libro.categoria === categoriaSeleccionada;
+        categoriaSeleccionada === t('catalogo.todas') || libro.categoria === categoriaSeleccionada;
 
         const coincideBusqueda =
         libro.titulo.toLowerCase().includes(searchText) ||
@@ -71,12 +73,12 @@
     return (
         <Container className="mt-4">
         <br />
-        <h4 className="title-gestion">Catálogo de Libros</h4>
+        <h4 className="title-gestion">{t('catalogo.titulo')}</h4>
 
         <Row className="g-3 align-items-end">
             <Col lg={4} md={6} sm={12}>
             <Form.Group controlId="categoria">
-                <Form.Label className="fw-semibold">Categoría:</Form.Label>
+                <Form.Label className="fw-semibold">{t('catalogo.categoria')}</Form.Label>
                 <Form.Select
                 value={categoriaSeleccionada}
                 onChange={(e) => {
@@ -84,7 +86,7 @@
                     setCurrentPage(1); // Reiniciar a la página 1 cuando cambias categoría
                 }}
                 >
-                <option value="Todas">Todas</option>
+                <option value={t('catalogo.todas')}>{t('catalogo.todas')}</option>
                 {categorias.map((categoria) => (
                     <option key={categoria.id} value={categoria.nombre}>
                     {categoria.nombre}
@@ -96,10 +98,10 @@
 
             <Col lg={4} md={6} sm={12}>
             <Form.Group controlId="busqueda">
-                <Form.Label className="fw-semibold">Buscar:</Form.Label>
+                <Form.Label className="fw-semibold">{t('catalogo.buscarLabel')}</Form.Label>
                 <Form.Control
                 type="text"
-                placeholder="Buscar libro..."
+                placeholder={t('catalogo.buscarPlaceholder')}
                 value={searchText}
                 onChange={handleSearchChange}
                 />
@@ -107,13 +109,15 @@
             </Col>
         </Row>
 
-        <Row>
+        <Row className="mt-4">
             {paginatedLibros.length > 0 ? (
             paginatedLibros.map((libro) => (
                 <TarjetaLibro key={libro.id} libro={libro} />
             ))
             ) : (
-            <p>No hay libros que coincidan con la búsqueda.</p>
+            <Col>
+                <p className="text-center">{t('catalogo.noHayLibros')}</p>
+            </Col>
             )}
         </Row>
 
