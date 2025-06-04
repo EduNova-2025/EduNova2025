@@ -20,6 +20,35 @@
         zona,
     } = usuario;
 
+    // Validaciones
+    if (!nombre || !cedula || !correo || !contrasena) {
+        throw new Error('Por favor complete todos los campos requeridos');
+    }
+
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo)) {
+        throw new Error('Por favor ingrese un correo electrónico válido');
+    }
+
+    // Validar contraseña
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(contrasena)) {
+        throw new Error('La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo');
+    }
+
+    // Validar cédula (asumiendo formato nicaragüense)
+    const cedulaRegex = /^\d{3}-\d{6}-\d{4}[A-Z]$/;
+    if (!cedulaRegex.test(cedula)) {
+        throw new Error('La cédula debe tener el formato: XXX-XXXXXX-XXXXX');
+    }
+
+    // Validar teléfono
+    const telefonoRegex = /^\d{8}$/;
+    if (telefono && !telefonoRegex.test(telefono)) {
+        throw new Error('El teléfono debe tener 8 dígitos');
+    }
+
     try {
         const credenciales = await createUserWithEmailAndPassword(auth, correo, contrasena);
         const uid = credenciales.user.uid;
@@ -39,12 +68,18 @@
         let datosFinales = { ...datosBase };
 
         if (rol === 'Docente') {
+        if (!centroEducativo || !asignaturas) {
+            throw new Error('Por favor complete los campos específicos del docente');
+        }
         datosFinales = {
             ...datosFinales,
             centroEducativo,
             asignaturas,
         };
         } else if (rol === 'Mined') {
+        if (!cargo || !zona) {
+            throw new Error('Por favor complete los campos específicos del gestor');
+        }
         datosFinales = {
             ...datosFinales,
             cargo,
@@ -61,6 +96,9 @@
         });
         return uid;
     } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+        throw new Error('El correo electrónico ya está registrado');
+        }
         throw new Error(error.message);
     }
     }

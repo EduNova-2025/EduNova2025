@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import ReactGA from "react-ga4";
 
@@ -18,6 +18,29 @@ const ModalRegistroCategoria = ({
   handleInputChange,
   handleAddCategoria,
 }) => {
+  const [error, setError] = useState('');
+
+  // Función para validar la categoría
+  const validarCategoria = () => {
+    if (!nuevaCategoria.nombre.trim()) {
+      setError('El nombre es requerido');
+      return false;
+    }
+    if (nuevaCategoria.nombre.length < 3) {
+      setError('El nombre debe tener al menos 3 caracteres');
+      return false;
+    }
+    if (!nuevaCategoria.descripcion.trim()) {
+      setError('La descripción es requerida');
+      return false;
+    }
+    if (nuevaCategoria.descripcion.length < 10) {
+      setError('La descripción debe tener al menos 10 caracteres');
+      return false;
+    }
+    return true;
+  };
+
   // Función para rastrear el registro de categoría
   const trackCategoriaRegistration = () => {
     ReactGA.event({
@@ -28,16 +51,22 @@ const ModalRegistroCategoria = ({
     });
   };
 
-  // Modificar handleAddCategoria para incluir el tracking
+  // Modificar handleAddCategoria para incluir el tracking y validación
   const handleAddCategoriaWithTracking = () => {
-    handleAddCategoria();
-    trackCategoriaRegistration();
+    setError('');
+    if (validarCategoria()) {
+      handleAddCategoria();
+      trackCategoriaRegistration();
+    }
   };
 
   return (
     <Modal
       show={showModal}
-      onHide={() => setShowModal(false)}
+      onHide={() => {
+        setShowModal(false);
+        setError('');
+      }}
       centered
       className="modal-categoria"
     >
@@ -51,7 +80,7 @@ const ModalRegistroCategoria = ({
           <Form.Group className="mb-4">
             <Form.Label
               htmlFor="categoria-nombre"
-              className="form-label-custom"
+              className="modal-label-custom"
             >
               Nombre
             </Form.Label>
@@ -62,13 +91,15 @@ const ModalRegistroCategoria = ({
               value={nuevaCategoria.nombre}
               onChange={handleInputChange}
               placeholder="Ingresa el nombre"
-              className="form-control-custom"
+              className="text-danger"
+              required
             />
+            <small className="text-danger">Ingrese un nombre descriptivo (mínimo 3 caracteres)</small>
           </Form.Group>
           <Form.Group className="mb-4">
             <Form.Label
               htmlFor="categoria-descripcion"
-              className="form-label-custom"
+              className="modal-label-custom"
             >
               Descripción
             </Form.Label>
@@ -80,13 +111,19 @@ const ModalRegistroCategoria = ({
               value={nuevaCategoria.descripcion}
               onChange={handleInputChange}
               placeholder="Ingresa la descripción"
-              className="form-control-custom"
+              className="text-danger"
+              required
             />
+            <small className="text-danger">Describa la categoría (mínimo 10 caracteres)</small>
           </Form.Group>
+          {error && <div className="text-danger mb-3">{error}</div>}
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
+        <Button variant="outline-secondary" onClick={() => {
+          setShowModal(false);
+          setError('');
+        }}>
           Cancelar
         </Button>
         <Button className="btn-style" onClick={handleAddCategoriaWithTracking}>
