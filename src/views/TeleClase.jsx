@@ -213,23 +213,19 @@ const TeleClase = () => {
                     <button className="btn-agregar" onClick={exportarExcelTeleclases}>
                         <i className="bi bi-file-earmark-excel"></i> {t('teleclase.generarReporteExcel')}
                     </button>
-                    <button className="btn-agregar" onClick={() => setShowModal(true)}>
-                        <i className="bi bi-plus-lg"></i> {t('teleclase.agregarTeleclase')}
-                    </button>
                 </div>
 
                 <div className="catalogo-teleclases">
                     <Container fluid>
                         <Row>
                             {currentTeleclases.map((teleclase) => (
-                                <div key={teleclase.id} style={{ position: 'relative', marginBottom: '20px' }}>
-                                    <TarjetaTeleclases 
-                                        teleclase={teleclase} 
-                                        openEditModal={() => {}} 
-                                        onVerTeleclase={() => handleVerTeleclase(teleclase)}
-                                        onShowQR={handleShowQR}
-                                    />
-                                </div>
+                                <TarjetaTeleclases
+                                    key={teleclase.id}
+                                    teleclase={teleclase}
+                                    openEditModal={() => { }}
+                                    onVerTeleclase={() => handleVerTeleclase(teleclase)}
+                                    onShowQR={handleShowQR}
+                                />
                             ))}
                         </Row>
                     </Container>
