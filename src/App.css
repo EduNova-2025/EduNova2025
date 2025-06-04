@@ -477,3 +477,12 @@ aside button:hover {
     border-radius: 1rem;
     margin-right: 600px;
     }
+
+
+  .edunova-inicio-logo {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    border-radius: 1rem;
+    margin-right: 432px;
+    }

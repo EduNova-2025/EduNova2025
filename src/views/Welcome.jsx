@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useTranslation } from 'react-i18next';
 import "../App.css"; // Importa el archivo CSS
-import edunovaImage from "../assets/Edunova-192x192-purple.png"; // Asegúrate de tener esta imagen en tu carpeta de assets
+import edunovaImage from "../assets/Edunova-192x192-purple.png";
 
 const Welcome = () => {
   const { t } = useTranslation();
