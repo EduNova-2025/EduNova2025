@@ -386,7 +386,7 @@ Asegúrate de que el plan sea adecuado para estudiantes de ${especificaGrado ? e
   }
 };
 
-export const getAnswer = async (question, sessionId) => {
+export const getAnswerFromFirebase = async (question, sessionId) => {
   if (!question || !question.trim()) {
     console.log('No question provided.');
     return 'No se puede enviar una pregunta vacía.';
@@ -395,7 +395,7 @@ export const getAnswer = async (question, sessionId) => {
   const user = auth.currentUser;
   if (!user) {
     console.log('No authenticated user found.');
-    return 'Debes debes iniciar sesión para enviar mensajes.';
+    return 'Debes iniciar sesión para enviar mensajes.';
   }
 
   const { success, response } = await enviarMensaje(question, user.uid, sessionId);
