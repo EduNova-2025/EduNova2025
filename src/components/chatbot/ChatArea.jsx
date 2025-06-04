@@ -22,21 +22,24 @@ const ChatArea = () => {
 
   useEffect(() => {
     let unsubscribeMessages = () => {};
-
+  
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        unsubscribeMessages = loadSessionMessages((messages) => {
+        // Espera a que la promesa se resuelva y guarda el unsubscribe real
+        loadSessionMessages((messages) => {
           setResponses(messages.map(msg => ({
             user: msg.question,
             ai: msg.answer,
           })));
+        }).then(unsub => {
+          unsubscribeMessages = unsub || (() => {});
         });
       } else {
         setResponses([]);
         clearSession();
       }
     });
-
+  
     return () => {
       unsubscribeMessages();
       unsubscribeAuth();
