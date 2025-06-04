@@ -94,8 +94,7 @@ const Sidebar = ({ ocultarHamburguesa }) => {
     { icon: <FaRobot />, label: t("menu.masterIA"), path: "/ia", rolesAllowed: ["Admin", "Docente"] },
     { icon: <FaComment />, label: t("menu.foro"), path: "/foro", rolesAllowed: ["Admin", "Docente", "Mined"] },
     { icon: <FaVideo />, label: t("menu.conferencias"), path: "/conferencia", rolesAllowed: ["Admin", "Docente", "Mined"] },
-    { icon: <FaChartBar />, label: t("menu.estadisticas"), path: "/estadisticas", rolesAllowed: ["Admin", "Docente", "Mined"] },
-    { icon: <FaCog />, label: t("menu.ajustes"), path: "/configuracion", rolesAllowed: ["Admin", "Docente", "Mined"] },
+    { icon: <FaChartBar />, label: t("menu.estadisticas"), path: "/estadisticas", rolesAllowed: ["Admin", "Mined"] },
   ];
 
   const bottomItems = [

@@ -449,69 +449,76 @@ aside button:hover {
   text-align: center;
   position: relative;
   overflow: hidden;
-  padding: 3rem 1rem; /* Base padding for all devices */
-  box-sizing: border-box; /* Ensure padding doesn't increase container size */
+  padding: 3rem 1rem;
+  box-sizing: border-box;
 }
 
 /* Responsive adjustments for welcome-container */
 @media (max-width: 768px) {
   .welcome-container {
-    padding: 2rem 0.5rem; /* Reduced padding for smaller screens */
+    padding: 2rem 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .welcome-container {
-    padding: 1.5rem 0.5rem; /* Further reduced padding for mobile */
+    padding: 1.5rem 0.5rem;
   }
 }
 
 .welcome-description {
   margin-top: 1rem;
-  font-size: clamp(1rem, 3.5vw, 1.3rem); /* Responsive font size */
+  font-size: clamp(1rem, 3.5vw, 1.3rem);
   color: #7e22ce;
   z-index: 1;
   font-weight: 500;
   line-height: 1.6;
-  max-width: 90%; /* Prevent text from touching edges on small screens */
+  max-width: 90%; /* Reduced from 100% to ensure some margin */
+  margin-left: auto;
+  margin-right: auto; /* Center horizontally */
 }
 
 /* Responsive font size for welcome-description */
 @media (max-width: 768px) {
   .welcome-description {
     font-size: clamp(0.9rem, 3vw, 1.1rem);
-    max-width: 95%;
+    max-width: 90%;
   }
 }
 
 .welcome-title {
-  font-size: clamp(1.8rem, 6vw, 3rem); /* Responsive font size */
+  font-size: clamp(1rem, 5vw, 2.7rem);
   font-weight: bold;
   color: #6b21a8;
   z-index: 1;
   text-transform: uppercase;
-  letter-spacing: clamp(1px, 0.5vw, 2px); /* Responsive letter spacing */
-  max-width: 90%; /* Prevent overflow on small screens */
+  letter-spacing: clamp(1px, 0.5vw, 2px);
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto; /* Center horizontally */
+  /* Removed justify-content: center; as it’s invalid for non-flex/grid containers */
 }
 
 /* Responsive font size for welcome-title */
 @media (max-width: 768px) {
   .welcome-title {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-size: clamp(1.5rem, 5vw, 2.7rem);
   }
 }
 
 @media (max-width: 480px) {
   .welcome-title {
-    font-size: clamp(1.2rem, 4.5vw, 2rem);
+    font-size: clamp(1.2rem, 6vw, 3rem);
   }
 }
 
 .edunova-image-logo {
   width: 80%;
   max-width: 300px;
-  margin: 1rem auto; /* Centered with auto margins */
+  margin: 1rem auto;
   border-radius: 1rem;
+  display: block;
+  margin-right: 37.3rem;
 }
 
 /* Remove fixed margin-right and adjust for smaller screens */
@@ -520,6 +527,7 @@ aside button:hover {
     width: 70%;
     max-width: 250px;
     margin: 0.8rem auto;
+      margin-right: 17.1rem;
   }
 }
 
@@ -528,14 +536,17 @@ aside button:hover {
     width: 60%;
     max-width: 200px;
     margin: 0.5rem auto;
+      margin-right: 7rem;
   }
 }
 
 .edunova-inicio-logo {
   width: 100%;
   max-width: 600px;
-  margin: 2rem auto; /* Centered with auto margins */
+  margin: 2rem auto;
   border-radius: 1rem;
+  display: block; /* Ensure image is a block element for centering */
+  /* Removed justify-items: center; as it’s invalid for non-grid containers */
 }
 
 /* Responsive adjustments for edunova-inicio-logo */
