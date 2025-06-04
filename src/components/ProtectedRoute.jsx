@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../database/authcontext";
 import { useTranslation } from 'react-i18next';
 
+
 const ProtectedRoute = ({ element, allowedRoles }) => {
     const { user, userRole } = useAuth();
     const { t } = useTranslation();
@@ -12,12 +13,7 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
     }
 
     if (allowedRoles && !allowedRoles.includes(userRole)) {
-        return (
-            <div className="access-denied">
-                <h2>{t('protectedRoute.accesoDenegado')}</h2>
-                <p>{t('protectedRoute.noPermisos')}</p>
-            </div>
-        );
+        return <div style={{padding: '2rem', textAlign: 'center', color: 'red'}}>{t('protectedRoute.accesoDenegado')}</div>;
     }
 
     return element;

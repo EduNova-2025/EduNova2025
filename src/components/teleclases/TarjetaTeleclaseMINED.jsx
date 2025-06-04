@@ -1,10 +1,12 @@
 import React from 'react';
 import { Card, Col, Button } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Zoom } from "react-awesome-reveal";
 
 const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
   return (
     <Col lg={4} md={6} sm={12} className="mb-4">
+      <Zoom cascade triggerOnce delay={10} duration={600}>
       <Card className="tarjeta-teleclase">
         {teleclase.videoUrl && (
           <div className="video-container">
@@ -45,6 +47,7 @@ const TarjetaTeleclasesMINED = ({ teleclase, onEdit, onDelete }) => {
           </div>
         </Card.Body>
       </Card>
+      </Zoom>
     </Col>
   );
 };
