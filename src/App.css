@@ -449,40 +449,108 @@ aside button:hover {
   text-align: center;
   position: relative;
   overflow: hidden;
-  padding: 3rem 1rem; /* Se añade más espaciado en la parte superior */
+  padding: 3rem 1rem; /* Base padding for all devices */
+  box-sizing: border-box; /* Ensure padding doesn't increase container size */
+}
+
+/* Responsive adjustments for welcome-container */
+@media (max-width: 768px) {
+  .welcome-container {
+    padding: 2rem 0.5rem; /* Reduced padding for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-container {
+    padding: 1.5rem 0.5rem; /* Further reduced padding for mobile */
+  }
 }
 
 .welcome-description {
   margin-top: 1rem;
-  font-size: 1.3rem; /* Aumenta el tamaño para hacerlo más legible */
+  font-size: clamp(1rem, 3.5vw, 1.3rem); /* Responsive font size */
   color: #7e22ce;
   z-index: 1;
   font-weight: 500;
-  line-height: 1.6; /* Aumenta el interlineado para mayor legibilidad */
+  line-height: 1.6;
+  max-width: 90%; /* Prevent text from touching edges on small screens */
+}
+
+/* Responsive font size for welcome-description */
+@media (max-width: 768px) {
+  .welcome-description {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    max-width: 95%;
+  }
 }
 
 .welcome-title {
-  font-size: 3rem;
+  font-size: clamp(1.8rem, 6vw, 3rem); /* Responsive font size */
   font-weight: bold;
   color: #6b21a8;
   z-index: 1;
-  text-transform: uppercase; /* Para hacerlo más llamativo */
-  letter-spacing: 2px; /* Espaciado entre letras para un efecto más limpio */
+  text-transform: uppercase;
+  letter-spacing: clamp(1px, 0.5vw, 2px); /* Responsive letter spacing */
+  max-width: 90%; /* Prevent overflow on small screens */
 }
 
+/* Responsive font size for welcome-title */
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: clamp(1.2rem, 4.5vw, 2rem);
+  }
+}
+
+.edunova-image-logo {
+  width: 80%;
+  max-width: 300px;
+  margin: 1rem auto; /* Centered with auto margins */
+  border-radius: 1rem;
+}
+
+/* Remove fixed margin-right and adjust for smaller screens */
+@media (max-width: 768px) {
   .edunova-image-logo {
-    width: 80%;
+    width: 70%;
+    max-width: 250px;
+    margin: 0.8rem auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .edunova-image-logo {
+    width: 60%;
+    max-width: 200px;
+    margin: 0.5rem auto;
+  }
+}
+
+.edunova-inicio-logo {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto; /* Centered with auto margins */
+  border-radius: 1rem;
+}
+
+/* Responsive adjustments for edunova-inicio-logo */
+@media (max-width: 768px) {
+  .edunova-inicio-logo {
+    width: 90%;
+    max-width: 450px;
+    margin: 1.5rem auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .edunova-inicio-logo {
+    width: 85%;
     max-width: 300px;
     margin: 1rem auto;
-    border-radius: 1rem;
-    margin-right: 600px;
-    }
-
-
-  .edunova-inicio-logo {
-    width: 100%;
-    max-width: 600px;
-    margin: 2rem auto;
-    border-radius: 1rem;
-    margin-right: 432px;
-    }
+  }
+}
