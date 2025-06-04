@@ -1,208 +1,121 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import { db } from "../database/firebaseconfig";
-import { collection, addDoc } from "firebase/firestore";
-import { useTranslation } from 'react-i18next';
-import { useAuth } from "../database/authcontext";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { registrarUsuario } from '../components/registro/RegistroUsuario';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../database/firebaseconfig';
+import '../styles/RegistroDocente.css';
 
-const RegistroDocente = () => {
-    const { t } = useTranslation();
-    const { user } = useAuth();
-    const [formData, setFormData] = useState({
-        nombre: "",
-        apellido: "",
-        email: user?.email || "",
-        especialidad: "",
-        institucion: "",
-        telefono: "",
-        direccion: "",
-        experiencia: "",
-        educacion: "",
-        certificaciones: ""
-    });
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
+export default function RegistroDocente() {
+const navigate = useNavigate();
+const [datos, setDatos] = useState({
+    nombre: '', cedula: '', correo: '', contrasena: '',
+    telefono: '', departamento: '', municipio: '',
+    centroEducativo: '', asignaturas: ''
+});
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+const [mensaje, setMensaje] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.nombre || !formData.apellido || !formData.email) {
-            setError(t('registroDocente.camposRequeridos'));
-            return;
-        }
-
-        try {
-            await addDoc(collection(db, "docentes"), {
-                ...formData,
-                fechaRegistro: new Date().toISOString(),
-                estado: "pendiente"
-            });
-            setSuccess(true);
-            setError(null);
-            setFormData({
-                nombre: "",
-                apellido: "",
-                email: user?.email || "",
-                especialidad: "",
-                institucion: "",
-                telefono: "",
-                direccion: "",
-                experiencia: "",
-                educacion: "",
-                certificaciones: ""
-            });
-        } catch (error) {
-            console.error("Error al registrar docente:", error);
-            setError(t('registroDocente.errorRegistro'));
-        }
-    };
-
-    return (
-        <Container className="mt-4">
-            <h4 className="title-gestion">{t('registroDocente.titulo')}</h4>
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{t('registroDocente.registroExitoso')}</div>}
-
-            <Card>
-                <Card.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.nombre')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="nombre"
-                                        value={formData.nombre}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.apellido')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="apellido"
-                                        value={formData.apellido}
-                                        onChange={handleInputChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.email')}</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        required
-                                        disabled
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.especialidad')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="especialidad"
-                                        value={formData.especialidad}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.institucion')}</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="institucion"
-                                        value={formData.institucion}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>{t('registroDocente.telefono')}</Form.Label>
-                                    <Form.Control
-                                        type="tel"
-                                        name="telefono"
-                                        value={formData.telefono}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('registroDocente.direccion')}</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="direccion"
-                                value={formData.direccion}
-                                onChange={handleInputChange}
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('registroDocente.experiencia')}</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                name="experiencia"
-                                value={formData.experiencia}
-                                onChange={handleInputChange}
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('registroDocente.educacion')}</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                name="educacion"
-                                value={formData.educacion}
-                                onChange={handleInputChange}
-                            />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>{t('registroDocente.certificaciones')}</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                name="certificaciones"
-                                value={formData.certificaciones}
-                                onChange={handleInputChange}
-                            />
-                        </Form.Group>
-
-                        <Button type="submit" variant="primary">
-                            {t('registroDocente.registrar')}
-                        </Button>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </Container>
-    );
+const departamentos = {
+    Managua: ['Managua', 'Ciudad Sandino', 'Tipitapa'],
+    León: ['León', 'Nagarote', 'La Paz Centro'],
+    Chontales: ['Juigalpa', 'Acoyapa', 'Santo Tomás'],
+    Masaya: ['Masaya', 'Nindirí', 'Masatepe'],
+    Granada: ['Granada', 'Nandaime'],
+    // Agregá más según necesites
 };
 
-export default RegistroDocente;
+const handleChange = (e) => {
+    setDatos({ ...datos, [e.target.name]: e.target.value });
+
+    // Limpiar municipio si se cambia de departamento
+    if (e.target.name === 'departamento') {
+    setDatos(prev => ({ ...prev, municipio: '' }));
+    }
+};
+
+function validarContrasena(contrasena) {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return regex.test(contrasena);
+}
+
+async function existeValor(campo, valor) {
+    const q = query(collection(db, 'usuarios'), where(campo, '==', valor));
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
+}
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (await existeValor('nombre', datos.nombre)) {
+    setMensaje('El nombre de usuario ya está en uso.');
+    return;
+    }
+    if (await existeValor('cedula', datos.cedula)) {
+    setMensaje('La cédula ya está registrada.');
+    return;
+    }
+    if (await existeValor('telefono', datos.telefono)) {
+    setMensaje('El número de teléfono ya está en uso.');
+    return;
+    }
+    if (!validarContrasena(datos.contrasena)) {
+    setMensaje('La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.');
+    return;
+    }
+
+    try {
+    await registrarUsuario({ ...datos, rol: 'Docente' });
+    navigate('/inicio');
+    } catch (error) {
+    if (error.message.includes('email-already-in-use')) {
+        setMensaje('El correo electrónico ya está registrado.');
+    } else {
+        setMensaje(error.message);
+    }
+    }
+};
+
+useEffect(() => {
+    if (mensaje) {
+    const timer = setTimeout(() => setMensaje(''), 5000);
+    return () => clearTimeout(timer);
+    }
+}, [mensaje]);
+
+return (
+    <div className="registro-docente-wrapper">
+    <div className="registro-docente-container">
+        <h2 className="registro-docente-titulo">Registrarse</h2>
+        <form onSubmit={handleSubmit} className="registro-docente-formulario">
+        <input name="nombre" placeholder="Nombre completo" value={datos.nombre} onChange={handleChange} required />
+        <input name="cedula" placeholder="Cédula" value={datos.cedula} onChange={handleChange} required />
+        <input name="correo" type="email" placeholder="Correo electrónico" value={datos.correo} onChange={handleChange} required />
+        <input name="contrasena" type="password" placeholder="Contraseña" value={datos.contrasena} onChange={handleChange} required />
+        <input name="telefono" placeholder="Teléfono" value={datos.telefono} onChange={handleChange} required />
+
+        <select name="departamento" value={datos.departamento} onChange={handleChange} required>
+            <option value="">Selecciona un departamento</option>
+            {Object.keys(departamentos).map(dep => (
+            <option key={dep} value={dep}>{dep}</option>
+            ))}
+        </select>
+
+        <select name="municipio" value={datos.municipio} onChange={handleChange} required disabled={!datos.departamento}>
+            <option value="">Selecciona un municipio</option>
+            {departamentos[datos.departamento]?.map(mun => (
+            <option key={mun} value={mun}>{mun}</option>
+            ))}
+        </select>
+
+        <input name="centroEducativo" placeholder="Centro educativo" value={datos.centroEducativo} onChange={handleChange} required />
+        <input name="asignaturas" placeholder="Asignaturas que imparte" value={datos.asignaturas} onChange={handleChange} required />
+
+        <button type="submit" className="registro-docente-boton">Registrarse</button>
+        </form>
+
+        {mensaje && <div className="mensaje-flotante">{mensaje}</div>}
+    </div>
+    </div>
+);
+}
