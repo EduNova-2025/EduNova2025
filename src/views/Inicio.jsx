@@ -13,6 +13,7 @@ const Inicio = () => {
 
     return (
         <div className="inicio-container">
+            
         <svg className="bg-svg" viewBox="0 0 800 600">
             <circle cx="400" cy="300" r="300" fill="url(#gradient)" />
             <defs>

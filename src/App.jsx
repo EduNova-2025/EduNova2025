@@ -9,7 +9,8 @@ import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
 import MasterIA from "./views/MasterIA";
 import Books from "./views/Books";
-import Bienvenida from "./views/Bienvenida";
+//import Bienvenida from "./views/Bienvenida";
+import Welcome from "./views/Welcome";
 import TeleClase from "./views/TeleClase";
 import TeleClaseMINED from "./views/TeleClaseMINED";
 import Categoria from "./views/Categorias";
@@ -36,7 +37,9 @@ function AppRoutes() {
       <Encabezado />
       <main>
         <Routes>
-          <Route path="/" element={<Bienvenida />} />
+
+          {/* <Route path="/" element={<Bienvenida />} /> */}
+          <Route path="/" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/registro-docente" element={<RegistroDocente />} />

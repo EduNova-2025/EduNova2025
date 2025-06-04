@@ -22,7 +22,7 @@
   z-index: -1;
   background: linear-gradient(270deg,#e5007d,#6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d, #6300e5,#0057b7, #e5007d);
   background-size: 1000% 1000%;
-  animation: rave-bg 12s ease-in-out infinite;
+  animation: rave-bg 25s ease-in-out infinite;
   opacity: 1;
   pointer-events: none;
   backdrop-filter: blur(18px);
