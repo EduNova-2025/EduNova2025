@@ -4,7 +4,7 @@ import { Container } from 'react-bootstrap';
 
 const MasterIA = () => {
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-0" style={{ height: '100vh', overflow: 'hidden' }}>
       <ChatArea />
     </Container>
   );

@@ -208,7 +208,7 @@ const ChatArea = () => {
   };
 
   return (
-    <div className="d-flex">
+    <div className="d-flex" style={{ height: '100%', overflow: 'hidden' }}>
       <div className={`history-modal ${isModalOpen ? 'open' : ''}`}>
         <div className="history-modal-header">
           <h4>EduNova AI</h4>
@@ -281,7 +281,7 @@ const ChatArea = () => {
 
       {isModalOpen && <div className="history-modal-overlay" onClick={toggleModal}></div>}
 
-      <div className="chat-area justify-content-center text-center flex-grow-1 p-5">
+      <div className="chat-area justify-content-center text-center flex-grow-1 p-5" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div className="top-right-buttons">
           <button
             className="new-chat-btn"
@@ -308,7 +308,9 @@ const ChatArea = () => {
           </>
         )}
 
-        <Chatbot responses={responses} isAIProcessing={isAIProcessing} />
+        <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+          <Chatbot responses={responses} isAIProcessing={isAIProcessing} />
+        </div>
 
         {attachedFile && (
           <div className="attached-file-preview">
@@ -329,7 +331,7 @@ const ChatArea = () => {
           </div>
         )}
 
-        <div className="input-container" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="input-container">
           <input
             type="text"
             className="input-box"
