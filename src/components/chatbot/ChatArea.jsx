@@ -209,77 +209,80 @@ const ChatArea = () => {
 
   return (
     <div className="d-flex" style={{ height: '100%', overflow: 'hidden' }}>
-      <div className={`history-modal ${isModalOpen ? 'open' : ''}`}>
-        <div className="history-modal-header">
-          <h4>EduNova AI</h4>
-          <button className="history-modal-close" onClick={toggleModal}>
-            <BsX size={24} />
-          </button>
-        </div>
-        <div className="history-modal-body">
-          <h5>Historial</h5>
-          <ul className="chat-list">
-            {chatHistory.map(session => (
-              <li key={session.id} className="chat-item" onClick={() => handleChatSelect(session)}>
-                <div className="chat-item-content">
-                  {editingSessionId === session.id ? (
-                    <div className="edit-title-container">
-                      <input
-                        type="text"
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                        className="title-input"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <button onClick={(e) => { e.stopPropagation(); handleSaveTitle(); }} className="action-btn save-btn">✓</button>
-                      <button onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }} className="action-btn cancel-btn">✗</button>
+      {isModalOpen && (
+        <>
+          <div className="history-modal open">
+            <div className="history-modal-header">
+              <h4>EduNova AI</h4>
+              <button className="history-modal-close" onClick={toggleModal}>
+                <BsX size={24} />
+              </button>
+            </div>
+            <div className="history-modal-body">
+              <h5>Historial</h5>
+              <ul className="chat-list">
+                {chatHistory.map(session => (
+                  <li key={session.id} className="chat-item" onClick={() => handleChatSelect(session)}>
+                    <div className="chat-item-content">
+                      {editingSessionId === session.id ? (
+                        <div className="edit-title-container">
+                          <input
+                            type="text"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
+                            className="title-input"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <button onClick={(e) => { e.stopPropagation(); handleSaveTitle(); }} className="action-btn save-btn">✓</button>
+                          <button onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }} className="action-btn cancel-btn">✗</button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="chat-item-title">
+                            {session.title || 'Sin título'}
+                          </span>
+                          <span className="chat-item-date">
+                            {session.timestamp?.toDate().toLocaleString('es-ES', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }) || 'Fecha no disponible'}
+                          </span>
+                          <div className="action-buttons">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
+                              className="action-btn edit-btn"
+                              title="Renombrar"
+                            >
+                              <BsPencil size={14} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
+                              className="action-btn delete-btn"
+                              title="Eliminar"
+                            >
+                              <BsTrash size={14} />
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
-                  ) : (
-                    <>
-                      <span className="chat-item-title">
-                        {session.title || 'Sin título'}
-                      </span>
-                      <span className="chat-item-date">
-                        {session.timestamp?.toDate().toLocaleString('es-ES', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }) || 'Fecha no disponible'}
-                      </span>
-                      <div className="action-buttons">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
-                          className="action-btn edit-btn"
-                          title="Renombrar"
-                        >
-                          <BsPencil size={14} />
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
-                          className="action-btn delete-btn"
-                          title="Eliminar"
-                        >
-                          <BsTrash size={14} />
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="history-modal-footer">
-          <Button variant="danger" onClick={handleSignOut}>
-            Cerrar Sesión
-          </Button>
-        </div>
-      </div>
-
-      {isModalOpen && <div className="history-modal-overlay" onClick={toggleModal}></div>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="history-modal-footer">
+              <Button variant="danger" onClick={handleSignOut}>
+                Cerrar Sesión
+              </Button>
+            </div>
+          </div>
+          <div className="history-modal-overlay" onClick={toggleModal}></div>
+        </>
+      )}
 
       <div className="chat-area justify-content-center text-center flex-grow-1 p-5" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div className="top-right-buttons">
