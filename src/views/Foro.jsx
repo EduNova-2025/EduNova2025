@@ -424,7 +424,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
       <>
         <div className="foro-container" style={{ flexDirection: 'column', height: '100vh' }}>
           {!grupoSeleccionado ? (
-            <div className="chats-sidebar" style={{ width: '100%', borderRadius: 0, height: '100vh', overflowY: 'auto' }}>
+            <div className="chats-sidebar">
               <div className="chats-header">
                 <button
                   className="menu-button"
@@ -435,9 +435,6 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                     left: grupoSeleccionado ? 20 : undefined,
                     zIndex: grupoSeleccionado ? 2000 : undefined,
                     background: 'white',
-                    border: '1px solid #eee',
-                    borderRadius: '50%',
-                    fontSize: 26,
                     color: '#1a73e8',
                     cursor: 'pointer',
                     marginRight: grupoSeleccionado ? 0 : 12,
@@ -451,7 +448,7 @@ const Foro = ({ grupoSeleccionado, setGrupoSeleccionado }) => {
                     boxShadow: grupoSeleccionado ? '0 2px 8px rgba(0,0,0,0.08)' : undefined
                   }}
                 >
-                  <span style={{fontSize: 28}}>☰</span>
+                
                 </button>
                 <h2 style={{ margin: 0, flex: 1, textAlign: 'left' }}>EduNova</h2>
               </div>
