@@ -13,7 +13,20 @@ const [datos, setDatos] = useState({
     centroEducativo: '', asignaturas: ''
 });
 
+const [errores, setErrores] = useState({
+    nombre: false,
+    cedula: false,
+    correo: false,
+    contrasena: false,
+    telefono: false,
+    departamento: false,
+    municipio: false,
+    centroEducativo: false,
+    asignaturas: false
+});
+
 const [mensaje, setMensaje] = useState('');
+const [formularioValido, setFormularioValido] = useState(false);
 
 const departamentos = {
     Managua: ['Managua', 'Ciudad Sandino', 'Tipitapa'],
@@ -24,12 +37,43 @@ const departamentos = {
     // Agregá más según necesites
 };
 
+const validarCampo = (nombre, valor) => {
+    switch (nombre) {
+        case 'nombre':
+            return valor.length >= 3;
+        case 'cedula':
+            return /^\d{3}-\d{6}-\d{4}[A-Z]$/.test(valor);
+        case 'correo':
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+        case 'contrasena':
+            return validarContrasena(valor);
+        case 'telefono':
+            return /^\d{8}$/.test(valor);
+        case 'departamento':
+            return valor !== '';
+        case 'municipio':
+            return valor !== '';
+        case 'centroEducativo':
+            return valor.length >= 5;
+        case 'asignaturas':
+            return valor.length >= 3;
+        default:
+            return true;
+    }
+};
+
 const handleChange = (e) => {
-    setDatos({ ...datos, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setDatos(prev => ({ ...prev, [name]: value }));
+    
+    // Validar el campo actual
+    const esValido = validarCampo(name, value);
+    setErrores(prev => ({ ...prev, [name]: !esValido }));
 
     // Limpiar municipio si se cambia de departamento
-    if (e.target.name === 'departamento') {
-    setDatos(prev => ({ ...prev, municipio: '' }));
+    if (name === 'departamento') {
+        setDatos(prev => ({ ...prev, municipio: '' }));
+        setErrores(prev => ({ ...prev, municipio: true }));
     }
 };
 
@@ -136,6 +180,14 @@ const handleSubmit = async (e) => {
 };
 
 useEffect(() => {
+    // Validar todo el formulario
+    const todosLosCamposValidos = Object.keys(datos).every(campo => 
+        datos[campo] !== '' && !errores[campo]
+    );
+    setFormularioValido(todosLosCamposValidos);
+}, [datos, errores]);
+
+useEffect(() => {
     if (mensaje) {
     const timer = setTimeout(() => setMensaje(''), 5000);
     return () => clearTimeout(timer);
@@ -154,6 +206,7 @@ return (
                         value={datos.nombre} 
                         onChange={handleChange} 
                         required 
+                        className={errores.nombre ? 'input-error' : ''}
                     />
                     <small className="text-muted">Ingrese su nombre completo (mínimo 3 caracteres)</small>
                 </div>
@@ -165,6 +218,7 @@ return (
                         value={datos.cedula} 
                         onChange={handleChange} 
                         required 
+                        className={errores.cedula ? 'input-error' : ''}
                     />
                     <small className="text-muted">Formato: XXX-XXXXXX-XXXXX</small>
                 </div>
@@ -177,6 +231,7 @@ return (
                         value={datos.correo} 
                         onChange={handleChange} 
                         required 
+                        className={errores.correo ? 'input-error' : ''}
                     />
                     <small className="text-muted">Ejemplo: usuario@dominio.com</small>
                 </div>
@@ -189,6 +244,7 @@ return (
                         value={datos.contrasena} 
                         onChange={handleChange} 
                         required 
+                        className={errores.contrasena ? 'input-error' : ''}
                     />
                     <small className="text-muted">Mínimo 8 caracteres, una mayúscula, un número y un símbolo</small>
                 </div>
@@ -200,6 +256,7 @@ return (
                         value={datos.telefono} 
                         onChange={handleChange} 
                         required 
+                        className={errores.telefono ? 'input-error' : ''}
                     />
                     <small className="text-muted">8 dígitos sin espacios ni guiones</small>
                 </div>
@@ -210,6 +267,7 @@ return (
                         value={datos.departamento} 
                         onChange={handleChange} 
                         required
+                        className={errores.departamento ? 'input-error' : ''}
                     >
                         <option value="">Selecciona un departamento</option>
                         {Object.keys(departamentos).map(dep => (
@@ -226,6 +284,7 @@ return (
                         onChange={handleChange} 
                         required 
                         disabled={!datos.departamento}
+                        className={errores.municipio ? 'input-error' : ''}
                     >
                         <option value="">Selecciona un municipio</option>
                         {departamentos[datos.departamento]?.map(mun => (
@@ -242,6 +301,7 @@ return (
                         value={datos.centroEducativo} 
                         onChange={handleChange} 
                         required 
+                        className={errores.centroEducativo ? 'input-error' : ''}
                     />
                     <small className="text-muted">Ingrese el nombre completo del centro educativo (mínimo 5 caracteres)</small>
                 </div>
@@ -253,11 +313,18 @@ return (
                         value={datos.asignaturas} 
                         onChange={handleChange} 
                         required 
+                        className={errores.asignaturas ? 'input-error' : ''}
                     />
                     <small className="text-muted">Ingrese las asignaturas que imparte (mínimo 3 caracteres)</small>
                 </div>
 
-                <button type="submit" className="registro-docente-boton">Registrarse</button>
+                <button 
+                    type="submit" 
+                    className="registro-docente-boton"
+                    disabled={!formularioValido}
+                >
+                    Registrarse
+                </button>
             </form>
 
             {mensaje && <div className="mensaje-flotante">{mensaje}</div>}

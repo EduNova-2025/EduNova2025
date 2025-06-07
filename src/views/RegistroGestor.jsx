@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { registrarUsuario } from '../components/registro/RegistroUsuario';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../database/firebaseconfig';
@@ -18,6 +18,18 @@ export default function RegistroGestor() {
         zona: '',
     });
 
+    const [errores, setErrores] = useState({
+        nombre: false,
+        cedula: false,
+        correo: false,
+        contrasena: false,
+        telefono: false,
+        departamento: false,
+        municipio: false,
+        cargo: false,
+        zona: false
+    });
+
     const departamentos = {
     Managua: ['Managua', 'Ciudad Sandino', 'Tipitapa'],
     León: ['León', 'Nagarote', 'La Paz Centro'],
@@ -29,11 +41,56 @@ export default function RegistroGestor() {
 
 
     const [mensaje, setMensaje] = useState('');
+    const [formularioValido, setFormularioValido] = useState(false);
     const navigate = useNavigate();  // Inicializa navigate
 
-    const handleChange = (e) => {
-        setDatos({ ...datos, [e.target.name]: e.target.value });
+    const validarCampo = (nombre, valor) => {
+        switch (nombre) {
+            case 'nombre':
+                return valor.length >= 3;
+            case 'cedula':
+                return /^\d{3}-\d{6}-\d{4}[A-Z]$/.test(valor);
+            case 'correo':
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+            case 'contrasena':
+                return validarContrasena(valor);
+            case 'telefono':
+                return /^\d{8}$/.test(valor);
+            case 'departamento':
+                return valor !== '';
+            case 'municipio':
+                return valor !== '';
+            case 'cargo':
+                return valor.length >= 3;
+            case 'zona':
+                return valor !== '';
+            default:
+                return true;
+        }
     };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setDatos(prev => ({ ...prev, [name]: value }));
+        
+        // Validar el campo actual
+        const esValido = validarCampo(name, value);
+        setErrores(prev => ({ ...prev, [name]: !esValido }));
+
+        // Limpiar municipio si se cambia de departamento
+        if (name === 'departamento') {
+            setDatos(prev => ({ ...prev, municipio: '' }));
+            setErrores(prev => ({ ...prev, municipio: true }));
+        }
+    };
+
+    useEffect(() => {
+        // Validar todo el formulario
+        const todosLosCamposValidos = Object.keys(datos).every(campo => 
+            datos[campo] !== '' && !errores[campo]
+        );
+        setFormularioValido(todosLosCamposValidos);
+    }, [datos, errores]);
 
     function validarContrasena(contrasena) {
         const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -134,9 +191,9 @@ export default function RegistroGestor() {
                         value={datos.nombre} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.nombre ? 'input-error' : ''}`}
                     />
-                    <small className="text-muted">Ingrese su nombre completo</small>
+                    <small className="text-muted">Ingrese su nombre completo (mínimo 3 caracteres)</small>
                 </div>
 
                 <div className="form-group">
@@ -146,7 +203,7 @@ export default function RegistroGestor() {
                         value={datos.cedula} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.cedula ? 'input-error' : ''}`}
                     />
                     <small className="text-muted">Formato: XXX-XXXXXX-XXXXX</small>
                 </div>
@@ -159,7 +216,7 @@ export default function RegistroGestor() {
                         value={datos.correo} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.correo ? 'input-error' : ''}`}
                     />
                     <small className="text-muted">Ejemplo: usuario@dominio.com</small>
                 </div>
@@ -172,7 +229,7 @@ export default function RegistroGestor() {
                         value={datos.contrasena} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.contrasena ? 'input-error' : ''}`}
                     />
                     <small className="text-muted">Mínimo 8 caracteres, una mayúscula, un número y un símbolo</small>
                 </div>
@@ -184,7 +241,7 @@ export default function RegistroGestor() {
                         value={datos.telefono} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.telefono ? 'input-error' : ''}`}
                     />
                     <small className="text-muted">8 dígitos sin espacios ni guiones</small>
                 </div>
@@ -195,7 +252,7 @@ export default function RegistroGestor() {
                         value={datos.departamento} 
                         onChange={handleChange} 
                         required
-                        className="w-full p-2 border rounded"
+                        className={`w-full p-2 border rounded ${errores.departamento ? 'input-error' : ''}`}
                     >
                         <option value="">Selecciona un departamento</option>
                         {Object.keys(departamentos).map(dep => (
@@ -212,7 +269,7 @@ export default function RegistroGestor() {
                         onChange={handleChange} 
                         required 
                         disabled={!datos.departamento}
-                        className="w-full p-2 border rounded"
+                        className={`w-full p-2 border rounded ${errores.municipio ? 'input-error' : ''}`}
                     >
                         <option value="">Selecciona un municipio</option>
                         {departamentos[datos.departamento]?.map(mun => (
@@ -229,9 +286,9 @@ export default function RegistroGestor() {
                         value={datos.cargo} 
                         onChange={handleChange} 
                         required 
-                        className="w-full p-2 border rounded" 
+                        className={`w-full p-2 border rounded ${errores.cargo ? 'input-error' : ''}`}
                     />
-                    <small className="text-muted">Ingrese su cargo actual</small>
+                    <small className="text-muted">Ingrese su cargo actual (mínimo 3 caracteres)</small>
                 </div>
 
                 <div className="form-group">
@@ -240,7 +297,7 @@ export default function RegistroGestor() {
                         value={datos.zona} 
                         onChange={handleChange} 
                         required
-                        className="w-full p-2 border rounded"
+                        className={`w-full p-2 border rounded ${errores.zona ? 'input-error' : ''}`}
                     >
                         <option value="">Selecciona zona</option>
                         <option value="Rural">Rural</option>
@@ -249,7 +306,13 @@ export default function RegistroGestor() {
                     <small className="text-muted">Seleccione su zona de trabajo</small>
                 </div>
 
-                <button type="submit" className="registro-docente-boton">Registrarse</button>
+                <button 
+                    type="submit" 
+                    className="registro-docente-boton"
+                    disabled={!formularioValido}
+                >
+                    Registrarse
+                </button>
             </form>
             {mensaje && <div className="mensaje-flotante">{mensaje}</div>}
         </div>
