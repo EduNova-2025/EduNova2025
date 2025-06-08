@@ -127,12 +127,6 @@
 
     // Función para agregar una nueva categoría (CREATE)
     const handleAddCategoria = async () => {
-        // Validar campos requeridos
-        if (!nuevaCategoria.nombre || !nuevaCategoria.descripcion) {
-        alert("Por favor, completa todos los campos antes de guardar.");
-        return;
-        }
-
         // Cerrar modal
         setShowModal(false);
     
@@ -141,34 +135,34 @@
         const categoriaConId = { ...nuevaCategoria, id: tempId };
     
         try {
-        // Actualizar estado local para reflejar la nueva categoría
-        setCategorias((prev) => [...prev, categoriaConId]);
-        setCategoriasFiltradas((prev) => [...prev, categoriaConId]);
+            // Actualizar estado local para reflejar la nueva categoría
+            setCategorias((prev) => [...prev, categoriaConId]);
+            setCategoriasFiltradas((prev) => [...prev, categoriaConId]);
 
-        // Limpiar campos del formulario
-        setNuevaCategoria({ nombre: "", descripcion: "" });
-    
-        // Intentar guardar en Firestore
-        await addDoc(categoriasCollection, nuevaCategoria);
-    
-        // Mensaje según estado de conexión
-        if (isOffline) {
-            console.log("Categoría agregada localmente (sin conexión).");
-        } else {
-            console.log("Categoría agregada exitosamente en la nube.");
-        }
+            // Limpiar campos del formulario
+            setNuevaCategoria({ nombre: "", descripcion: "" });
+        
+            // Intentar guardar en Firestore
+            await addDoc(categoriasCollection, nuevaCategoria);
+        
+            // Mensaje según estado de conexión
+            if (isOffline) {
+                console.log("Categoría agregada localmente (sin conexión).");
+            } else {
+                console.log("Categoría agregada exitosamente en la nube.");
+            }
         } catch (error) {
-        console.error("Error al agregar la categoría:", error);
-    
-        // Manejar error según estado de conexión
-        if (isOffline) {
-            console.log("Offline: Categoría almacenada localmente.");
-        } else {
-            // Revertir cambios locales si falla en la nube
-            setCategorias((prev) => prev.filter((cat) => cat.id !== tempId));
-            setCategoriasFiltradas((prev) => prev.filter((cat) => cat.id !== tempId));
-            alert("Error al agregar la categoría: " + error.message);
-        }
+            console.error("Error al agregar la categoría:", error);
+        
+            // Manejar error según estado de conexión
+            if (isOffline) {
+                console.log("Offline: Categoría almacenada localmente.");
+            } else {
+                // Revertir cambios locales si falla en la nube
+                setCategorias((prev) => prev.filter((cat) => cat.id !== tempId));
+                setCategoriasFiltradas((prev) => prev.filter((cat) => cat.id !== tempId));
+                alert("Error al agregar la categoría: " + error.message);
+            }
         }
     };
 

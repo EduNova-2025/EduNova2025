@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import ReactGA from "react-ga4";
 
@@ -21,71 +21,75 @@ const ModalRegistroLibro = ({
   handleAddLibro,
   categorias
 }) => {
-  const [error, setError] = useState('');
+  const [errores, setErrores] = useState({
+    titulo: true,
+    descripcion: true,
+    edicion: true,
+    area_edu: true,
+    dirigido: true,
+    categoria: true,
+    imagen: true,
+    pdf: true
+  });
+  const [formularioValido, setFormularioValido] = useState(false);
 
-  const validarLibro = () => {
-    if (!nuevoLibro.titulo.trim()) {
-      setError('El título es requerido');
-      return false;
+  const validarCampo = (nombre, valor) => {
+    switch (nombre) {
+      case 'titulo':
+        return valor.trim().length >= 3;
+      case 'descripcion':
+        return valor.trim().length >= 10;
+      case 'edicion':
+        return valor.trim() !== '';
+      case 'area_edu':
+        return valor.trim() !== '';
+      case 'dirigido':
+        return valor.trim() !== '';
+      case 'categoria':
+        return valor !== '';
+      case 'imagen':
+        if (!valor) return false;
+        if (!valor.type.startsWith('image/')) return false;
+        if (valor.size > 5 * 1024 * 1024) return false;
+        return true;
+      case 'pdf':
+        if (!valor) return false;
+        if (!valor.type.includes('pdf')) return false;
+        if (valor.size > 50 * 1024 * 1024) return false;
+        return true;
+      default:
+        return true;
     }
-    if (nuevoLibro.titulo.length < 3) {
-      setError('El título debe tener al menos 3 caracteres');
-      return false;
-    }
-    if (!nuevoLibro.descripcion.trim()) {
-      setError('La descripción es requerida');
-      return false;
-    }
-    if (nuevoLibro.descripcion.length < 10) {
-      setError('La descripción debe tener al menos 10 caracteres');
-      return false;
-    }
-    if (!nuevoLibro.edicion.trim()) {
-      setError('La edición es requerida');
-      return false;
-    }
-    if (!nuevoLibro.area_edu.trim()) {
-      setError('El área educativa es requerida');
-      return false;
-    }
-    if (!nuevoLibro.dirigido.trim()) {
-      setError('El campo "Dirigido a" es requerido');
-      return false;
-    }
-    if (!nuevoLibro.categoria) {
-      setError('Debe seleccionar una categoría');
-      return false;
-    }
-    if (!nuevoLibro.imagen) {
-      setError('Debe seleccionar una imagen');
-      return false;
-    }
-    // Validar formato de imagen
-    if (nuevoLibro.imagen && !nuevoLibro.imagen.type.startsWith('image/')) {
-      setError('El archivo debe ser una imagen');
-      return false;
-    }
-    // Validar tamaño de imagen (máximo 5MB)
-    if (nuevoLibro.imagen && nuevoLibro.imagen.size > 5 * 1024 * 1024) {
-      setError('La imagen no debe superar los 5MB');
-      return false;
-    }
-    if (!nuevoLibro.pdf) {
-      setError('Debe seleccionar un archivo PDF');
-      return false;
-    }
-    // Validar formato del PDF
-    if (nuevoLibro.pdf && !nuevoLibro.pdf.type.includes('pdf')) {
-      setError('El archivo debe ser un PDF');
-      return false;
-    }
-    // Validar tamaño del PDF (máximo 50MB)
-    if (nuevoLibro.pdf && nuevoLibro.pdf.size > 50 * 1024 * 1024) {
-      setError('El PDF no debe superar los 50MB');
-      return false;
-    }
-    return true;
   };
+
+  const handleInputChangeWithValidation = (e) => {
+    const { name, value } = e.target;
+    handleInputChange(e);
+    const esValido = validarCampo(name, value);
+    setErrores(prev => ({ ...prev, [name]: !esValido }));
+  };
+
+  const handleImageChangeWithValidation = (e) => {
+    handleImageChange(e);
+    const archivo = e.target.files[0];
+    const esValido = validarCampo('imagen', archivo);
+    setErrores(prev => ({ ...prev, imagen: !esValido }));
+  };
+
+  const handlePdfChangeWithValidation = (e) => {
+    handlePdfChange(e);
+    const archivo = e.target.files[0];
+    const esValido = validarCampo('pdf', archivo);
+    setErrores(prev => ({ ...prev, pdf: !esValido }));
+  };
+
+  useEffect(() => {
+    const todosLosCamposValidos = Object.keys(errores).every(campo => !errores[campo]);
+    const todosLosCamposLlenos = Object.keys(nuevoLibro).every(campo => 
+      nuevoLibro[campo] && nuevoLibro[campo].trim() !== ''
+    );
+    setFormularioValido(todosLosCamposValidos && todosLosCamposLlenos);
+  }, [errores, nuevoLibro]);
 
   const trackLibroRegistration = () => {
     ReactGA.event({
@@ -97,8 +101,7 @@ const ModalRegistroLibro = ({
   };
 
   const handleAddLibroWithTracking = () => {
-    setError('');
-    if (validarLibro()) {
+    if (formularioValido) {
       handleAddLibro();
       trackLibroRegistration();
     }
@@ -107,7 +110,16 @@ const ModalRegistroLibro = ({
   return (
     <Modal show={showModal} onHide={() => {
       setShowModal(false);
-      setError('');
+      setErrores({
+        titulo: true,
+        descripcion: true,
+        edicion: true,
+        area_edu: true,
+        dirigido: true,
+        categoria: true,
+        imagen: true,
+        pdf: true
+      });
     }}>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title-custom">Agregar Libro</Modal.Title>
@@ -121,11 +133,11 @@ const ModalRegistroLibro = ({
               type="text"
               name="titulo"
               value={nuevoLibro.titulo}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.titulo ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Ingrese el título del libro (mínimo 3 caracteres)</small>
+            <small className="text-muted">Ingrese el título del libro (mínimo 3 caracteres)</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="descripcion" className="modal-label-custom">Descripción</Form.Label>
@@ -134,11 +146,11 @@ const ModalRegistroLibro = ({
               type="text"
               name="descripcion"
               value={nuevoLibro.descripcion}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.descripcion ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Describa el contenido del libro (mínimo 10 caracteres)</small>
+            <small className="text-muted">Describa el contenido del libro (mínimo 10 caracteres)</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="edicion" className="modal-label-custom">Edición</Form.Label>
@@ -147,11 +159,11 @@ const ModalRegistroLibro = ({
               type="text"
               name="edicion"
               value={nuevoLibro.edicion}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.edicion ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Ingrese la edición del libro</small>
+            <small className="text-muted">Ingrese la edición del libro</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="area_edu" className="modal-label-custom">Área Educativa</Form.Label>
@@ -160,11 +172,11 @@ const ModalRegistroLibro = ({
               type="text"
               name="area_edu"
               value={nuevoLibro.area_edu}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.area_edu ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Ingrese el área educativa</small>
+            <small className="text-muted">Ingrese el área educativa</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="dirigido" className="modal-label-custom">Dirigido a</Form.Label>
@@ -173,11 +185,11 @@ const ModalRegistroLibro = ({
               type="text"
               name="dirigido"
               value={nuevoLibro.dirigido}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.dirigido ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Especifique a quién está dirigido el libro</small>
+            <small className="text-muted">Especifique a quién está dirigido el libro</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="categoria" className="modal-label-custom">Categoría</Form.Label>
@@ -185,8 +197,8 @@ const ModalRegistroLibro = ({
               id="categoria"
               name="categoria"
               value={nuevoLibro.categoria}
-              onChange={handleInputChange}
-              className="text-danger"
+              onChange={handleInputChangeWithValidation}
+              className={errores.categoria ? 'input-error' : ''}
               required
             >
               <option value="">Seleccione una categoría</option>
@@ -196,7 +208,7 @@ const ModalRegistroLibro = ({
                 </option>
               ))}
             </Form.Select>
-            <small className="text-danger">Seleccione la categoría correspondiente</small>
+            <small className="text-muted">Seleccione la categoría correspondiente</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="imagen" className="modal-label-custom">Imagen</Form.Label>
@@ -204,11 +216,11 @@ const ModalRegistroLibro = ({
               id="imagen"
               type="file"
               accept="image/*"
-              onChange={handleImageChange}
-              className="text-danger"
+              onChange={handleImageChangeWithValidation}
+              className={errores.imagen ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Seleccione una imagen (máximo 5MB)</small>
+            <small className="text-muted">Seleccione una imagen (máximo 5MB)</small>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="pdf" className="modal-label-custom">Documento PDF</Form.Label>
@@ -216,23 +228,35 @@ const ModalRegistroLibro = ({
               id="pdf"
               type="file"
               accept="application/pdf"
-              onChange={handlePdfChange}
-              className="text-danger"
+              onChange={handlePdfChangeWithValidation}
+              className={errores.pdf ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Seleccione un archivo PDF (máximo 50MB)</small>
+            <small className="text-muted">Seleccione un archivo PDF (máximo 50MB)</small>
           </Form.Group>
-          {error && <div className="text-danger mb-3">{error}</div>}
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={() => {
           setShowModal(false);
-          setError('');
+          setErrores({
+            titulo: true,
+            descripcion: true,
+            edicion: true,
+            area_edu: true,
+            dirigido: true,
+            categoria: true,
+            imagen: true,
+            pdf: true
+          });
         }}>
           Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleAddLibroWithTracking}>
+        <Button 
+          className="btn-style" 
+          onClick={handleAddLibroWithTracking}
+          disabled={!formularioValido}
+        >
           Guardar
         </Button>
       </Modal.Footer>

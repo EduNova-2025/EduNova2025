@@ -217,19 +217,6 @@ const Libros = () => {
             return;
             }
         
-            if (
-            !nuevoLibro.titulo ||
-            !nuevoLibro.descripcion ||
-            !nuevoLibro.area_edu ||
-            !nuevoLibro.edicion ||
-            !nuevoLibro.dirigido ||
-            !nuevoLibro.imagen ||
-            !nuevoLibro.categoria ||
-            !pdfFile
-            ) {
-            alert(t('libros.camposRequeridosImagen'));
-            return;
-            }
             try {
             const storageRef = ref(storage, `libros/${pdfFile.name}`);
             await uploadBytes(storageRef, pdfFile);

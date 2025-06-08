@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import ReactGA from "react-ga4";
 
@@ -18,30 +18,38 @@ const ModalRegistroCategoria = ({
   handleInputChange,
   handleAddCategoria,
 }) => {
-  const [error, setError] = useState('');
+  const [errores, setErrores] = useState({
+    nombre: true,
+    descripcion: true
+  });
+  const [formularioValido, setFormularioValido] = useState(false);
 
-  // Función para validar la categoría
-  const validarCategoria = () => {
-    if (!nuevaCategoria.nombre.trim()) {
-      setError('El nombre es requerido');
-      return false;
+  const validarCampo = (nombre, valor) => {
+    switch (nombre) {
+      case 'nombre':
+        return valor.trim().length >= 3;
+      case 'descripcion':
+        return valor.trim().length >= 10;
+      default:
+        return true;
     }
-    if (nuevaCategoria.nombre.length < 3) {
-      setError('El nombre debe tener al menos 3 caracteres');
-      return false;
-    }
-    if (!nuevaCategoria.descripcion.trim()) {
-      setError('La descripción es requerida');
-      return false;
-    }
-    if (nuevaCategoria.descripcion.length < 10) {
-      setError('La descripción debe tener al menos 10 caracteres');
-      return false;
-    }
-    return true;
   };
 
-  // Función para rastrear el registro de categoría
+  const handleInputChangeWithValidation = (e) => {
+    const { name, value } = e.target;
+    handleInputChange(e);
+    const esValido = validarCampo(name, value);
+    setErrores(prev => ({ ...prev, [name]: !esValido }));
+  };
+
+  useEffect(() => {
+    const todosLosCamposValidos = Object.keys(errores).every(campo => !errores[campo]);
+    const todosLosCamposLlenos = Object.keys(nuevaCategoria).every(campo => 
+      nuevaCategoria[campo] && nuevaCategoria[campo].trim() !== ''
+    );
+    setFormularioValido(todosLosCamposValidos && todosLosCamposLlenos);
+  }, [errores, nuevaCategoria]);
+
   const trackCategoriaRegistration = () => {
     ReactGA.event({
       category: "Categorías",
@@ -51,10 +59,8 @@ const ModalRegistroCategoria = ({
     });
   };
 
-  // Modificar handleAddCategoria para incluir el tracking y validación
   const handleAddCategoriaWithTracking = () => {
-    setError('');
-    if (validarCategoria()) {
+    if (formularioValido) {
       handleAddCategoria();
       trackCategoriaRegistration();
     }
@@ -65,7 +71,10 @@ const ModalRegistroCategoria = ({
       show={showModal}
       onHide={() => {
         setShowModal(false);
-        setError('');
+        setErrores({
+          nombre: true,
+          descripcion: true
+        });
       }}
       centered
       className="modal-categoria"
@@ -89,12 +98,12 @@ const ModalRegistroCategoria = ({
               type="text"
               name="nombre"
               value={nuevaCategoria.nombre}
-              onChange={handleInputChange}
+              onChange={handleInputChangeWithValidation}
               placeholder="Ingresa el nombre"
-              className="text-danger"
+              className={errores.nombre ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Ingrese un nombre descriptivo (mínimo 3 caracteres)</small>
+            <small className="text-muted">Ingrese un nombre descriptivo (mínimo 3 caracteres)</small>
           </Form.Group>
           <Form.Group className="mb-4">
             <Form.Label
@@ -109,24 +118,30 @@ const ModalRegistroCategoria = ({
               rows={3}
               name="descripcion"
               value={nuevaCategoria.descripcion}
-              onChange={handleInputChange}
+              onChange={handleInputChangeWithValidation}
               placeholder="Ingresa la descripción"
-              className="text-danger"
+              className={errores.descripcion ? 'input-error' : ''}
               required
             />
-            <small className="text-danger">Describa la categoría (mínimo 10 caracteres)</small>
+            <small className="text-muted">Describa la categoría (mínimo 10 caracteres)</small>
           </Form.Group>
-          {error && <div className="text-danger mb-3">{error}</div>}
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={() => {
           setShowModal(false);
-          setError('');
+          setErrores({
+            nombre: true,
+            descripcion: true
+          });
         }}>
           Cancelar
         </Button>
-        <Button className="btn-style" onClick={handleAddCategoriaWithTracking}>
+        <Button 
+          className="btn-style" 
+          onClick={handleAddCategoriaWithTracking}
+          disabled={!formularioValido}
+        >
           Guardar
         </Button>
       </Modal.Footer>

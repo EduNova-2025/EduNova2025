@@ -76,23 +76,6 @@ const TeleClaseMINED = () => {
     };
 
     const handleAddTeleclase = async () => {
-        if (!nuevaTeleclase.titulo.trim()) {
-            alert(t('teleclase.agregarTitulo'));
-            return;
-        }
-        if (!nuevaTeleclase.materia.trim()) {
-            alert(t('teleclase.seleccionarMateria'));
-            return;
-        }
-        if (!nuevaTeleclase.descripcion.trim()) {
-            alert(t('teleclase.escribirDescripcion'));
-            return;
-        }
-        if (!videoFile) {
-            alert(t('teleclase.archivoVideo'));
-            return;
-        }
-
         const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
         if (!allowedTypes.includes(videoFile.type)) {
             alert(t('teleclase.seleccionarVideo'));
