@@ -64,7 +64,7 @@ const InputBox = ({ onSendMessage, onFileUpload, isProcessing }) => {
         </div>
       </div>
       {attachedFile && (
-        <div className="attached-file-preview">
+        <div className="attached-file-preview" style={{ marginTop: '10px' }}>
           <span className="attached-file-name">{attachedFile.name}</span>
           <button
             className="discard-file-btn"

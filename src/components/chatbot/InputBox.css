@@ -15,7 +15,7 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  padding: 20px 15px 80px 20px;
+  padding: 20px 15px 120px 20px; /* Increased bottom padding to 120px to accommodate input and preview */
   margin-top: 17px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -23,9 +23,9 @@
   width: 100%;
   box-sizing: border-box;
   margin-left: 0;
-  height: calc(100vh - 100px);
+  height: calc(113vh - 100px); /* Adjust this value if the header/input height changes */
   max-height: 100vh;
-  z-index: 1; /* Ajustado para no interferir con overlay */
+  z-index: 1; /* Adjusted to not interfere with overlay */
 }
 
 
@@ -35,7 +35,7 @@
   .chat-container {
     padding: 5px 5px 50px 5px !important;
     margin-top: 65px !important;
-    height: calc(100vh - 90px) !important;
+    height: calc(91vh - 90px) !important;
     position: relative !important;
     top: 0 !important;
     left: 0 !important;
@@ -148,6 +148,8 @@
   max-width: 800px;
   padding: 10px;
   font-size: 16px;
+  margin: 0 auto;
+  position: relative;
   border-radius: 10px;
   border: 4px solid #4A6B3E;
   outline: none;
@@ -177,6 +179,7 @@
   transform: translateX(-50%);
   width: 70%;
   display: flex;
+  margin-bottom: 10px;
   justify-content: center;
   align-items: center;
   z-index: 5;
@@ -209,6 +212,21 @@
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
+}
+
+
+
+.message-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 4px solid #4A6B3E;
+  outline: none;
+  color: #333;
+  background-color: #FFF;
+  transition: border-color 0.3s ease;
+  animation: gradientBorder 3s linear infinite;
 }
 
 
@@ -345,13 +363,13 @@
 /* ===== Modal and File Styles ===== */
 .history-modal {
   position: fixed;
-  top: 50%;
+  top: 52%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.7);
-  width: 400px;
-  max-width: 90%;
+  width: 400px !important; /* Added !important */
+  max-width: 80% !important; /* Added !important */
   max-height: 80vh;
-  background: rgba(40, 40, 40, 0.95);
+  background: #000000 !important;
   backdrop-filter: blur(10px);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -395,6 +413,7 @@
 
 .history-modal-body {
   padding: 16px;
+  background: #000000 !important;
 }
 
 .history-modal-body h5 {
@@ -431,40 +450,50 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  background: #000000 !important;
 }
 
 .chat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 8px 12px;
   margin: 4px 0;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.342);
+  box-shadow: none;
   -webkit-tap-highlight-color: transparent;
   position: relative;
   color: #e0e0e0;
+  background: #1a1a1a;
+  min-height: 40px;
 }
 
 .history-modal .chat-item:hover {
   transform: translateY(2px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 .history-modal .chat-item:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 .chat-item-content {
   display: flex;
   flex-direction: column;
-  position: relative;
+  flex-grow: 1;
+  width: 100%;
 }
 
 .chat-item-title {
   font-size: 14px;
   font-weight: 500;
   color: #e0e0e0;
+  display: block;
+  height: 20px !important;  
+  line-height: 20px !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -472,16 +501,26 @@
 
 .chat-item-date {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgb(255, 255, 255);
   margin-top: 4px;
+  display: block;
+  height: 20px !important;
+  line-height: 20px !important;
 }
 
 .action-buttons {
-  position: absolute;
-  top: 8px;
-  right: -50px;
-  display: flex;
+  position: static !important;
+  margin-left: 0 !important;
   gap: 4px;
+  margin-top: 5px;
+  justify-content: flex-end; /* Align buttons to the right */
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.action-buttons {
+background: transparent !important;
+width: auto !important;
 }
 
 .action-btn {
@@ -492,6 +531,12 @@
   padding: 2px;
   border-radius: 4px;
   transition: color 0.2s ease, background 0.2s ease;
+  font-size: 14px;
+  width: 24px; /* Fixed width for consistency */
+  height: 24px; /* Fixed height for consistency */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn:hover {
@@ -526,26 +571,50 @@
   .history-modal {
     width: 90%;
     max-width: 320px;
+    background: #000000 !important;
   }
 
   .history-modal-header {
     padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
   }
 
   .history-modal-body {
     padding: 12px;
+    background: #000000 !important;
+    color: #e0e0e0 !important;
+  }
+
+  .chat-list {
+    background: #000000 !important;
+    padding: 0;
+    margin: 0;
   }
 
   .chat-item {
     padding: 6px 10px;
+    background: #1a1a1a !important;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    box-shadow: none !important;
   }
 
   .chat-item-title {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #e0e0e0;
+    display: block;
+    height: 20px !important;
+    line-height: 20px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust this value based on your design needs */
   }
 
   .chat-item-date {
     font-size: 11px;
+    color: rgba(255, 255, 255, 0.7) !important;
   }
 }
 
@@ -553,57 +622,21 @@
   .history-modal {
     width: 95%;
     max-width: 280px;
+    background: #000000 !important;
   }
   
-  .chat-area {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  .history-modal-body {
+    background: #000000 !important;
+    color: #e0e0e0 !important;
   }
   
-  .chat-container {
-    padding: 15px 10px 70px 15px;
-    margin-top: 60px;
-    margin-left: 0;
-    overflow: hidden !important;
-    height: calc(100% - 130px);
-    max-height: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 70px;
+  .chat-list {
+    background: #000000 !important;
   }
   
-  .chat-bubble {
-    max-width: 95%;
-    font-size: 14px;
-    padding: 10px 12px;
-  }
-  
-  .chat-bubble-container {
-    margin-bottom: 15px;
-  }
-  
-  .chat-bubble.user {
-    border-bottom-right-radius: 4px;
-    margin-right: 5px;
-  }
-  
-  .chat-bubble.ai {
-    border-bottom-left-radius: 4px;
-    margin-left: 5px;
-  }
-
   .chat-item {
-    width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box;
-  }
-  .action-buttons {
-    background: transparent !important;
-    width: auto !important;
+    background: #1a1a1a !important;
+    box-shadow: none !important;
   }
 }
 
@@ -611,18 +644,21 @@
   .history-modal {
     width: 95%;
     max-width: 260px;
+    background: #000000 !important;
+  }
+
+  .history-modal-body {
+    background: #000000 !important;
+    color: #e0e0e0 !important;
+  }
+
+  .chat-list {
+    background: #000000 !important;
   }
 
   .chat-item {
-    padding: 5px 8px;
-  }
-
-  .chat-item-title {
-    font-size: 12px;
-  }
-
-  .chat-item-date {
-    font-size: 10px;
+    background: #1a1a1a !important;
+    box-shadow: none !important;
   }
 }
 
@@ -734,4 +770,11 @@
   50% { border-color: #3357FF; }
   75% { border-color: #FF33A6; }
   100% { border-color: #5092ee; }
+}
+
+/* Forzar fondo negro en historial de chats */
+.history-modal .chat-list,
+.history-modal .chat-list li,
+.history-modal .chat-item {
+  background: #000 !important;
 }

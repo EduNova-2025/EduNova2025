@@ -221,57 +221,64 @@ const ChatArea = () => {
             <div className="history-modal-body">
               <h5>Historial</h5>
               <ul className="chat-list">
-                {chatHistory.map(session => (
-                  <li key={session.id} className="chat-item" onClick={() => handleChatSelect(session)}>
-                    <div className="chat-item-content">
-                      {editingSessionId === session.id ? (
-                        <div className="edit-title-container">
-                          <input
-                            type="text"
-                            value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
-                            className="title-input"
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <button onClick={(e) => { e.stopPropagation(); handleSaveTitle(); }} className="action-btn save-btn">✓</button>
-                          <button onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }} className="action-btn cancel-btn">✗</button>
-                        </div>
-                      ) : (
-                        <>
-                          <span className="chat-item-title">
-                            {session.title || 'Sin título'}
-                          </span>
-                          <span className="chat-item-date">
-                            {session.timestamp?.toDate().toLocaleString('es-ES', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            }) || 'Fecha no disponible'}
-                          </span>
-                          <div className="action-buttons">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
-                              className="action-btn edit-btn"
-                              title="Renombrar"
-                            >
-                              <BsPencil size={14} />
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
-                              className="action-btn delete-btn"
-                              title="Eliminar"
-                            >
-                              <BsTrash size={14} />
-                            </button>
+                {chatHistory.map(session => {
+                  console.log('Session ID:', session.id);
+                  console.log('Session Title:', session.title);
+                  console.log('Session Timestamp:', session.timestamp);
+                  return (
+                    <li key={session.id} className="chat-item" onClick={() => handleChatSelect(session)}>
+                      <div className="chat-item-content">
+                        {editingSessionId === session.id ? (
+                          <div className="edit-title-container">
+                            <input
+                              type="text"
+                              value={newTitle}
+                              onChange={(e) => setNewTitle(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleSaveTitle()}
+                              className="title-input"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <button onClick={(e) => { e.stopPropagation(); handleSaveTitle(); }} className="action-btn save-btn">✓</button>
+                            <button onClick={(e) => { e.stopPropagation(); handleCancelEdit(); }} className="action-btn cancel-btn">✗</button>
                           </div>
-                        </>
+                        ) : (
+                          <>
+                            <span className="chat-item-title">
+                              {session.title || 'Sin título'}
+                            </span>
+                            <span className="chat-item-date">
+                              {session.timestamp?.toDate().toLocaleString('es-ES', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }) || 'Fecha no disponible'}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      {!editingSessionId && (
+                        <div className="action-buttons">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleEditTitle(session.id, session.title); }}
+                            className="action-btn edit-btn"
+                            title="Renombrar"
+                          >
+                            <BsPencil size={14} />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
+                            className="action-btn delete-btn"
+                            title="Eliminar"
+                          >
+                            <BsTrash size={14} />
+                          </button>
+                        </div>
                       )}
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
             <div className="history-modal-footer">
